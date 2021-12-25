@@ -518,6 +518,52 @@
 </deviceset>
 </devicesets>
 </library>
+<library name="HC05_BLUETOOTH">
+<packages>
+<package name="HC05_BLUETOOTH">
+<wire x1="-2.54" y1="5.08" x2="-2.54" y2="-5.08" width="0.127" layer="21"/>
+<wire x1="-2.54" y1="-5.08" x2="2.54" y2="-5.08" width="0.127" layer="21"/>
+<wire x1="2.54" y1="-5.08" x2="2.54" y2="5.08" width="0.127" layer="21"/>
+<wire x1="2.54" y1="5.08" x2="-2.54" y2="5.08" width="0.127" layer="21"/>
+<pad name="RX" x="-1.27" y="3.81" drill="0.9652"/>
+<pad name="TX" x="-1.27" y="1.27" drill="0.9652"/>
+<pad name="GND" x="-1.27" y="-1.27" drill="0.9652"/>
+<pad name="VCC" x="-1.27" y="-3.81" drill="0.9652"/>
+</package>
+</packages>
+<symbols>
+<symbol name="HC05_BLUETOOTH">
+<wire x1="-5.08" y1="7.62" x2="-5.08" y2="-12.7" width="0.254" layer="94"/>
+<wire x1="-5.08" y1="-12.7" x2="5.08" y2="-12.7" width="0.254" layer="94"/>
+<wire x1="5.08" y1="-12.7" x2="5.08" y2="7.62" width="0.254" layer="94"/>
+<wire x1="5.08" y1="7.62" x2="-5.08" y2="7.62" width="0.254" layer="94"/>
+<pin name="RX" x="-10.16" y="5.08" length="middle"/>
+<pin name="TX" x="-10.16" y="0" length="middle"/>
+<pin name="GND" x="-10.16" y="-5.08" length="middle"/>
+<pin name="VCC" x="-10.16" y="-10.16" length="middle"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="HC05_BLUETOOTH">
+<gates>
+<gate name="G$1" symbol="HC05_BLUETOOTH" x="0" y="2.54"/>
+</gates>
+<devices>
+<device name="" package="HC05_BLUETOOTH">
+<connects>
+<connect gate="G$1" pin="GND" pad="GND"/>
+<connect gate="G$1" pin="RX" pad="RX"/>
+<connect gate="G$1" pin="TX" pad="TX"/>
+<connect gate="G$1" pin="VCC" pad="VCC"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -539,6 +585,7 @@
 <part name="U$9" library="MOTOR_ENCODER_25D" deviceset="MOTOR_ENCODER_25D" device=""/>
 <part name="U$10" library="MOTOR_ENCODER_25D" deviceset="MOTOR_ENCODER_25D" device=""/>
 <part name="U$11" library="IMU" deviceset="IMU" device=""/>
+<part name="U$12" library="HC05_BLUETOOTH" deviceset="HC05_BLUETOOTH" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -559,6 +606,7 @@
 <instance part="U$9" gate="G$1" x="116.84" y="10.16" smashed="yes"/>
 <instance part="U$10" gate="G$1" x="195.58" y="7.62" smashed="yes"/>
 <instance part="U$11" gate="G$1" x="144.78" y="81.28" smashed="yes"/>
+<instance part="U$12" gate="G$1" x="93.98" y="96.52" smashed="yes"/>
 </instances>
 <busses>
 </busses>
@@ -618,6 +666,11 @@
 <pinref part="U$11" gate="G$1" pin="5V"/>
 <wire x1="137.16" y1="88.9" x2="132.08" y2="88.9" width="0.1524" layer="91"/>
 <label x="124.46" y="88.9" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$12" gate="G$1" pin="VCC"/>
+<wire x1="83.82" y1="86.36" x2="78.74" y2="86.36" width="0.1524" layer="91"/>
+<label x="71.12" y="86.36" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$3" class="0">
@@ -721,6 +774,11 @@
 <wire x1="187.96" y1="5.08" x2="182.88" y2="5.08" width="0.1524" layer="91"/>
 <label x="172.72" y="5.08" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="U$12" gate="G$1" pin="GND"/>
+<wire x1="83.82" y1="91.44" x2="78.74" y2="91.44" width="0.1524" layer="91"/>
+<label x="68.58" y="91.44" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="N$2" class="0">
 <segment>
@@ -811,6 +869,54 @@
 <pinref part="U$11" gate="G$1" pin="GND"/>
 <wire x1="137.16" y1="83.82" x2="132.08" y2="83.82" width="0.1524" layer="91"/>
 <label x="121.92" y="83.82" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="SDA_CONN" class="0">
+<segment>
+<pinref part="U$1" gate="G$1" pin="18/A4/T/SDA0"/>
+<wire x1="40.64" y1="22.86" x2="35.56" y2="22.86" width="0.1524" layer="91"/>
+<label x="25.4" y="22.86" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$11" gate="G$1" pin="SDA"/>
+<wire x1="137.16" y1="78.74" x2="132.08" y2="78.74" width="0.1524" layer="91"/>
+<label x="121.92" y="78.74" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="SCL_CONN" class="0">
+<segment>
+<pinref part="U$1" gate="G$1" pin="19/A5/T/SCL0"/>
+<wire x1="40.64" y1="20.32" x2="35.56" y2="20.32" width="0.1524" layer="91"/>
+<label x="25.4" y="20.32" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$11" gate="G$1" pin="SCL"/>
+<wire x1="137.16" y1="73.66" x2="132.08" y2="73.66" width="0.1524" layer="91"/>
+<label x="121.92" y="73.66" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="TX_TO_RX" class="0">
+<segment>
+<pinref part="U$12" gate="G$1" pin="RX"/>
+<wire x1="83.82" y1="101.6" x2="78.74" y2="101.6" width="0.1524" layer="91"/>
+<label x="68.58" y="101.6" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="1/TX1/T"/>
+<wire x1="40.64" y1="66.04" x2="35.56" y2="66.04" width="0.1524" layer="91"/>
+<label x="25.4" y="66.04" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="RX_TO_TX" class="0">
+<segment>
+<pinref part="U$12" gate="G$1" pin="TX"/>
+<wire x1="83.82" y1="96.52" x2="78.74" y2="96.52" width="0.1524" layer="91"/>
+<label x="68.58" y="96.52" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="0/RX1/T"/>
+<wire x1="40.64" y1="68.58" x2="35.56" y2="68.58" width="0.1524" layer="91"/>
+<label x="25.4" y="68.58" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>

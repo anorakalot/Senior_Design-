@@ -919,28 +919,52 @@
 <label x="25.4" y="68.58" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$1" class="0">
+<net name="M1_FWD_PWM_CONN" class="0">
 <segment>
 <pinref part="U$2" gate="G$1" pin="M1_FWD_PWN"/>
 <wire x1="142.24" y1="53.34" x2="124.46" y2="53.34" width="0.1524" layer="91"/>
+<label x="101.6" y="53.34" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="3/CAN-TX/PWM"/>
+<wire x1="40.64" y1="60.96" x2="35.56" y2="60.96" width="0.1524" layer="91"/>
+<label x="15.24" y="60.96" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$8" class="0">
+<net name="M1_REV_PWM_CONN" class="0">
 <segment>
 <pinref part="U$2" gate="G$1" pin="M1_REV_PWN"/>
 <wire x1="142.24" y1="27.94" x2="124.46" y2="27.94" width="0.1524" layer="91"/>
+<label x="101.6" y="27.94" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="4/CAN-RX/PWM"/>
+<wire x1="40.64" y1="58.42" x2="35.56" y2="58.42" width="0.1524" layer="91"/>
+<label x="15.24" y="58.42" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$12" class="0">
+<net name="M2_FWD_PWM_CONN" class="0">
 <segment>
 <pinref part="U$2" gate="G$1" pin="M2_FWD_PWM"/>
 <wire x1="195.58" y1="27.94" x2="213.36" y2="27.94" width="0.1524" layer="91"/>
+<label x="210.82" y="27.94" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="5/PWM"/>
+<wire x1="40.64" y1="55.88" x2="35.56" y2="55.88" width="0.1524" layer="91"/>
+<label x="15.24" y="55.88" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$13" class="0">
+<net name="M2_REV_PWM_CONN" class="0">
 <segment>
 <pinref part="U$2" gate="G$1" pin="M2_REV_PWM"/>
 <wire x1="195.58" y1="53.34" x2="210.82" y2="53.34" width="0.1524" layer="91"/>
+<label x="210.82" y="53.34" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="6/PWM"/>
+<wire x1="40.64" y1="53.34" x2="35.56" y2="53.34" width="0.1524" layer="91"/>
+<label x="15.24" y="53.34" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>

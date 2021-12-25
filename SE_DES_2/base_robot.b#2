@@ -241,6 +241,15 @@
 </package>
 </packages>
 </library>
+<library name="3_4_BALLCASTER">
+<packages>
+<package name="3_4_BALLCASTER">
+<wire x1="0" y1="0" x2="15.24" y2="0" width="0.127" layer="21"/>
+<wire x1="-3.81" y1="-1.27" x2="19.05" y2="-1.27" width="0.127" layer="21"/>
+<circle x="7.62" y="-1.27" radius="12.048275" width="0.127" layer="21"/>
+</package>
+</packages>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -449,6 +458,7 @@ design rules under a new name.</description>
 <element name="U$10" library="MOTOR_ENCODER_25D" package="MOTOR_ENCODER_25D" value="MOTOR_ENCODER_25D" x="-48.26" y="2.54" smashed="yes"/>
 <element name="U$11" library="IMU" package="IMU" value="IMU" x="-55.88" y="11.43" smashed="yes"/>
 <element name="U$12" library="HC05_BLUETOOTH" package="HC05_BLUETOOTH" value="HC05_BLUETOOTH" x="-62.23" y="0" smashed="yes"/>
+<element name="U$13" library="3_4_BALLCASTER" package="3_4_BALLCASTER" value="3_4_BALLCASTER" x="110.49" y="50.8" smashed="yes" rot="R90"/>
 </elements>
 <signals>
 <signal name="AGND">
@@ -522,7 +532,9 @@ design rules under a new name.</description>
 <contactref element="U$9" pad="GND"/>
 <contactref element="U$10" pad="GND"/>
 <contactref element="U$12" pad="GND"/>
-<wire x1="-48.26" y1="1.27" x2="-63.5" y2="-1.27" width="0" layer="19" extent="1-1"/>
+<contactref element="U$11" pad="GND"/>
+<wire x1="-57.15" y1="11.43" x2="-63.5" y2="-1.27" width="0" layer="19" extent="1-1"/>
+<wire x1="-48.26" y1="1.27" x2="-57.15" y2="11.43" width="0" layer="19" extent="1-1"/>
 <wire x1="-44.45" y1="1.27" x2="-48.26" y2="1.27" width="0" layer="19" extent="1-1"/>
 <wire x1="-40.64" y1="0" x2="-44.45" y2="1.27" width="0" layer="19" extent="1-1"/>
 <wire x1="-38.1" y1="-5.08" x2="-40.64" y2="0" width="0" layer="19" extent="1-1"/>
@@ -556,11 +568,15 @@ design rules under a new name.</description>
 <contactref element="U$1" pad="14/A0"/>
 <wire x1="-40.64" y1="2.54" x2="27.94" y2="19.05" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$4">
+<signal name="M2_EN_CONN">
 <contactref element="U$2" pad="M2_ENABLE"/>
+<contactref element="U$1" pad="21/A7"/>
+<wire x1="-2.54" y1="2.54" x2="27.94" y2="36.83" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$11">
+<signal name="M1_EN_CONN">
 <contactref element="U$2" pad="M1_ENABLE"/>
+<contactref element="U$1" pad="20/A6"/>
+<wire x1="-10.16" y1="20.32" x2="27.94" y2="34.29" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="L_M1_1">
 <contactref element="U$2" pad="L_M1_1"/>
@@ -581,9 +597,6 @@ design rules under a new name.</description>
 <contactref element="U$2" pad="R_M2_1"/>
 <contactref element="U$10" pad="M1"/>
 <wire x1="-2.54" y1="15.24" x2="-48.26" y2="-3.81" width="0" layer="19" extent="1-1"/>
-</signal>
-<signal name="CMD_GND">
-<contactref element="U$11" pad="GND"/>
 </signal>
 <signal name="SDA_CONN">
 <contactref element="U$1" pad="18/A4"/>
@@ -624,6 +637,26 @@ design rules under a new name.</description>
 <contactref element="U$2" pad="M2_REV_PWM"/>
 <contactref element="U$1" pad="6"/>
 <wire x1="-2.54" y1="17.78" x2="12.7" y2="31.75" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="OUTA_L_CONN">
+<contactref element="U$9" pad="OUTA"/>
+<contactref element="U$1" pad="15/A1"/>
+<wire x1="-44.45" y1="6.35" x2="27.94" y2="21.59" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="OUTB_L_CONN">
+<contactref element="U$9" pad="OUTB"/>
+<contactref element="U$1" pad="2"/>
+<wire x1="-44.45" y1="8.89" x2="12.7" y2="41.91" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="OUTA_R_CONN">
+<contactref element="U$10" pad="OUTA"/>
+<contactref element="U$1" pad="17/A3"/>
+<wire x1="-48.26" y1="6.35" x2="27.94" y2="26.67" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="OUTB_R_CONN">
+<contactref element="U$10" pad="OUTB"/>
+<contactref element="U$1" pad="16/A2"/>
+<wire x1="-48.26" y1="8.89" x2="27.94" y2="24.13" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 <mfgpreviewcolors>

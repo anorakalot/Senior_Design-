@@ -564,6 +564,89 @@
 </deviceset>
 </devicesets>
 </library>
+<library name="3_4_BALLCASTER">
+<packages>
+<package name="3_4_BALLCASTER">
+<wire x1="0" y1="0" x2="15.24" y2="0" width="0.127" layer="21"/>
+<wire x1="-3.81" y1="-1.27" x2="19.05" y2="-1.27" width="0.127" layer="21"/>
+<circle x="7.62" y="-1.27" radius="12.048275" width="0.127" layer="21"/>
+</package>
+</packages>
+<symbols>
+<symbol name="3_4_BALLCASTER">
+<circle x="0" y="0" radius="7.184203125" width="0.254" layer="94"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="3_4_BALLCASTER">
+<gates>
+<gate name="G$1" symbol="3_4_BALLCASTER" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="3_4_BALLCASTER">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
+<library name="MOTOR_BRACKET_25D">
+<packages>
+<package name="MOTOR_BRACKET_25D">
+<wire x1="-13.97" y1="0" x2="38.1" y2="0" width="0.127" layer="21"/>
+<wire x1="-13.97" y1="-0.508" x2="-4.318" y2="-0.508" width="0.127" layer="21"/>
+<pad name="P$1" x="-3.81" y="-0.508" drill="0.9652"/>
+<wire x1="-3.302" y1="-0.508" x2="3.048" y2="-0.508" width="0.127" layer="21"/>
+<pad name="P$2" x="3.556" y="-0.508" drill="0.9652"/>
+<wire x1="4.064" y1="-0.508" x2="10.414" y2="-0.508" width="0.127" layer="21"/>
+<pad name="P$3" x="10.922" y="-0.508" drill="0.9652"/>
+<wire x1="11.43" y1="-0.508" x2="17.78" y2="-0.508" width="0.127" layer="21"/>
+<pad name="P$4" x="18.288" y="-0.508" drill="0.9652"/>
+<wire x1="18.796" y1="-0.508" x2="25.146" y2="-0.508" width="0.127" layer="21"/>
+<pad name="P$5" x="25.654" y="-0.508" drill="0.9652"/>
+<wire x1="26.162" y1="-0.508" x2="36.83" y2="-0.508" width="0.127" layer="21"/>
+<wire x1="-13.97" y1="-22.098" x2="-4.318" y2="-22.098" width="0.127" layer="21"/>
+<pad name="P$6" x="-3.81" y="-22.098" drill="0.9652"/>
+<wire x1="-3.302" y1="-22.098" x2="3.048" y2="-22.098" width="0.127" layer="21"/>
+<pad name="P$7" x="3.556" y="-22.098" drill="0.9652"/>
+<wire x1="4.064" y1="-22.098" x2="10.414" y2="-22.098" width="0.127" layer="21"/>
+<pad name="P$8" x="10.922" y="-22.098" drill="0.9652"/>
+<wire x1="11.43" y1="-22.098" x2="17.78" y2="-22.098" width="0.127" layer="21"/>
+<pad name="P$9" x="18.288" y="-22.098" drill="0.9652"/>
+<wire x1="18.796" y1="-22.098" x2="25.146" y2="-22.098" width="0.127" layer="21"/>
+<pad name="P$10" x="25.654" y="-22.098" drill="0.9652"/>
+<wire x1="26.162" y1="-22.098" x2="36.83" y2="-22.098" width="0.127" layer="21"/>
+</package>
+</packages>
+<symbols>
+<symbol name="MOTOR_BRACKET_25D">
+<wire x1="12.7" y1="0" x2="12.7" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="12.7" y1="-2.54" x2="-10.16" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="-2.54" x2="-10.16" y2="0" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="0" x2="-7.62" y2="0" width="0.254" layer="94"/>
+<wire x1="-7.62" y1="0" x2="12.7" y2="0" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="0" x2="-10.16" y2="7.62" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="7.62" x2="-7.62" y2="7.62" width="0.254" layer="94"/>
+<wire x1="-7.62" y1="7.62" x2="-7.62" y2="0" width="0.254" layer="94"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="MOTOR_BRACKET_25D">
+<gates>
+<gate name="G$1" symbol="MOTOR_BRACKET_25D" x="7.62" y="-2.54"/>
+</gates>
+<devices>
+<device name="" package="MOTOR_BRACKET_25D">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -586,6 +669,9 @@
 <part name="U$10" library="MOTOR_ENCODER_25D" deviceset="MOTOR_ENCODER_25D" device=""/>
 <part name="U$11" library="IMU" deviceset="IMU" device=""/>
 <part name="U$12" library="HC05_BLUETOOTH" deviceset="HC05_BLUETOOTH" device=""/>
+<part name="U$13" library="3_4_BALLCASTER" deviceset="3_4_BALLCASTER" device=""/>
+<part name="U$14" library="MOTOR_BRACKET_25D" deviceset="MOTOR_BRACKET_25D" device=""/>
+<part name="U$15" library="MOTOR_BRACKET_25D" deviceset="MOTOR_BRACKET_25D" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -607,6 +693,9 @@
 <instance part="U$10" gate="G$1" x="195.58" y="7.62" smashed="yes"/>
 <instance part="U$11" gate="G$1" x="144.78" y="81.28" smashed="yes"/>
 <instance part="U$12" gate="G$1" x="93.98" y="96.52" smashed="yes"/>
+<instance part="U$13" gate="G$1" x="248.92" y="91.44" smashed="yes"/>
+<instance part="U$14" gate="G$1" x="116.84" y="-15.24" smashed="yes"/>
+<instance part="U$15" gate="G$1" x="193.04" y="-15.24" smashed="yes"/>
 </instances>
 <busses>
 </busses>

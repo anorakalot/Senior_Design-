@@ -487,17 +487,25 @@ design rules under a new name.</description>
 <contactref element="U$8" pad="BAT_7.4V"/>
 <wire x1="-5.08" y1="-2.54" x2="-40.64" y2="-5.08" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$5">
+<signal name="TRIG_1_CONN">
 <contactref element="U$4" pad="TRIG"/>
+<contactref element="U$1" pad="7"/>
+<wire x1="-17.78" y1="5.08" x2="12.7" y2="29.21" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$6">
+<signal name="ECHO_1_CONN">
 <contactref element="U$4" pad="ECHO"/>
+<contactref element="U$1" pad="8"/>
+<wire x1="-17.78" y1="2.54" x2="12.7" y2="26.67" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$9">
+<signal name="TRIG_2_CONN">
 <contactref element="U$5" pad="TRIG"/>
+<contactref element="U$1" pad="11"/>
+<wire x1="-25.4" y1="5.08" x2="12.7" y2="19.05" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$10">
+<signal name="ECHO_2_CONN">
 <contactref element="U$5" pad="ECHO"/>
+<contactref element="U$1" pad="12"/>
+<wire x1="-25.4" y1="2.54" x2="12.7" y2="16.51" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="CMN_GND">
 <contactref element="U$8" pad="BAT_GND"/>
@@ -528,16 +536,20 @@ design rules under a new name.</description>
 <wire x1="-2.54" y1="10.16" x2="-2.54" y2="12.7" width="0" layer="19" extent="1-1"/>
 <wire x1="12.7" y1="49.53" x2="-2.54" y2="12.7" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$2">
+<signal name="TRIG_3_CONN">
 <contactref element="U$6" pad="TRIG"/>
+<contactref element="U$1" pad="13"/>
+<wire x1="-33.02" y1="5.08" x2="27.94" y2="16.51" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$7">
+<signal name="ECHO_3_CONN">
 <contactref element="U$6" pad="ECHO"/>
+<contactref element="U$1" pad="14/A0"/>
+<wire x1="-33.02" y1="2.54" x2="27.94" y2="19.05" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$14">
+<signal name="TRIG_4_CONN">
 <contactref element="U$7" pad="TRIG"/>
 </signal>
-<signal name="N$15">
+<signal name="ECHO_4_CONN">
 <contactref element="U$7" pad="ECHO"/>
 </signal>
 <signal name="N$4">
@@ -588,6 +600,26 @@ design rules under a new name.</description>
 <contactref element="U$12" pad="TX"/>
 <contactref element="U$1" pad="0"/>
 <wire x1="12.7" y1="46.99" x2="-63.5" y2="1.27" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="M1_FWD_PWM_CONN">
+<contactref element="U$2" pad="M1_FWD_PWN"/>
+<contactref element="U$1" pad="3"/>
+<wire x1="-10.16" y1="17.78" x2="12.7" y2="39.37" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="M1_REV_PWM_CONN">
+<contactref element="U$2" pad="M1_REV_PWN"/>
+<contactref element="U$1" pad="4"/>
+<wire x1="-10.16" y1="5.08" x2="12.7" y2="36.83" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="M2_FWD_PWM_CONN">
+<contactref element="U$2" pad="M2_FWD_PWN"/>
+<contactref element="U$1" pad="5"/>
+<wire x1="-2.54" y1="5.08" x2="12.7" y2="34.29" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="M2_REV_PWM_CONN">
+<contactref element="U$2" pad="M2_REV_PWM"/>
+<contactref element="U$1" pad="6"/>
+<wire x1="-2.54" y1="17.78" x2="12.7" y2="31.75" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 <mfgpreviewcolors>

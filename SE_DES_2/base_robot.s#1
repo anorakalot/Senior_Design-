@@ -564,6 +564,34 @@
 </deviceset>
 </devicesets>
 </library>
+<library name="3_4_BALLCASTER">
+<packages>
+<package name="3_4_BALLCASTER">
+<wire x1="0" y1="0" x2="15.24" y2="0" width="0.127" layer="21"/>
+<wire x1="-3.81" y1="-1.27" x2="19.05" y2="-1.27" width="0.127" layer="21"/>
+<circle x="7.62" y="-1.27" radius="12.048275" width="0.127" layer="21"/>
+</package>
+</packages>
+<symbols>
+<symbol name="3_4_BALLCASTER">
+<circle x="0" y="0" radius="7.184203125" width="0.254" layer="94"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="3_4_BALLCASTER">
+<gates>
+<gate name="G$1" symbol="3_4_BALLCASTER" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="3_4_BALLCASTER">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -586,6 +614,7 @@
 <part name="U$10" library="MOTOR_ENCODER_25D" deviceset="MOTOR_ENCODER_25D" device=""/>
 <part name="U$11" library="IMU" deviceset="IMU" device=""/>
 <part name="U$12" library="HC05_BLUETOOTH" deviceset="HC05_BLUETOOTH" device=""/>
+<part name="U$13" library="3_4_BALLCASTER" deviceset="3_4_BALLCASTER" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -607,6 +636,7 @@
 <instance part="U$10" gate="G$1" x="195.58" y="7.62" smashed="yes"/>
 <instance part="U$11" gate="G$1" x="144.78" y="81.28" smashed="yes"/>
 <instance part="U$12" gate="G$1" x="93.98" y="96.52" smashed="yes"/>
+<instance part="U$13" gate="G$1" x="248.92" y="91.44" smashed="yes"/>
 </instances>
 <busses>
 </busses>
@@ -802,6 +832,11 @@
 <wire x1="83.82" y1="91.44" x2="78.74" y2="91.44" width="0.1524" layer="91"/>
 <label x="68.58" y="91.44" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="U$11" gate="G$1" pin="GND"/>
+<wire x1="137.16" y1="83.82" x2="129.54" y2="83.82" width="0.1524" layer="91"/>
+<label x="121.92" y="83.82" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="TRIG_3_CONN" class="0">
 <segment>
@@ -851,16 +886,28 @@
 <label x="20.32" y="33.02" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$4" class="0">
+<net name="M2_EN_CONN" class="0">
 <segment>
 <pinref part="U$2" gate="G$1" pin="M2_ENABLE"/>
-<wire x1="195.58" y1="22.86" x2="208.28" y2="22.86" width="0.1524" layer="91"/>
+<wire x1="195.58" y1="22.86" x2="210.82" y2="22.86" width="0.1524" layer="91"/>
+<label x="208.28" y="22.86" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="21/A7/PWM"/>
+<wire x1="40.64" y1="15.24" x2="33.02" y2="15.24" width="0.1524" layer="91"/>
+<label x="20.32" y="15.24" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$11" class="0">
+<net name="M1_EN_CONN" class="0">
 <segment>
 <pinref part="U$2" gate="G$1" pin="M1_ENABLE"/>
-<wire x1="142.24" y1="58.42" x2="132.08" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="58.42" x2="129.54" y2="58.42" width="0.1524" layer="91"/>
+<label x="114.3" y="58.42" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="20/A6/PWM"/>
+<wire x1="40.64" y1="17.78" x2="33.02" y2="17.78" width="0.1524" layer="91"/>
+<label x="20.32" y="17.78" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="L_M1_1" class="0">
@@ -909,13 +956,6 @@
 <pinref part="U$10" gate="G$1" pin="M1"/>
 <wire x1="187.96" y1="0" x2="182.88" y2="0" width="0.1524" layer="91"/>
 <label x="175.26" y="0" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="CMD_GND" class="0">
-<segment>
-<pinref part="U$11" gate="G$1" pin="GND"/>
-<wire x1="137.16" y1="83.82" x2="132.08" y2="83.82" width="0.1524" layer="91"/>
-<label x="121.92" y="83.82" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SDA_CONN" class="0">
