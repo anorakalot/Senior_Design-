@@ -1,56 +1,30 @@
 #include <Wire.h>
 #include <LSM6.h>
 #include <math.h>    // (no semicolon)
-
+#include "global_values.h"
 #define pi 3.141592653589793238462643383279
 
 
 LSM6 imu;
 
-//int motor_1_enc_a = 13;
-//int motor_1_enc_b = 14;
-//
-//int motor_2_enc_a = 13;
-//int motor_2_enc_b = 14;
-
-
-int motor_1_enable = 20;
-int motor_2_enable = 21;
-
-int motor_1_enc_a = 15;
-int motor_1_enc_b = 2;
-
-int motor_2_enc_a = 17;
-int motor_2_enc_b = 16;
-
-
-int led_pin = 1;
-//
-//int motor_driver_output_1_1 = 22;
-//int motor_driver_output_1_2 = 23;
-
-int motor_driver_output_1_1 = 3;
-int motor_driver_output_1_2 = 4;
-
-//
-//int motor_driver_output_2_1 = 20;
-//int motor_driver_output_2_2 = 21;
-
-int motor_driver_output_2_1 = 5;
-int motor_driver_output_2_2 = 6;
-
-
-
-unsigned long encoder_count_left = 0;
-unsigned long encoder_count_right = 0;
-//
+//should put in if negative going backwards 
 void left_encoder_update(){
   encoder_count_left += 1;
+  if (encoder_count_left > 200000000){
+    encoder_count_left = 0;
+  }
+  curr_enc_count_l = encoder_count_left;
 }
 
 
 void right_encoder_update(){
   encoder_count_right += 1;
+  if (encoder_count_right > 200000000){
+    encoder_count_right = 0;
+  }
+
+  curr_enc_count_r = encoder_count_right;
+
 }
 
 
@@ -123,8 +97,6 @@ void reverse(){
   digitalWrite(motor_driver_output_1_2,HIGH);
   digitalWrite(motor_driver_output_2_1,LOW);
   digitalWrite(motor_driver_output_2_2,HIGH);
-
-  
 }
 
 
@@ -134,7 +106,6 @@ void left_turn(){
 
   digitalWrite(motor_driver_output_2_1,HIGH);
   digitalWrite(motor_driver_output_2_2,LOW);
-
 }
 
 void right_turn(){
@@ -143,7 +114,6 @@ void right_turn(){
 
   digitalWrite(motor_driver_output_2_1,LOW);
   digitalWrite(motor_driver_output_2_2,HIGH);
-
 }
 
 void halt(){
@@ -151,7 +121,6 @@ void halt(){
   digitalWrite(motor_driver_output_1_2,LOW);
   digitalWrite(motor_driver_output_2_1,LOW);
   digitalWrite(motor_driver_output_2_2,LOW);
-  
 }
 
 
@@ -175,11 +144,12 @@ class controller{
       previous_error = 0;  
     }
     
-    int update_robot(int current_value){
+    int update_robot(float current_value){
       error = set_point - current_value;
       p_value = kp * error;
       d_value = kd * (error - previous_error);
       previous_error = error;
+      return (p_value + d_value);
     }
 
     void set_kp(int input_kp){
@@ -196,84 +166,84 @@ class controller{
     
 };
 controller left_speed;
+left_speed.set_set_point()
+
 controller right_speed;
 
 
-
-char encoder_print[90];
-
-
-float gyro_raw_data_z;
-
-
-float gyro_angle_z;
-
-float angle_time_rate = 0.01;
-
-float accel_raw_data_z;
-
-float accel_data; 
-
-float angle; 
-
-
-
-
-float pulse_per_rotation = 4741.44/4;
-
-//float pi_value = pi;
-
-int angular_speed_l;
-int angular_speed_r;
-
-
-int millis_time_l;
-int millis_time_r;
-
-int millis_time_l_prev = 0;
-int millis_time_r_prev = 0;
-
-char pid_print[100];
-
-void encoder_pid_1(){
-  
-  millis_time_l = millis() - millis_time_l_prev;
-  millis_time_r = millis() - millis_time_r_prev;
-
-  angular_speed_l = (2*pi*encoder_count_left) / (pulse_per_rotation * millis_time_l);
-  angular_speed_r = (2*pi*encoder_count_right) / (pulse_per_rotation * millis_time_r);
-
-  millis_time_l_prev = millis_time_l;
-  millis_time_r_prev = millis_time_r;
-  encoder_count_left = 0;
-  encoder_count_right = 0;
-
-  snprintf(pid_print,sizeof(pid_print),"millis_time_l %lu, millis_time_r %lu, angular_speed_l %lu, angular_speed_r %lu",
-  millis_time_l,millis_time_r,angular_speed_l,angular_speed_r);
-
-  Serial.println(pid_print);
-
-}
+//class controller_diff{
+//  
+//  public:
+//    int kp;
+//    int kd;
+//    int error;
+//    int set_point;
+//    int p_value;
+//    int d_value;
+//    int previous_error;
+//    int error_l;
+//    int error_r;
+//    
+//
+//    //default constructor
+//    controller(){
+//      kp = 1;
+//      kd = 1;
+//      error = 0;
+//      set_point = 100;
+//      previous_error = 0;  
+//    }
+//    
+//    int update_robot(int left_speed, int right_speed){
+//      //error = set_point - current_value;
+//      
+////      error_l = left_speed - right_speed;
+////      error_r = right_speed-left_speed;
+//      p_value = kp * error;
+//      d_value = kd * (error - previous_error);
+//      previous_error = error;
+//
+//      
+//       
+//    }
+//
+//    void set_kp(int input_kp){
+//      kp = input_kp;
+//    }
+//    
+//    void set_kd(int input_kd){
+//      kd = input_kd;
+//    }
+////
+////    void set_set_point(int input_set_point){
+////      set_point = input_set_point;
+////    }
+//    
+//};
 
 
-unsigned long curr_time; 
-unsigned long prev_time = 0;
+//ill provbably not use this merrick said other method was correct
+//void encoder_pid_1(){
+//  
+//  millis_time_l = millis() - millis_time_l_prev;
+//  millis_time_r = millis() - millis_time_r_prev;
+//
+//  angular_speed_l = (2*pi*encoder_count_left) / (pulse_per_rotation * millis_time_l);
+//  angular_speed_r = (2*pi*encoder_count_right) / (pulse_per_rotation * millis_time_r);
+//
+//  millis_time_l_prev = millis_time_l;
+//  millis_time_r_prev = millis_time_r;
+//  encoder_count_left = 0;
+//  encoder_count_right = 0;
+//
+//  snprintf(pid_print,sizeof(pid_print),"millis_time_l %lu, millis_time_r %lu, angular_speed_l %lu, angular_speed_r %lu",
+//  millis_time_l,millis_time_r,angular_speed_l,angular_speed_r);
+//
+//  Serial.println(pid_print);
+//
+//}
 
-unsigned long interval_time = 500;
 
-unsigned long curr_enc_count_l = 0;
-unsigned long curr_enc_count_r = 0;
-
-unsigned long prev_enc_count_l = 0;
-unsigned long prev_enc_count_r = 0;
-
-
-
-
-long velocity_l;
-long velocity_r;
-
-char misc_print[100];
 
 
 void loop() {
@@ -293,25 +263,26 @@ void loop() {
   curr_time = millis();
 
   if ((curr_time - prev_time) > interval_time){
-    curr_enc_count_l = encoder_count_left;
-    curr_enc_count_r = encoder_count_right;
-
     
-    velocity_l = (curr_enc_count_l - prev_enc_count_l)/ (interval_time);
-    velocity_r = (curr_enc_count_r - prev_enc_count_r)/ (interval_time);
-
-
-
+//    curr_enc_count_l = encoder_count_left;
+//    curr_enc_count_r = encoder_count_right;
+//      
+    velocity_l = ((float(curr_enc_count_l) - float(prev_enc_count_l))/ float(interval_time));
+    velocity_r = ((float(curr_enc_count_r - float(prev_enc_count_r)))/ float(interval_time));
+ 
     prev_time = curr_time;
     prev_enc_count_l = curr_enc_count_l;
     prev_enc_count_r = curr_enc_count_r;
 
   }
 
-  snprintf(misc_print,sizeof(misc_print),"velocity_l %ld, velocity_r %ld ",velocity_l,velocity_r);
+  snprintf(misc_print,sizeof(misc_print)," curr_enc_count_l %lu , curr_enc_count_r %lu,prev_enc_count %lu,prev_enc_count %lu, velocity_l %f, velocity_r %f ",curr_enc_count_l,curr_enc_count_r,prev_enc_count_l,prev_enc_count_r,velocity_l,velocity_r); 
   Serial.println(misc_print);
-}
+}//end of loop 
 
+//
+//halt();
+//delay(1000);
 //TESTING ENCODER PID 
   
   
