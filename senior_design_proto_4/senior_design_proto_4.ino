@@ -180,48 +180,48 @@ void setup() {
 //}
 
 
-void pid_l(){
-  //left_pwm += (int)left_speed.update_robot(velocity_l);
-  p_d_error_val = left_speed.update_robot(enc_count_interval_l);
-//  Serial.print("P_d_error_val l: ");
-//  Serial.println(p_d_error_val);
-  left_pwm += p_d_error_val;
-  
-}
-void pid_r(){
-  //right_pwm += (int)right_speed.update_robot(velocity_r);
-  p_d_error_val = right_speed.update_robot(enc_count_interval_r);
-//  Serial.print("p_d_error_val r: ");
-//  Serial.println(p_d_error_val);
-  right_pwm += p_d_error_val;
-  
-}
+//void pid_l(){
+//  //left_pwm += (int)left_speed.update_robot(velocity_l);
+//  p_d_error_val = left_speed.update_robot(enc_count_interval_l);
+////  Serial.print("P_d_error_val l: ");
+////  Serial.println(p_d_error_val);
+//  left_pwm += p_d_error_val;
+//  
+//}
+//void pid_r(){
+//  //right_pwm += (int)right_speed.update_robot(velocity_r);
+//  p_d_error_val = right_speed.update_robot(enc_count_interval_r);
+////  Serial.print("p_d_error_val r: ");
+////  Serial.println(p_d_error_val);
+//  right_pwm += p_d_error_val;
+//  
+//}
 
 
 //int drift_comp_value = 1;
 
-//void update_gyro_forward(){
-//
-//  
-// curr_time_imu = millis();
-// if ((curr_time_imu - reset_time_imu ) > reset_imu_interval){
-//    gyro_angle_z = 0;
-//    reset_time_imu = curr_time_imu;
-// }
-// 
-// if ((curr_time_imu - prev_time_imu) > imu_interval){
-// 
-//   imu.read();
-//   gyro_raw_data_z = imu.g.z; 
-//   gyro_angle_z +=((gyro_raw_data_z/100));
-//   //gyro_angle_z += drift_comp_value;
-//   Serial.println(gyro_angle_z);
-//   
-//   
-//   
-//    prev_time_imu = curr_time_imu;
-//  }
-//}
+void update_gyro_forward(){
+
+  
+ curr_time_imu = millis();
+ if ((curr_time_imu - reset_time_imu ) > reset_imu_interval){
+    gyro_angle_z = 0;
+    reset_time_imu = curr_time_imu;
+ }
+ 
+ if ((curr_time_imu - prev_time_imu) > imu_interval){
+ 
+   imu.read();
+   gyro_raw_data_z = imu.g.z; 
+   gyro_angle_z +=((gyro_raw_data_z/100));
+   //gyro_angle_z += drift_comp_value;
+   Serial.println(gyro_angle_z);
+   
+   
+   
+    prev_time_imu = curr_time_imu;
+  }
+}
 
 
 void update_gyro(){
@@ -273,18 +273,23 @@ void right_turn_w_gyro(){
 }
 
 
-//
-//void gyro_pid (){
-//  p_d_error_val = l_r_speed.update_robot(gyro_angle_z);
-//  if (p_d_error_val <0){
-//    left_pwm += p_d_error_val;
-//    right_pwm -= p_d_error_val; 
-//  }
-//  else if (p_d_error_val > 0){
-//    left_pwm -= p_d_error_val;
-//    right_pwm += p_d_error_val;
-//  }
-//}
+
+void pid_l_r_gyro (){
+
+  update_gyro_forward();
+    
+  p_d_error_val = l_r_speed_imu.update_robot(gyro_angle_z);
+  
+  if (p_d_error_val <0){
+    left_pwm += p_d_error_val;
+    right_pwm -= p_d_error_val; 
+  }
+  else if (p_d_error_val > 0){
+    left_pwm -= p_d_error_val;
+    right_pwm += p_d_error_val;
+  }
+  
+}
 
 void pid_l_r(){
   p_d_error_val = l_r_speed_vel.update_robot(enc_count_interval_l,enc_count_interval_r);
@@ -305,6 +310,7 @@ void pid_l_r(){
     left_pwm -= p_d_error_val_abs; 
       //left_pwm -= abs(p_d_error_val);
   }
+  
 }
 
 void encoder_pid(){
@@ -326,7 +332,6 @@ void encoder_pid(){
 //  
 
     noInterrupts();
-        
     velocity_l = ((float(curr_enc_count_l) - float(prev_enc_count_l))/ float(interval_time));
     velocity_r = ((float(curr_enc_count_r) - float(prev_enc_count_r))/ float(interval_time));
     enc_count_interval_l = curr_enc_count_l - prev_enc_count_l;
@@ -343,7 +348,7 @@ void encoder_pid(){
     Serial.println(left_pwm);
     Serial.print("right_pwm:");
     Serial.println(right_pwm);
-    forward_w_speed(left_pwm,right_pwm);
+    forward_w_speed(left_pwm+4,right_pwm);//since it keeps going to the left make left motor slightly faster//5 goes to the right,3 going to the left, 
     
   }
 
@@ -367,10 +372,12 @@ void encoder_pid(){
 
 
 }
+
+
 void loop() {
 //use tthis to test pid going straight
   encoder_pid();
-
+  
   //testing turning 
   //left_turn_w_gyro();
   //right_turn_w_gyro();

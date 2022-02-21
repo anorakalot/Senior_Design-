@@ -119,8 +119,9 @@ int analog_speed_r = 100;
 char char_input_from_serial;
 
 //PID values 
+int p_d_error_val;
 int p_d_error_val_abs = 0;
-int left_pwm=100;
+int left_pwm=120;
 int right_pwm=100;
 
 //
@@ -328,6 +329,6 @@ class controller_imu{
     
 };
 controller_imu l_r_speed_imu;
-int p_d_error_val;
+
 //controller left_speed;
 //controller right_speed;
