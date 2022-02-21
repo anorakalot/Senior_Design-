@@ -83,7 +83,7 @@ unsigned long curr_time=0;
 unsigned long prev_time = 0;
 
 //unsigned long interval_time = 1000;
-unsigned long interval_time = 500;
+unsigned long interval_time = 300;
 
 unsigned long curr_enc_count_l = 0;
 unsigned long curr_enc_count_r = 0;
@@ -119,6 +119,7 @@ int analog_speed_r = 100;
 char char_input_from_serial;
 
 //PID values 
+int p_d_error_val_abs = 0;
 int left_pwm=100;
 int right_pwm=100;
 

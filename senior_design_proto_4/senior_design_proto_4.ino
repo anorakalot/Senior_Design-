@@ -196,27 +196,7 @@ void pid_r(){
   right_pwm += p_d_error_val;
   
 }
-int p_d_error_val_abs = 0;
-void pid_l_r(){
-  p_d_error_val = l_r_speed_vel.update_robot(enc_count_interval_l,enc_count_interval_r);
-  Serial.print("p_d_error_val : ");
-  Serial.println(p_d_error_val);
-  p_d_error_val_abs = abs(p_d_error_val);
-  
-  if (p_d_error_val <0){
-    Serial.println("less than 0");
-    right_pwm -= p_d_error_val_abs;
-    left_pwm += p_d_error_val_abs;
-    //left_pwm += abs(p_d_error_val);
-    
-  }
-  else if (p_d_error_val > 0){
-    Serial.println("more than 0");
-    right_pwm += p_d_error_val_abs;
-    left_pwm -= p_d_error_val_abs; 
-      //left_pwm -= abs(p_d_error_val);
-  }
-}
+
 
 //int drift_comp_value = 1;
 
@@ -306,6 +286,26 @@ void right_turn_w_gyro(){
 //  }
 //}
 
+void pid_l_r(){
+  p_d_error_val = l_r_speed_vel.update_robot(enc_count_interval_l,enc_count_interval_r);
+  Serial.print("p_d_error_val : ");
+  Serial.println(p_d_error_val);
+  p_d_error_val_abs = abs(p_d_error_val);
+  
+  if (p_d_error_val <0){
+    Serial.println("less than 0");
+    right_pwm -= p_d_error_val_abs;
+    left_pwm += p_d_error_val_abs;
+    //left_pwm += abs(p_d_error_val);
+    
+  }
+  else if (p_d_error_val > 0){
+    Serial.println("more than 0");
+    right_pwm += p_d_error_val_abs;
+    left_pwm -= p_d_error_val_abs; 
+      //left_pwm -= abs(p_d_error_val);
+  }
+}
 
 void encoder_pid(){
   //encoder pid way   
@@ -336,6 +336,15 @@ void encoder_pid(){
     prev_enc_count_l = curr_enc_count_l;
     prev_enc_count_r = curr_enc_count_r;
 
+    
+    pid_l_r();//actuall sets the pwm_l and pwm_r using controller class in global values.h
+    Serial.println();
+    Serial.print("left_pwm :");
+    Serial.println(left_pwm);
+    Serial.print("right_pwm:");
+    Serial.println(right_pwm);
+    forward_w_speed(left_pwm,right_pwm);
+    
   }
 
   //snprintf(misc_print,sizeof(misc_print)," curr_enc_count_l %lu , curr_enc_count_r %lu,prev_enc_count %lu,prev_enc_count %lu, velocity_l %f, velocity_r %f ",curr_enc_count_l,curr_enc_count_r,prev_enc_count_l,prev_enc_count_r,velocity_l,velocity_r); 
@@ -355,24 +364,17 @@ void encoder_pid(){
 ////  pid_l();
 ////  pid_r();
 
-  pid_l_r();
-  Serial.println();
-  Serial.print("left_pwm :");
-  Serial.println(left_pwm);
-  Serial.print("right_pwm:");
-  Serial.println(right_pwm);
-  forward_w_speed(left_pwm,right_pwm);
-  
 
 
 }
 void loop() {
 //use tthis to test pid going straight
-  //encoder_pid();
+  encoder_pid();
 
   //testing turning 
   //left_turn_w_gyro();
-  right_turn_w_gyro();
+  //right_turn_w_gyro();
+
 //  
   //forward_w_speed(50,255);
 
