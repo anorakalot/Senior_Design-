@@ -95,14 +95,20 @@ unsigned long prev_enc_count_r = 0;
 //unsigned long velocity_l;
 //unsigned long velocity_r;
 
-//float velocity_l;
-//float velocity_r;
+float velocity_l;
+float velocity_r;
 int enc_count_interval_l;
 int enc_count_interval_r;
 
 
 
-char misc_print[200];
+char misc_print_1[200];
+char misc_print_2[200];
+char misc_print_3[200];
+char misc_print_4[200];
+char misc_print_5[200];
+
+
 
 //starting values for analog speed
 int analog_speed_l  = 100;
@@ -130,7 +136,7 @@ class controller_enc{
     int previous_error;
 
     //default constructor
-    controller(){
+    controller_enc(){
       kp = 1;
       kd = 1;
       error = 0;
@@ -139,8 +145,16 @@ class controller_enc{
     }
     
     int update_robot(int current_value){
+      Serial.print("kp :");
+      Serial.println(kp);
+      Serial.print("set_point :");
+      Serial.println(set_point);
       error = set_point - current_value;
+      Serial.print("ERROR :");
+      Serial.println(error);
       p_value = kp * error;
+      Serial.print("p_value:");
+      Serial.println(p_value);
       d_value = kd * (error - previous_error);
       previous_error = error;
       return (p_value + d_value);
@@ -163,6 +177,111 @@ class controller_enc{
 controller_enc left_speed;
 controller_enc right_speed;
 
+//encoder controller  Encoder Diff
+class controller_enc_diff{
+  
+  public:
+    int kp;
+    int kd;
+    int error;
+    int set_point;
+    int p_value;
+    int d_value;
+    int previous_error;
+
+    //default constructor
+    controller_enc_diff(){
+      kp = 1;
+      kd = 1;
+      error = 0;
+      set_point = 500;
+      previous_error = 0;  
+    }
+    
+    int update_robot(int left_enc_count,int right_enc_count){
+      Serial.print("kp :");
+      Serial.println(kp);
+      
+      error = left_enc_count-right_enc_count;
+      
+      Serial.print("ERROR :");
+      Serial.println(error);
+      p_value = kp * error;
+      Serial.print("p_value:");
+      Serial.println(p_value);
+      d_value = kd * (error - previous_error);
+      previous_error = error;
+      return (p_value + d_value);
+    }
+
+    void set_kp(int input_kp){
+      kp = input_kp;
+    }
+    
+    void set_kd(int input_kd){
+      kd = input_kd;
+    }
+
+    void set_setpoint(int input_set_point){
+      set_point = input_set_point;
+    }
+    
+};
+controller_enc_diff l_r_speed;
+
+//new controller enc diff with float 
+//encoder controller  Encoder Diff
+class controller_enc_diff_vel{
+  
+  public:
+    float kp;
+    float kd;
+    float error;
+    float set_point;
+    float p_value;
+    float d_value;
+    float previous_error;
+
+    //default constructor
+    controller_enc_diff_vel(){
+      kp = 1;
+      kd = 1;
+      error = 0;
+      set_point = 500;
+      previous_error = 0;  
+    }
+    
+    float update_robot(float left_enc_count,float right_enc_count){
+      Serial.print("kp :");
+      Serial.println(kp);
+      
+      //error = left_enc_count-right_enc_count;
+      error = velocity_l - velocity_r;
+      Serial.print("ERROR :");
+      Serial.println(error);
+      p_value = kp * error;
+      Serial.print("p_value:");
+      Serial.println(p_value);
+      d_value = kd * (error - previous_error);
+      previous_error = error;
+      return (p_value + d_value);
+    }
+
+    void set_kp(int input_kp){
+      kp = input_kp;
+    }
+    
+    void set_kd(int input_kd){
+      kd = input_kd;
+    }
+
+    void set_setpoint(int input_set_point){
+      set_point = input_set_point;
+    }
+    
+};
+
+controller_enc_diff_vel l_r_speed_vel;
 
 
 ////imu controller
@@ -207,7 +326,7 @@ class controller_imu{
     }
     
 };
-controller_imu l_r_speed;
+controller_imu l_r_speed_imu;
 int p_d_error_val;
 //controller left_speed;
 //controller right_speed;

@@ -1,6 +1,6 @@
 #include <Wire.h>
 #include <LSM6.h>
-#include <math.h>    // (no semicolon)
+#include <math.h>    // (no semicolon)  
 #include "global_values.h"
 #include "motor_func.h"
 #define pi 3.141592653589793238462643383279
@@ -47,11 +47,17 @@ void right_encoder_update(){
 void setup() {
   left_pwm = 100;
   right_pwm = 100;
-    
-  left_speed.set_setpoint(1.3);
+  //set up controller enc
+//  left_speed.set_kp(1); 
+//  left_speed.set_kd(1); 
+//  left_speed.set_setpoint(600);
+//  
+//  right_speed.set_kp(1);
+//  right_speed.set_kd(1);
+//  right_speed.set_setpoint(550);//430
   
-  right_speed.set_setpoint(1.4);
   // put your setup code here, to run once:
+  
   Serial.begin(9600);
   
  // encoder_count_left_1 = 0;
@@ -93,6 +99,7 @@ void setup() {
 //  }
 //  Serial.println("STARTING MOTOR TEST");  
 
+  delay(4000);
 }//end of setup 
 
 
@@ -175,36 +182,66 @@ void setup() {
 
 void pid_l(){
   //left_pwm += (int)left_speed.update_robot(velocity_l);
-  left_pwm += left_speed.update_robot(enc_count_interval_l);
+  p_d_error_val = left_speed.update_robot(enc_count_interval_l);
+//  Serial.print("P_d_error_val l: ");
+//  Serial.println(p_d_error_val);
+  left_pwm += p_d_error_val;
   
 }
 void pid_r(){
   //right_pwm += (int)right_speed.update_robot(velocity_r);
-  right_pwm += right_speed.update_robot(enc_count_interval_r);
+  p_d_error_val = right_speed.update_robot(enc_count_interval_r);
+//  Serial.print("p_d_error_val r: ");
+//  Serial.println(p_d_error_val);
+  right_pwm += p_d_error_val;
   
 }
-
-void update_gyro_forward(){
-
+int p_d_error_val_abs = 0;
+void pid_l_r(){
+  p_d_error_val = l_r_speed_vel.update_robot(enc_count_interval_l,enc_count_interval_r);
+  Serial.print("p_d_error_val : ");
+  Serial.println(p_d_error_val);
+  p_d_error_val_abs = abs(p_d_error_val);
   
- curr_time_imu = millis();
- if ((curr_time_imu - reset_time_imu ) > reset_imu_interval){
-    gyro_angle_z = 0;
-    reset_time_imu = curr_time_imu;
- }
- 
- if ((curr_time_imu - prev_time_imu) > imu_interval){
- 
-   imu.read();
-   gyro_raw_data_z = imu.g.z; 
-   gyro_angle_z +=((gyro_raw_data_z/100));
-   Serial.println(gyro_angle_z);
-   
-  
-   
-    prev_time_imu = curr_time_imu;
+  if (p_d_error_val <0){
+    Serial.println("less than 0");
+    right_pwm -= p_d_error_val_abs;
+    left_pwm += p_d_error_val_abs;
+    //left_pwm += abs(p_d_error_val);
+    
+  }
+  else if (p_d_error_val > 0){
+    Serial.println("more than 0");
+    right_pwm += p_d_error_val_abs;
+    left_pwm -= p_d_error_val_abs; 
+      //left_pwm -= abs(p_d_error_val);
   }
 }
+
+//int drift_comp_value = 1;
+
+//void update_gyro_forward(){
+//
+//  
+// curr_time_imu = millis();
+// if ((curr_time_imu - reset_time_imu ) > reset_imu_interval){
+//    gyro_angle_z = 0;
+//    reset_time_imu = curr_time_imu;
+// }
+// 
+// if ((curr_time_imu - prev_time_imu) > imu_interval){
+// 
+//   imu.read();
+//   gyro_raw_data_z = imu.g.z; 
+//   gyro_angle_z +=((gyro_raw_data_z/100));
+//   //gyro_angle_z += drift_comp_value;
+//   Serial.println(gyro_angle_z);
+//   
+//   
+//   
+//    prev_time_imu = curr_time_imu;
+//  }
+//}
 
 
 void update_gyro(){
@@ -229,6 +266,33 @@ void update_gyro(){
   }
 }
 
+void left_turn_w_gyro(){
+ gyro_angle_z = 0;
+ halt();
+ delay(1000);
+ while(gyro_angle < 100){
+  left_turn();
+  update_gyro();
+ }
+ halt();
+ delay(1000);
+ gyro_angle_z=0;
+}
+
+
+void right_turn_w_gyro(){
+ gyro_angle = 0;
+ halt();
+ delay(1000);
+ while(gyro_angle > -100){
+  right_turn();
+  update_gyro();
+ }
+ halt();
+ delay(1000);
+}
+
+
 //
 //void gyro_pid (){
 //  p_d_error_val = l_r_speed.update_robot(gyro_angle_z);
@@ -242,30 +306,32 @@ void update_gyro(){
 //  }
 //}
 
-void loop() {
 
-//encoder pid way   
+void encoder_pid(){
+  //encoder pid way   
 
 //  snprintf(encoder_print,sizeof(encoder_print), "encoder_count_left %lu , encoder_count_right %lu \n", 
 //  encoder_count_left,encoder_count_right);
 //  Serial.println(encoder_print);
 
   //forward();
-  //encoder_pid_1();
+ // encoder_pid_1();
   
   curr_time = millis();
 
   if ((curr_time - prev_time) > interval_time){
     
-//    curr_enc_count_l = encoder_count_left;
-//    curr_enc_count_r = encoder_count_right;
-//      
-//    velocity_l = ((float(curr_enc_count_l) - float(prev_enc_count_l))/ float(interval_time));
-//    velocity_r = ((float(curr_enc_count_r) - float(prev_enc_count_r))/ float(interval_time));
+////    curr_enc_count_l = encoder_count_left;
+////    curr_enc_count_r = encoder_count_right;
+//  
 
+    noInterrupts();
+        
+    velocity_l = ((float(curr_enc_count_l) - float(prev_enc_count_l))/ float(interval_time));
+    velocity_r = ((float(curr_enc_count_r) - float(prev_enc_count_r))/ float(interval_time));
     enc_count_interval_l = curr_enc_count_l - prev_enc_count_l;
     enc_count_interval_r = curr_enc_count_r - prev_enc_count_r;
-    
+    interrupts();
     prev_time = curr_time;
     prev_enc_count_l = curr_enc_count_l;
     prev_enc_count_r = curr_enc_count_r;
@@ -273,8 +339,10 @@ void loop() {
   }
 
   //snprintf(misc_print,sizeof(misc_print)," curr_enc_count_l %lu , curr_enc_count_r %lu,prev_enc_count %lu,prev_enc_count %lu, velocity_l %f, velocity_r %f ",curr_enc_count_l,curr_enc_count_r,prev_enc_count_l,prev_enc_count_r,velocity_l,velocity_r); 
-  snprintf(misc_print,sizeof(misc_print),"enc_count_interval_l %i, enc_count_interval_r %i",enc_count_interval_l,enc_count_interval_r);
-  Serial.println(misc_print);
+  snprintf(misc_print_1,sizeof(misc_print_1)," curr_enc_count_l %lu , curr_enc_count_r %lu,prev_enc_count %lu,prev_enc_count %lu, ",curr_enc_count_l,curr_enc_count_r,prev_enc_count_l,prev_enc_count_r); 
+  snprintf(misc_print_2,sizeof(misc_print_2),"enc_count_interval_l %i, enc_count_interval_r %i",enc_count_interval_l,enc_count_interval_r);
+  Serial.println(misc_print_1);
+  Serial.println(misc_print_2);
 
 
 
@@ -282,20 +350,37 @@ void loop() {
 
 
 
-//
-  pid_l();
-  pid_r();
+
+//////
+////  pid_l();
+////  pid_r();
+
+  pid_l_r();
+  Serial.println();
+  Serial.print("left_pwm :");
+  Serial.println(left_pwm);
+  Serial.print("right_pwm:");
+  Serial.println(right_pwm);
   forward_w_speed(left_pwm,right_pwm);
   
 
 
-//gyro_pid way 
+}
+void loop() {
+
+  //encoder_pid();
+  
+//  
+  //forward_w_speed(50,255);
+
+////gyro_pid way 
 //update_gyro_forward();
-//gyro_pid();
-//forward_w_speed(left_pwm,right_pwm);
+////gyro_pid();
+////forward_w_speed(left_pwm,right_pwm);
 
 
 //  forward_w_speed(50,100);
+
 }//end of loop 
 
   
