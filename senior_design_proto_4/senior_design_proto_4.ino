@@ -270,7 +270,7 @@ void left_turn_w_gyro(){
  gyro_angle_z = 0;
  halt();
  delay(1000);
- while(gyro_angle < 100){
+ while(gyro_angle_z < 8000){//100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
   left_turn();
   update_gyro();
  }
@@ -281,10 +281,10 @@ void left_turn_w_gyro(){
 
 
 void right_turn_w_gyro(){
- gyro_angle = 0;
+ gyro_angle_z = 0;
  halt();
  delay(1000);
- while(gyro_angle > -100){
+ while(gyro_angle_z > -8000){
   right_turn();
   update_gyro();
  }
@@ -367,9 +367,12 @@ void encoder_pid(){
 
 }
 void loop() {
-
+//use tthis to test pid going straight
   //encoder_pid();
-  
+
+  //testing turning 
+  //left_turn_w_gyro();
+  right_turn_w_gyro();
 //  
   //forward_w_speed(50,255);
 
