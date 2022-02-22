@@ -65,6 +65,8 @@ unsigned long reset_imu_interval = 1000;
 
 
 //gyro_forward
+int gyro_pid_bool;
+
 unsigned long imu_counter_forward = 0;
 unsigned long curr_time_imu_forward = 0;
 unsigned long prev_time_imu_forward = 0;

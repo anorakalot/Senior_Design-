@@ -6,6 +6,7 @@
 #define pi 3.141592653589793238462643383279
 
 
+
 LSM6 imu;
 
 void serial_input_test() {
@@ -250,7 +251,7 @@ void right_turn_w_gyro() {
 
 //int drift_comp_value = 1;
 //time to get data might be causing pid oscillations
-void update_gyro_forward() {
+bool update_gyro_forward() {
 
 
   curr_time_imu_forward = millis();
@@ -282,13 +283,15 @@ void update_gyro_forward() {
 
 
     prev_time_imu_forward = curr_time_imu_forward;
+    return 1;//can go and do pid 
   }
+  return 0;//don't do pid
 }
 
 
 void gyro_pid () {
 
-  update_gyro_forward();
+  gyro_pid_bool = update_gyro_forward();
 
   p_d_error_val = l_r_speed_imu.update_robot(gyro_angle_z_forward);
   p_d_error_val_abs = abs(p_d_error_val);
@@ -421,32 +424,41 @@ void loop() {
   //use tthis to test pid going straight
   //encoder_pid();
 //
-//  noInterrupts();
-//  go_one_cell_curr = curr_enc_count_l;
-//  interrupts();
+  noInterrupts();
+  go_one_cell_curr = curr_enc_count_l;
+  interrupts();
+  
+  snprintf(cell_print,sizeof(cell_print),"go_one_cell_curr : %lu,go_one_cell_prev: %lu",go_one_cell_curr, go_one_cell_prev);
+  Serial.println(cell_print);
+  Serial.println(":)");
 //  
-//  snprintf(cell_print,sizeof(cell_print),"go_one_cell_curr : %lu,go_one_cell_prev: %lu",go_one_cell_curr, go_one_cell_prev);
-//  Serial.println(cell_print);
-//  Serial.println(":)");
-//  
-//  if ((go_one_cell_curr - go_one_cell_prev) > go_one_cell_length){
-//    go_one_cell_prev = go_one_cell_curr;
+  if ((go_one_cell_curr - go_one_cell_prev) > go_one_cell_length){
+    go_one_cell_prev = go_one_cell_curr;
 //    gyro_angle_z_forward = 0;
-//    noInterrupts();
+    //noInterrupts();
 //    halt();
-//    delay(2000);
-//    interrupts();
-//  }
+//    delay(1000);
+    Serial.println("after delay");
+    //interrupts();
+    halt();
+    delay(1000);
+    left_turn();
+    delay(1000);
+
+    halt();
+    delay(1000);
+  }
     
-  gyro_pid();
+  //gyro_pid();
 //
-forward();//works with forward
+//forward();//works with forward
 //delay(1000);
 //halt();
 //delay(1000);
 
-  //forward_w_speed(100,100);//not working w/ forward w speed()
+  forward_w_speed(100,100);//not working w/ forward w speed()
 
+  //delay(1000);
 //  Serial.println(curr_enc_count_l);
 
   
