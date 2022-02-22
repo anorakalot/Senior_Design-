@@ -7,7 +7,8 @@
 
 unsigned long go_one_cell_curr=0;
 unsigned long go_one_cell_prev=0;
-unsigned long go_one_cell_length=3000;
+unsigned long go_one_cell_length=2400;//3000,2500,(1750 5 percent way there ,2300(really close to one cell
+//1500,500
 
 int motor_1_enable = 20;
 int motor_2_enable = 21;
@@ -57,8 +58,8 @@ unsigned long imu_interval =10;
 //float gyro_raw_data_z;
 //float gyro_angle_z;
 
-int gyro_raw_data_z;
-int gyro_angle_z;
+int gyro_raw_data_z=0;
+int gyro_angle_z=0;
 
 unsigned long reset_time_imu = 0;
 unsigned long reset_imu_interval = 1000;
@@ -78,9 +79,9 @@ unsigned long imu_interval_forward =5;//10
 //float gyro_raw_data_z;
 //float gyro_angle_z;
 
-double gyro_raw_data_z_forward;
-double gyro_data_calc_z_forward;
-double gyro_angle_z_forward;
+double gyro_raw_data_z_forward=0;
+double gyro_data_calc_z_forward=0;
+double gyro_angle_z_forward=0;
 
 unsigned long reset_time_imu_forward = 0;
 unsigned long reset_imu_interval_forward = 200;//1000 (maybe too high)
@@ -108,7 +109,9 @@ unsigned long curr_time=0;
 unsigned long prev_time = 0;
 
 //unsigned long interval_time = 1000;
-unsigned long interval_time = 300;
+//unsigned long interval_time = 300;
+unsigned long interval_time = 300;//1000,500
+
 
 unsigned long curr_enc_count_l = 0;
 unsigned long curr_enc_count_r = 0;
@@ -120,8 +123,8 @@ unsigned long prev_enc_count_r = 0;
 //unsigned long velocity_l;
 //unsigned long velocity_r;
 
-float velocity_l;
-float velocity_r;
+double velocity_l;
+double velocity_r;
 int enc_count_interval_l;
 int enc_count_interval_r;
 
@@ -134,229 +137,26 @@ char misc_print_4[200];
 char misc_print_5[200];
 
 
-
-//starting values for analog speed
-int analog_speed_l  = 100;
-int analog_speed_r = 100;
+//
+////starting values for analog speed
+//int analog_speed_l  = 100;
+//int analog_speed_r = 100;
 
 
 //input
 char char_input_from_serial;
 
 //PID values 
-double p_d_error_val;
+double p_d_error_val=0;
 double p_d_error_val_abs = 0;
+
+double p_d_error_val_l = 0;
+double p_d_error_val_abs_l = 0;
+
+double p_d_error_val_r = 0;
+double p_d_error_val_abs_r = 0;
+
+
 
 double left_pwm=100;
 double right_pwm=100;
-
-//
-//encoder controller  NEW ENCODER COUNT ONLY
-class controller_enc{
-  
-  public:
-    int kp;
-    int kd;
-    int error;
-    int set_point;
-    int p_value;
-    int d_value;
-    int previous_error;
-
-    //default constructor
-    controller_enc(){
-      kp = 1;
-      kd = 1;
-      error = 0;
-      set_point = 500;
-      previous_error = 0;  
-    }
-    
-    int update_robot(int current_value){
-      Serial.print("kp :");
-      Serial.println(kp);
-      Serial.print("set_point :");
-      Serial.println(set_point);
-      error = set_point - current_value;
-      Serial.print("ERROR :");
-      Serial.println(error);
-      p_value = kp * error;
-      Serial.print("p_value:");
-      Serial.println(p_value);
-      d_value = kd * (error - previous_error);
-      previous_error = error;
-      return (p_value + d_value);
-    }
-
-    void set_kp(int input_kp){
-      kp = input_kp;
-    }
-    
-    void set_kd(int input_kd){
-      kd = input_kd;
-    }
-
-    void set_setpoint(int input_set_point){
-      set_point = input_set_point;
-    }
-    
-};
-
-controller_enc left_speed;
-controller_enc right_speed;
-
-//encoder controller  Encoder Diff
-class controller_enc_diff{
-  
-  public:
-    int kp;
-    int kd;
-    int error;
-    int set_point;
-    int p_value;
-    int d_value;
-    int previous_error;
-
-    //default constructor
-    controller_enc_diff(){
-      kp = 1;
-      kd = 1;
-      error = 0;
-      set_point = 500;
-      previous_error = 0;  
-    }
-    
-    int update_robot(int left_enc_count,int right_enc_count){
-      Serial.print("kp :");
-      Serial.println(kp);
-      
-      error = left_enc_count-right_enc_count;
-      
-      Serial.print("ERROR :");
-      Serial.println(error);
-      p_value = kp * error;
-      Serial.print("p_value:");
-      Serial.println(p_value);
-      d_value = kd * (error - previous_error);
-      previous_error = error;
-      return (p_value + d_value);
-    }
-
-    void set_kp(int input_kp){
-      kp = input_kp;
-    }
-    
-    void set_kd(int input_kd){
-      kd = input_kd;
-    }
-
-    void set_setpoint(int input_set_point){
-      set_point = input_set_point;
-    }
-    
-};
-controller_enc_diff l_r_speed;
-
-//new controller enc diff with float 
-//encoder controller  Encoder Diff
-class controller_enc_diff_vel{
-  
-  public:
-    float kp;
-    float kd;
-    float error;
-    float set_point;
-    float p_value;
-    float d_value;
-    float previous_error;
-
-    //default constructor
-    controller_enc_diff_vel(){
-      kp = 1;
-      kd = 1;
-      error = 0;
-      set_point = 500;
-      previous_error = 0;  
-    }
-    
-    float update_robot(float left_enc_count,float right_enc_count){
-      Serial.print("kp :");
-      Serial.println(kp);
-      
-      //error = left_enc_count-right_enc_count;
-      error = velocity_l - velocity_r;
-      Serial.print("ERROR :");
-      Serial.println(error);
-      p_value = kp * error;
-      Serial.print("p_value:");
-      Serial.println(p_value);
-      d_value = kd * (error - previous_error);
-      previous_error = error;
-      return (p_value + d_value);
-    }
-
-    void set_kp(int input_kp){
-      kp = input_kp;
-    }
-    
-    void set_kd(int input_kd){
-      kd = input_kd;
-    }
-
-    void set_setpoint(int input_set_point){
-      set_point = input_set_point;
-    }
-    
-};
-
-controller_enc_diff_vel l_r_speed_vel;
-
-//change gyro to zero after every cell since it gets less accurate over time
-////imu controller
-class controller_imu{
-  
-  public:
-    double kp;
-    double kd;
-    double error;
-    double set_point;
-    double p_value;
-    double d_value;
-    double previous_error;
-
-    //j means jittery
-    //default constructor
-    controller_imu(){
-      kp = 0.000005;//0.25,0.05(jittery overshoots)0.02(still jitter),0.01(j),0.0002(j),0.000005(works good alone and for first 3 cells(
-      kd = 0.000005;//0.25,0.05(jittery overshoots),0.02(still jittery),0.01(j)
-      //kd = 0;
-      error = 0;
-      set_point = 0;
-      previous_error = 0;  
-    }
-    
-    double update_robot(double current_value){
-      error = set_point - current_value;
-      p_value = kp * error;
-      d_value = kd * (error - previous_error);
-      previous_error = error;
-      return (p_value + d_value);
-    }
-
-    void set_kp(double input_kp){
-      kp = input_kp;
-    }
-    
-    void set_kd(double input_kd){
-      kd = input_kd;
-    }
-
-    void set_setpoint(double input_set_point){
-      set_point = input_set_point;
-    }
-    
-};
-controller_imu l_r_speed_imu;
-
-//controller left_speed;
-//controller right_speed;
