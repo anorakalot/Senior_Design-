@@ -292,8 +292,8 @@ bool update_gyro_forward() {
 void gyro_pid () {
 
   gyro_pid_bool = update_gyro_forward();
-
-  p_d_error_val = l_r_speed_imu.update_robot(gyro_angle_z_forward);
+  if(gyro_pid_bool == 1){
+     p_d_error_val = l_r_speed_imu.update_robot(gyro_angle_z_forward);
   p_d_error_val_abs = abs(p_d_error_val);
   
   if (p_d_error_val < 0) {
@@ -319,6 +319,11 @@ void gyro_pid () {
   }
   
   forward_w_speed(left_pwm,right_pwm);
+  }
+  else{
+    //nothing
+  }
+ 
 
 }
 
@@ -451,6 +456,8 @@ void loop() {
   }
     
   gyro_pid();
+
+  
 //
 //forward();//works with forward
 //delay(1000);
@@ -483,6 +490,11 @@ void loop() {
   //  forward_w_speed(50,100);
 
 }//end of loop
+
+////TESTING TURNING VOID LOOP
+//void loop(){
+//  left_turn_w_gyro();
+//}
 
 
 //
