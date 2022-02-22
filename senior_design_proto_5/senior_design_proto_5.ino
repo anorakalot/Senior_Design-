@@ -424,17 +424,17 @@ void loop() {
   //use tthis to test pid going straight
   //encoder_pid();
 //
-  noInterrupts();
+  //noInterrupts();
   go_one_cell_curr = curr_enc_count_l;
-  interrupts();
+  //interrupts();
   
   snprintf(cell_print,sizeof(cell_print),"go_one_cell_curr : %lu,go_one_cell_prev: %lu",go_one_cell_curr, go_one_cell_prev);
   Serial.println(cell_print);
   Serial.println(":)");
-//  
-  if ((go_one_cell_curr - go_one_cell_prev) > go_one_cell_length){
+
+  if ((go_one_cell_curr - go_one_cell_prev) > go_one_cell_length){//go_one_cell_length needs to be bigger 
     go_one_cell_prev = go_one_cell_curr;
-//    gyro_angle_z_forward = 0;
+    gyro_angle_z_forward = 0;
     //noInterrupts();
 //    halt();
 //    delay(1000);
@@ -442,22 +442,24 @@ void loop() {
     //interrupts();
     halt();
     delay(1000);
-    left_turn();
-    delay(1000);
-
-    halt();
-    delay(1000);
+////    left_turn();
+////    delay(1000);
+//
+//    left_turn_w_gyro();
+//    halt();
+//    delay(1000);
   }
     
-  //gyro_pid();
+  gyro_pid();
 //
 //forward();//works with forward
 //delay(1000);
 //halt();
 //delay(1000);
 
-  forward_w_speed(100,100);//not working w/ forward w speed()
-
+//  forward_w_speed(100,100);//not working w/ forward w speed()
+//  delay(1000);
+  
   //delay(1000);
 //  Serial.println(curr_enc_count_l);
 

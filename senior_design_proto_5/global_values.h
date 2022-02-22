@@ -7,7 +7,7 @@
 
 unsigned long go_one_cell_curr=0;
 unsigned long go_one_cell_prev=0;
-unsigned long go_one_cell_length=1000;
+unsigned long go_one_cell_length=3000;
 
 int motor_1_enable = 20;
 int motor_2_enable = 21;
