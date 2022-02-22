@@ -54,7 +54,8 @@ void setup() {
   //l r setpoint 0.70 and 0.67 goes to the right
   //l r setpoint 0.70 and 0.68 goes to the right
   //l r setpoint 0.70 and 0.69 goes to the right
-  
+
+  // l r setpoint 0.70 and 0.70 goes pretty straightt
   l_speed.set_setpoint(0.70);//0.65
   r_speed.set_setpoint(0.70);
 
