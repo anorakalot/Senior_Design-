@@ -8,8 +8,12 @@ struct coord{
 struct dict{
   int key_x;
   int key_y;
-  
   int dict_cost;
+};
+
+struct parent_dict{
+  coord child;
+  coord parent;
 };
 
 coord neighbors [4]; 
@@ -72,6 +76,9 @@ coord current;
 
 coord start_val;
 
+coord path[100];
+int path_size = 0;
+int path_index = 0;
 
 void setup() {
   goal.x = 3;
@@ -220,7 +227,9 @@ void loop() {
       }
 
       if ((in_past_cost_dict == 0) || (new_cost_less == 1)){
-        
+          if (in_past_cost_dict==1){
+            //nothing
+          }
       }
       
        
@@ -231,5 +240,11 @@ void loop() {
     Serial.println();
     Serial.println();
    
+    }
+    path_index = 0;
+    while( (current.x != start_val.x) && (current.y != start_val.y)){
+      path[path_index]= current;
+      current = parent[current];
+      /////////////////////////////
     }
   }
