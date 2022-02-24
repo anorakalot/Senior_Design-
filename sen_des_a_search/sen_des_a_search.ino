@@ -280,17 +280,17 @@ void loop() {
           
           
           
-      }
+      }//end of if in_past_cost / new_cost _less 
       
        
 
     ///////////////////////////////////////
        
-    }
+    }//end of for candidates loop
     Serial.println();
     Serial.println();
    
-    }
+    }//end of while amt in open_list 
     path_index = 0;
     
     while( (current.x != start_val.x) && (current.y != start_val.y)){
@@ -305,7 +305,7 @@ void loop() {
       path_index += 1;
       path_size += 1;
       /////////////////////////////
-    }
+    }//end of getting reverse path 
 
 //getting finalized path
    reverse_path_index = 0;
@@ -313,7 +313,7 @@ void loop() {
     reverse_path[reverse_path_index] = path[x];
     reverse_path_index += 1;
     
-  }
+  }//end of reverse path 
 
 
 
