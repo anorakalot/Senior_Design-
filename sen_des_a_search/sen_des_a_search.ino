@@ -34,6 +34,7 @@ int parent_dict_size = 0;
 int parent_dict_index = 0;
 
 
+
 //set up goal 
 coord goal;
 
@@ -86,11 +87,13 @@ coord path[100];
 
 coord reverse_path[100];
 int reverse_path_index = 0;
+int reverse_path_size = 0;
 
 int path_size = 0;
 int path_index = 0;
 
 void setup() {
+  Serial.begin(9600);
   goal.x = 3;
   goal.y = 3;
   
@@ -137,6 +140,7 @@ void setup() {
 //past_cost_dict = {};
 
 char misc_print_1[200];
+char misc_print_2[200];
 
 int in_obstacles=0;
 
@@ -153,6 +157,7 @@ int new_cost_less = 0;
 int candidate_index_past_cost_dict = 0;
 
 void loop() {
+  Serial.println("not in big while");
 //
 //  distance_test_val = heuristic_distance_func(start_val,goal);
 //  Serial.println(distance_test_val);
@@ -161,6 +166,9 @@ void loop() {
 //  // put your main code here, to run repeatedly:
 //  //while(open_list.size() != 0){
   while(amt_in_open_list!=0){
+    Serial.print("amt_in_open_list");
+    Serial.println(amt_in_open_list);
+    
     current = open_list[0];
     amt_in_open_list -= 1;
 
@@ -247,13 +255,16 @@ void loop() {
           }
           else {
             past_cost_dict[past_cost_dict_index].dict_cost = new_cost;
-            past_cost_dict[past_cost_dict_index].dict_key_coord = candidates[i];
+            //past_cost_dict[past_cost_dict_index].dict_key_coord = candidates[i];
+            past_cost_dict[past_cost_dict_index].dict_key_coord.x = candidates[i].x;
+            past_cost_dict[past_cost_dict_index].dict_key_coord.y = candidates[i].y;
+            
             est_total_cost = past_cost_dict[past_cost_dict_index].dict_cost;
             est_total_cost += heuristic_distance_func(candidates[i],goal);
 
             //make sure to increase index at the end 
             past_cost_dict_index += 1;
-          }
+          } 
 
           //parent_dict[candidate] = current
           parent_dict[parent_dict_index].child = current;
@@ -301,10 +312,24 @@ void loop() {
   for (int x = path_size; x >0; x--){
     reverse_path[reverse_path_index] = path[x];
     reverse_path_index += 1;
+    
   }
 
 
 
+//  Serial.println(reverse_path);
+//  
+//just does test prints to make sure it gives right path 
+  while(1){
+    for (int x = 0; x <reverse_path_size; x ++){
+      snprintf(misc_print_2,sizeof(misc_print_2),"[%i],[%i] ",reverse_path[x].x, reverse_path[x].y);
+      Serial.print(misc_print_2);
+    }//end of loop printing out
+    Serial.println();
+    Serial.println();
+
+    delay(2000);  
+  }//while(1) test loop
     
   }//end of void loop 
  
