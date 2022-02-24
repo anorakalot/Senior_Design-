@@ -4,6 +4,8 @@
 #include "global_values.h"
 #include "motor_func.h"
 #include "misc_functions.h"
+
+
 #define pi 3.141592653589793238462643383279
 
 
@@ -48,6 +50,23 @@ void right_encoder_update() {
 
 
 void setup() {
+  //make dummy reverse_path for testing 
+reverse_path[0].x = 0;
+reverse_path[0].y = 0;
+
+reverse_path[1].x = 1;
+reverse_path[1].y = 0;
+
+
+reverse_path[2].x = 1;
+reverse_path[2].y = 1;
+
+
+
+
+
+reverse_path_index = 0;
+
   left_pwm = 100;
   right_pwm = 100;
 
@@ -262,8 +281,11 @@ char cell_print[100];
 
 void loop() {
 //  //use tthis to test pid going straight
-encoder_pid();
+//encoder_pid();
 
+go_one_cell();
+
+//forward_w_speed(100,100);
 //  noInterrupts();
 //  go_one_cell_curr = curr_enc_count_l;
 //  interrupts();

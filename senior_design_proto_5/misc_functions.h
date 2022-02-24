@@ -1,3 +1,4 @@
+
 //
 //encoder controller  NEW ENCODER COUNT ONLY
 class controller_enc{
@@ -13,9 +14,11 @@ class controller_enc{
 
     //default constructor
     controller_enc(){
-      kp = 3;//0.50 moves slow as of time of writing,0.75,2 goes to values pretty fast of velocity
-      //kd = 1;
-      kd = 0;
+      kp = 3.2;//0.50 moves slow as of time of writing,0.75,2 goes to values pretty fast of velocity,3,
+      //3 kp  was used in pid test that went pretty straight
+//kp 5 might be a little too much       
+      kd = 3;//1 isn't making it change fast 
+      //kd = 0;
       error = 0;
       set_point = 1;
       previous_error = 0;  
@@ -415,18 +418,47 @@ void encoder_pid() {
   //Serial.println(misc_print_2);
   }
 
-
-
-
-
-
-
-
-
   //////
   ////  pid_l();
   ////  pid_r();
+  
+}//end of encoder pid
 
 
 
+void go_one_cell(){
+  halt();
+  delay(2000);
+
+   Serial.println("outside while");
+  while ((go_one_cell_curr - go_one_cell_prev) < go_one_cell_length){//go_one_cell_length needs to be bigger 
+      Serial.println("inside while");
+      noInterrupts();
+      go_one_cell_curr = curr_enc_count_l;
+      interrupts();
+      
+//      snprintf(cell_print,sizeof(cell_print),"go_one_cell_curr : %lu,go_one_cell_prev: %lu",go_one_cell_curr, go_one_cell_prev);
+//      Serial.println(cell_print);
+//      Serial.println(":)");
+
+    
+//    //gyro_angle_z_forward = 150;//1000(goes to the right),750,100000000(goes to the right);,750,600(goes to right),500(goes to right),250
+////    gyro_angle_z_forward = 0;
+//    //noInterrupts();
+////    halt();
+////    delay(1000);
+//    Serial.println("after delay");
+//    //interrupts();
+//    halt();
+//    delay(1000);
+//////
+////    left_turn_w_gyro();
+////    halt();
+////    delay(1000);
+  //      encoder_pid();
+    forward_w_speed(100,100);  
+  }//end of while
+  go_one_cell_prev = go_one_cell_curr;
+    halt();
+    delay(2000);
 }

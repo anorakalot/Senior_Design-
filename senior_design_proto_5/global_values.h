@@ -160,3 +160,9 @@ double p_d_error_val_abs_r = 0;
 
 double left_pwm=100;
 double right_pwm=100;
+
+
+
+//for state machine 
+
+enum MOTOR_STATES {MOTOR_INIT, GO_ONE_CELL, CHOOSE_MOVE, TURN_REVERSE_L, TURN_REVERSE_R, TURN_LEFT, TURN_RIGHT } motor_state;
