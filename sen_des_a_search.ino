@@ -6,8 +6,9 @@ struct coord{
 };
 
 struct dict{
-  int key_x;
-  int key_y;
+//  int key_x;
+//  int key_y;
+  coord dict_key_coord;
   int dict_cost;
 };
 
@@ -30,11 +31,14 @@ int past_cost_dict_index = 0;
 
 p_dict parent_dict [200];
 int parent_dict_size = 0;
+int parent_dict_index = 0;
 
 
 //set up goal 
 coord goal;
 
+
+int est_total_cost;
 
 coord * neighbors_func(coord current){
   //coord neighbors [4]; 
@@ -79,6 +83,10 @@ coord current;
 coord start_val;
 
 coord path[100];
+
+coord reverse_path[100];
+int reverse_path_index = 0;
+
 int path_size = 0;
 int path_index = 0;
 
@@ -108,8 +116,8 @@ void setup() {
   //set up past cost_dict as a global variable
 
   //past_cost_dict[start] = 0
-  past_cost_dict[past_cost_dict_index].key_x = open_list[0].x;
-  past_cost_dict[past_cost_dict_index].key_y = open_list[0].y;
+  past_cost_dict[past_cost_dict_index].dict_key_coord.x = open_list[0].x;
+  past_cost_dict[past_cost_dict_index].dict_key_coord.y = open_list[0].y;
   past_cost_dict[past_cost_dict_index].dict_cost = 0;
   past_cost_dict_index += 1;//goes to next available index 
   
@@ -143,6 +151,7 @@ int distance_test_val= 0;
 int new_cost_less = 0;
 
 int candidate_index_past_cost_dict = 0;
+
 void loop() {
 //
 //  distance_test_val = heuristic_distance_func(start_val,goal);
@@ -201,7 +210,7 @@ void loop() {
       new_cost = 0;
       //new cost = past_cost_dict[current] + 1;
       for (int x = 0; x < past_cost_dict_size; x++){
-        if ((current.x == past_cost_dict[x].key_x) && (current.y == past_cost_dict[x].key_y)){
+        if ((current.x == past_cost_dict[x].dict_key_coord.x) && (current.y == past_cost_dict[x].dict_key_coord.y)){
           new_cost = past_cost_dict[x].dict_cost + 1;
         }
         
@@ -212,7 +221,7 @@ void loop() {
       //if candidate not in past_cost_dict
       
       for (int x = 0; past_cost_dict_size; x++){
-        if ((candidates[i].x == past_cost_dict[x].key_x) && (candidates[i].y == past_cost_dict[x].key_y)){
+        if ((candidates[i].x == past_cost_dict[x].dict_key_coord.x) && (candidates[i].y == past_cost_dict[x].dict_key_coord.y)){
           in_past_cost_dict = 1;//means it is in past_cost_dict
           candidate_index_past_cost_dict = x;
         }
@@ -227,11 +236,39 @@ void loop() {
           }
         
       }
-
+//goes though the final if statement 
       if ((in_past_cost_dict == 0) || (new_cost_less == 1)){
+          //gona do est_total cost differently depending on 
+          //past_cost_dict bool
           if (in_past_cost_dict==1){
-            //nothing
+            past_cost_dict[candidate_index_past_cost_dict].dict_cost = new_cost;
+            est_total_cost = past_cost_dict[candidate_index_past_cost_dict].dict_cost;
+            est_total_cost += heuristic_distance_func(candidates[i],goal); 
           }
+          else {
+            past_cost_dict[past_cost_dict_index].dict_cost = new_cost;
+            past_cost_dict[past_cost_dict_index].dict_key_coord = candidates[i];
+            est_total_cost = past_cost_dict[past_cost_dict_index].dict_cost;
+            est_total_cost += heuristic_distance_func(candidates[i],goal);
+
+            //make sure to increase index at the end 
+            past_cost_dict_index += 1;
+          }
+
+          //parent_dict[candidate] = current
+          parent_dict[parent_dict_index].child = current;
+          parent_dict[parent_dict_index].parent = candidates[i];
+          parent_dict_index += 1;
+          
+          //open_list append ((est_total_cost,candidate
+          open_list[open_list_index] = candidates[i];
+          open_list[open_list_index].cost = est_total_cost;
+          //open_list[open_list_index].cost = est_total_cost;
+          open_list_index +=1;
+          amt_in_open_list += 1;
+          
+          
+          
       }
       
        
@@ -254,10 +291,22 @@ void loop() {
             current = parent_dict[x].parent;
            }
       }
+      path_index += 1;
+      path_size += 1;
       /////////////////////////////
     }
+
+
+   reverse_path_index = 0;
+  for (int x = path_size; x >0; x--){
+    reverse_path[reverse_path_index] = path[x];
+    reverse_path_index += 1;
   }
 
 
 
-//do reverse path here later 
+    
+  }//end of void loop 
+ 
+
+//reverse path is the actual path that is used since it's from start to goal instead of goal to start
