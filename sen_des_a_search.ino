@@ -250,10 +250,14 @@ void loop() {
       //current = parent[current];
       //find parent[current
       for (int x = 0; x < parent_dict_size ; x++){
-           if (parent_dict.child == current){
-            current = parent.parent;
+           if (parent_dict[x].child.x == current.x && parent_dict[x].child.y == current.y ){
+            current = parent_dict[x].parent;
            }
       }
       /////////////////////////////
     }
   }
+
+
+
+//do reverse path here later 
