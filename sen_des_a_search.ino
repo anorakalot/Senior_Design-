@@ -296,7 +296,7 @@ void loop() {
       /////////////////////////////
     }
 
-
+//getting finalized path
    reverse_path_index = 0;
   for (int x = path_size; x >0; x--){
     reverse_path[reverse_path_index] = path[x];
