@@ -73,10 +73,12 @@ int heuristic_distance_func(coord candidate, coord goal){
 coord open_list[100];
 int amt_in_open_list=0;
 int open_list_index = 0;
+int open_list_size = 100;
 
 
 coord closed_list[100];
 int closed_list_size= 100;
+int closed_list_index = 0;
 
 
 coord current;
@@ -170,7 +172,17 @@ void loop() {
     Serial.println(amt_in_open_list);
     
     current = open_list[0];
+    //does poppinig for open_list[0]
+    for (int x = 0; x < open_list_size; x++){
+      open_list[x] = open_list [x+1];
+      
+    }
+    //amt is right
     amt_in_open_list -= 1;
+
+    //closed_list.append(current);
+    closed_list[closed_list_index] = current;
+    closed_list_index += 1;
 
     //if current == goal
     if ((current.x == goal.x) &&(current.y == goal.y)){
