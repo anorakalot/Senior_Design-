@@ -12,20 +12,7 @@
 
 LSM6 imu;
 
-void serial_input_test() {
-  ////testing input
-  //Serial.println("apples");
-  if (Serial.available() > 0) {
-    char_input_from_serial = Serial.read();
-    if (char_input_from_serial == '1') {
-      //if (input_from_serial == 103){
-      forward();
-    }
-    else {
-      halt();
-    }
-  }
-}
+
 
 
 //should put in if negative going backwards
@@ -137,6 +124,7 @@ reverse_path_index = 0;
   //  Serial.println("STARTING MOTOR TEST");
 
   delay(4000);
+
 }//end of setup
 
 
@@ -181,6 +169,24 @@ void left_turn_w_gyro() {
   gyro_angle_z = 0;
 }
 
+unsigned long left_turn_enc_count_curr=0;
+unsigned long left_turn_enc_count_prev=0;
+
+void left_turn_w_enc(unsigned long enc_interval_length) {
+  //gyro_angle_z = 0;
+  halt();
+  delay(1000);
+  while (left_turn_enc_count_curr- left_turn_enc_count_prev < enc_interval_length) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
+    left_turn_enc_count_curr = curr_enc_count_l;
+    left_turn();
+    
+    
+  }
+  left_turn_enc_count_prev = left_turn_enc_count_curr;
+  halt();
+  delay(1000);
+ // gyro_angle_z = 0;
+}
 
 void right_turn_w_gyro() {
   gyro_angle_z = 0;
@@ -194,6 +200,25 @@ void right_turn_w_gyro() {
   delay(1000);
 }
 
+
+unsigned long right_turn_enc_count_curr=0;
+unsigned long right_turn_enc_count_prev=0;
+
+void right_turn_w_enc(unsigned long enc_interval_length) {
+  //gyro_angle_z = 0;
+  halt();
+  delay(1000);
+  while (right_turn_enc_count_curr- right_turn_enc_count_prev < enc_interval_length) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
+    right_turn_enc_count_curr = curr_enc_count_r;
+    right_turn();
+    
+    
+  }
+  right_turn_enc_count_prev = right_turn_enc_count_curr;
+  halt();
+  delay(1000);
+ // gyro_angle_z = 0;
+}
 
 //int drift_comp_value = 1;
 //time to get data might be causing pid oscillations
@@ -279,11 +304,142 @@ void gyro_pid () {
 
 char cell_print[100];
 
+
+void serial_input_test() {
+  ////testing input
+  //Serial.println("apples");
+  if (Serial.available() > 0) {
+    char_input_from_serial = Serial.read();
+    if (char_input_from_serial == '1') {
+      //if (input_from_serial == 103){
+      forward();
+    }
+    else {
+      halt();
+    }
+  }
+}
+
+int row_number=0;
+int int_serial_input = 0;
+
+int col_number=0;
+int power_of_10_row = 100;
+int power_of_10_col = 100;
+int number_of_input = 0;
+
+void send_recieve_serial(){
+  while(1){
+  //if (Serial.available() <=0){
+    Serial.write('z');
+  //}
+    
+  if (Serial.available() > 0) {
+    //makes row/col = 0l at the start before going into a and getting values 
+    row_number = 0;
+    col_number = 0;
+    
+    char_input_from_serial = Serial.read();
+    if (char_input_from_serial == 'a') {
+      while(1){
+        if (Serial.available()> 0){
+          char_input_from_serial = Serial.read();
+        if (char_input_from_serial== 'f'){
+          break;
+        }//end of break out of 
+        else{
+          int_serial_input = char_input_from_serial - '0';
+          if (number_of_input <3){
+            row_number  += (int_serial_input * power_of_10_row);
+            power_of_10_row /= 10;
+          }
+          else{
+             col_number += (int_serial_input * power_of_10_col);
+             power_of_10_col /= 10;  
+          }
+          number_of_input += 1;
+          }//end of else statement
+        }//end of inner if serial.available() > 0
+      }//end of while (1)
+      
+    }//end of if char _input == 0
+  }//end of outer else if serial.available() > 0
+
+
+    if ((row_number >= 100 ) && (col_number >= 100 )){
+      
+//      for(int x = 0; x < 3; x ++){
+//      forward_w_speed(100,100);
+//      delay(1000);
+//      halt();
+//      delay(1000);
+//      
+        
+        //break out of while loop 
+//      }//end of for loop forward halt
+
+
+        break;
+        //PUT BREAK HERE IF VALUES ARE RIGHT
+      }//end of if 
+
+  }//end of while(1);
+}
+
+int enc_interval_length_global = 0;
+
+void adjust_to_cup(){
+  //gets col_number from nano to use in micro adj
+   //send_recieve_serial();
+
+   //this is what p term is set to 
+   //enc_interval_length_global = micro_adjust_l_r.update_robot(col_number);
+    enc_interval_length_global = micro_adjust_l_r.update_robot(400);
+    
+    Serial.println(enc_interval_length_global);
+
+   enc_interval_length_global = abs(enc_interval_length_global);
+   if (direction_micro_adj == 'l'){
+    left_turn_w_enc(enc_interval_length_global);
+   }
+   else if (direction_micro_adj == 'r'){
+    right_turn_w_enc(enc_interval_length_global);
+   }
+
+   
+   
+}
+
+int testing_flag = 0;
 void loop() {
 //  //use tthis to test pid going straight
 //encoder_pid();
+//go_one_cell();
 
-go_one_cell();
+  //continous signarl 
+  //delay(2000)
+
+//testing w_enc func
+//right_turn_w_enc(100);
+//left_turn_w_enc(100);
+  
+  if (testing_flag == 0){
+//    halt();
+//    delay(1000);
+    adjust_to_cup();
+//    halt();
+//    delay(1000);
+    //testing_flag = 1;
+  }
+  
+//adjust_to_cup();
+
+
+
+}//end of loop
+
+
+
 
 //forward_w_speed(100,100);
 //  noInterrupts();
@@ -314,9 +470,6 @@ go_one_cell();
 //  }
 //    
 //  gyro_pid();
-
-
-
 
 
 
@@ -352,7 +505,7 @@ go_one_cell();
 
   //  forward_w_speed(50,100);
 
-}//end of loop
+
 
 ////TESTING TURNING VOID LOOP
 //void loop(){

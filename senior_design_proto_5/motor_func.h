@@ -124,6 +124,7 @@ int direction_robot= 1;
 //1 = forward, 
 
 
+
 void motor_tick(){
 
   switch (motor_state) { //transitions
@@ -133,6 +134,7 @@ void motor_tick(){
       break;
     case CHOOSE_MOVE:
       reverse_path[reverse_path_index];
+      
       break;
     default:
       motor_state = GO_ONE_CELL;

@@ -14,7 +14,7 @@ class controller_enc{
 
     //default constructor
     controller_enc(){
-      kp = 3.2;//0.50 moves slow as of time of writing,0.75,2 goes to values pretty fast of velocity,3,
+      kp = 3.5;//0.50 moves slow as of time of writing,0.75,2 goes to values pretty fast of velocity,3,3.2
       //3 kp  was used in pid test that went pretty straight
 //kp 5 might be a little too much       
       kd = 3;//1 isn't making it change fast 
@@ -42,15 +42,15 @@ class controller_enc{
       return (p_value + d_value);
     }
 
-    double set_kp(double input_kp){
+    void set_kp(double input_kp){
       kp = input_kp;
     }
     
-    double set_kd(double input_kd){
+    void set_kd(double input_kd){
       kd = input_kd;
     }
 
-    double set_setpoint(double input_set_point){
+    void set_setpoint(double input_set_point){
       set_point = input_set_point;
     }
     
@@ -455,10 +455,67 @@ void go_one_cell(){
 ////    left_turn_w_gyro();
 ////    halt();
 ////    delay(1000);
-  //      encoder_pid();
-    forward_w_speed(100,100);  
+        encoder_pid();
+    //forward_w_speed(100,100);  
   }//end of while
   go_one_cell_prev = go_one_cell_curr;
     halt();
     delay(2000);
 }
+
+char direction_micro_adj;
+
+class controller_micro_adjustment{
+  
+  public:
+    int kp;
+    //double kd;
+    int error;
+    int set_point;
+    int p_value;
+    int d_value;
+    int previous_error;
+
+    //default constructor
+    controller_micro_adjustment(){
+      kp = 0.50;//1,
+      error = 0;
+      set_point = 330;
+      previous_error = 0;  
+    }
+    
+    int update_robot(int current_value){
+      error = set_point - current_value;
+      Serial.print("ERROR");
+      Serial.println(error);
+      
+      if (error < 0){
+        direction_micro_adj = 'l';
+      }
+      
+      else if (error > 0){
+        direction_micro_adj = 'r';
+      }
+      
+      p_value = kp * error;
+
+      previous_error = error;
+      Serial.print("p_value ");
+      Serial.println(p_value);
+      return (p_value );
+    }
+
+    void set_kp(int input_kp){
+      kp = input_kp;
+    }
+    
+//    void set_kd(int input_kd){
+//      kd = input_kd;
+//    }
+
+    void set_setpoint(int input_set_point){
+      set_point = input_set_point;
+    }
+    
+};
+controller_micro_adjustment micro_adjust_l_r;
