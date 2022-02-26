@@ -2,9 +2,10 @@
 #include <LSM6.h>
 #include <math.h>    // (no semicolon)  
 #include "global_values.h"
+#include "sonar_func.h"
 #include "motor_func.h"
 #include "misc_functions.h"
-#include "sonar_func.h"
+
 
 
 #define pi 3.141592653589793238462643383279
@@ -46,21 +47,21 @@ void setup() {
   
 
   //make dummy reverse_path for testing 
-reverse_path[0].x = 0;
-reverse_path[0].y = 0;
-
-reverse_path[1].x = 1;
-reverse_path[1].y = 0;
-
-
-reverse_path[2].x = 1;
-reverse_path[2].y = 1;
-
-
+  reverse_path[0].x = 0;
+  reverse_path[0].y = 0;
+  
+  reverse_path[1].x = 1;
+  reverse_path[1].y = 0;
+  
+  
+  reverse_path[2].x = 1;
+  reverse_path[2].y = 1;
 
 
 
-reverse_path_index = 0;
+  
+  
+  reverse_path_index = 0;
 
   left_pwm = 100;
   right_pwm = 100;
@@ -70,8 +71,8 @@ reverse_path_index = 0;
   //l r setpoint 0.70 and 0.69 goes to the right
 
   // l r setpoint 0.70 and 0.70 goes pretty straightt
-  l_speed.set_setpoint(0.70);//0.65
-  r_speed.set_setpoint(0.70);
+  l_speed.set_setpoint(0.50);//0.65,0.70,0.71 movse to the right 0.70
+  r_speed.set_setpoint(0.49);                                 //  0.70
 
 //  Serial.print("l setpoint");
 //  Serial.println(l_speed.set_point);
@@ -113,6 +114,7 @@ reverse_path_index = 0;
   //attachInterrupt(digitalPinToInterrupt(motor_2_enc_b),right_encoder_update,CHANGE);
 
   Wire.begin();
+
   while (!imu.init()) {
     Serial.println("IMU INIT FAILED");
     //while (1);
@@ -130,10 +132,15 @@ reverse_path_index = 0;
   //    delay(1000);
   //  }
   //  Serial.println("STARTING MOTOR TEST");
+//  for (int x = 0; x < 100; x ++){
+//      encoder_pid();
+//  }
 
-
-  while(dist_val_middle >150){
-    
+  //halt();
+  
+    get_sonar_dist();
+  while(dist_val_middle >250){
+    Serial.println("INSIDE SETUP WHILE"); 
     get_sonar_dist();
     
   }
@@ -175,8 +182,8 @@ void left_turn_w_gyro() {
   gyro_angle_z = 0;
   halt();
   delay(1000);
-  while (gyro_angle_z < 8000) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
-    left_turn();
+  while (gyro_angle_z <7850) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close),7900(really close)
+    left_turn();        //7900,7800(too little)
     update_gyro();
   }
   halt();
@@ -191,6 +198,10 @@ void left_turn_w_enc(unsigned long enc_interval_length) {
   //gyro_angle_z = 0;
   halt();
   delay(1000);
+  left_turn_enc_count_curr = curr_enc_count_l;
+  left_turn_enc_count_prev = left_turn_enc_count_curr;
+  
+  
   while (left_turn_enc_count_curr- left_turn_enc_count_prev < enc_interval_length) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
     left_turn_enc_count_curr = curr_enc_count_l;
     left_turn();
@@ -198,6 +209,7 @@ void left_turn_w_enc(unsigned long enc_interval_length) {
     
   }
   left_turn_enc_count_prev = left_turn_enc_count_curr;
+  
   halt();
   delay(1000);
  // gyro_angle_z = 0;
@@ -207,7 +219,7 @@ void right_turn_w_gyro() {
   gyro_angle_z = 0;
   halt();
   delay(1000);
-  while (gyro_angle_z > -8000) {
+  while (gyro_angle_z > -7850) {//-8000,-7900,7850
     right_turn();
     update_gyro();
   }
@@ -223,6 +235,9 @@ void right_turn_w_enc(unsigned long enc_interval_length) {
   //gyro_angle_z = 0;
   halt();
   delay(1000);
+  right_turn_enc_count_curr = curr_enc_count_r;
+  right_turn_enc_count_prev = right_turn_enc_count_curr;
+  
   while (right_turn_enc_count_curr- right_turn_enc_count_prev < enc_interval_length) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
     right_turn_enc_count_curr = curr_enc_count_r;
     right_turn();
@@ -344,80 +359,98 @@ int power_of_10_col = 100;
 int number_of_input = 0;
 
 void send_recieve_serial(){
+  
   while(1){
+    
   //if (Serial.available() <=0){
     Serial.write('z');
   //}
     
   if (Serial.available() > 0) {
-    //makes row/col = 0l at the start before going into a and getting values 
+    //makes row/col = 0 at the start before going into a and getting values 
     row_number = 0;
     col_number = 0;
+    number_of_input = 0;
+    power_of_10_row = 100;
+    power_of_10_col = 100;
     
     char_input_from_serial = Serial.read();
     if (char_input_from_serial == 'a') {
       while(1){
         if (Serial.available()> 0){
           char_input_from_serial = Serial.read();
-        if (char_input_from_serial== 'f'){
-          break;
-        }//end of break out of 
-        else{
-          int_serial_input = char_input_from_serial - '0';
-          if (number_of_input <3){
-            row_number  += (int_serial_input * power_of_10_row);
-            power_of_10_row /= 10;
-          }
+          if (char_input_from_serial== 'f'){
+            break;//breaks out of inner while(1)
+            
+          }//end of break out of 
+          
           else{
-             col_number += (int_serial_input * power_of_10_col);
-             power_of_10_col /= 10;  
-          }
-          number_of_input += 1;
-          }//end of else statement
+            int_serial_input = char_input_from_serial - '0';
+            if (number_of_input <3){
+              row_number  += (int_serial_input * power_of_10_row);
+              power_of_10_row /= 10;
+            }
+            else{
+               col_number += (int_serial_input * power_of_10_col);
+               power_of_10_col /= 10;  
+            }
+            number_of_input += 1;
+           }//end of else statement
+        
         }//end of inner if serial.available() > 0
+      
       }//end of while (1)
       
     }//end of if char _input == 0
   }//end of outer else if serial.available() > 0
 
-
+//    row_number = 200;
+//    col_number = 200;
+    
     if ((row_number >= 100 ) && (col_number >= 100 )){
       
-//      for(int x = 0; x < 3; x ++){
+//      for(int x = 0; x < 2; x ++){
 //      forward_w_speed(100,100);
-//      delay(1000);
+//      delay(300);
 //      halt();
-//      delay(1000);
+//      delay(300);
 //      
-        
-        //break out of while loop 
-//      }//end of for loop forward halt
+//      }
+     Serial.write('B');
+    //end of for loop forward halt
 
+        //break out of while loop 
 
         break;
         //PUT BREAK HERE IF VALUES ARE RIGHT
-      }//end of if 
+     }//end of if 
 
   }//end of while(1);
-}
+}//end of send recieve func
 
 int enc_interval_length_global = 0;
 
 void adjust_to_cup(){
   //gets col_number from nano to use in micro adj
-   //send_recieve_serial();
+   send_recieve_serial();
 
    //this is what p term is set to 
-   //enc_interval_length_global = micro_adjust_l_r.update_robot(col_number);
-    enc_interval_length_global = micro_adjust_l_r.update_robot(400);
+   enc_interval_length_global = micro_adjust_l_r.update_robot(col_number);
+   
+   //enc_interval_length_global = micro_adjust_l_r.update_robot(203);
     
-    Serial.println(enc_interval_length_global);
+   Serial.println(enc_interval_length_global);
 
    enc_interval_length_global = abs(enc_interval_length_global);
    if (direction_micro_adj == 'l'){
+    //
+    Serial.write('l');
+    Serial.print("leftz");
     left_turn_w_enc(enc_interval_length_global);
    }
    else if (direction_micro_adj == 'r'){
+    Serial.write('r');
+    Serial.print("rightz");
     right_turn_w_enc(enc_interval_length_global);
    }
 
@@ -428,11 +461,18 @@ void adjust_to_cup(){
 int testing_flag = 0;
 void loop() {
 //get_sonar_dist();
-  go_one_cell();
-  go_one_cell();
-  left_turn_w_gyro();
-  left_turn_w_gyro();
-  go_one_cell();
+ // go_one_cell();
+  //left_turn_w_gyro();
+  //left_turn_w_gyro();
+  //right_turn_w_gyro();
+  adjust_to_cup();
+//  left_turn_w_enc(100);
+//  right_turn_w_enc(100);
+  //Serial.println("APPLES");
+  //left_turn_w_enc(100);
+  //  go_one_cell();
+//  go_one_cell();
+//encoder_pid();
 //  //use tthis to test pid going straight
 //encoder_pid();
 //go_one_cell();

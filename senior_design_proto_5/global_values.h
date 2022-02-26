@@ -7,7 +7,7 @@
 
 unsigned long go_one_cell_curr=0;
 unsigned long go_one_cell_prev=0;
-unsigned long go_one_cell_length=2500;//3000,2500,(1750 5 percent way there ,2300(really close to one cell,2400
+unsigned long go_one_cell_length=2700;//3000,2500,(1750 5 percent way there ,2300(really close to one cell,2400
 //1500,500
 
 int motor_1_enable = 20;
@@ -165,4 +165,4 @@ double right_pwm=100;
 
 //for state machine 
 
-enum MOTOR_STATES {MOTOR_INIT, GO_ONE_CELL, CHOOSE_MOVE, TURN_REVERSE_L, TURN_REVERSE_R, TURN_LEFT, TURN_RIGHT,SEND_RECIEVE_DATA } motor_state;
+enum MOTOR_STATES {MOTOR_INIT, GO_ONE_CELL, CHOOSE_MOVE, TURN_REVERSE, TURN_LEFT, TURN_RIGHT,SEND_RECIEVE_DATA,ADJUST_TO_CUP } motor_state;
