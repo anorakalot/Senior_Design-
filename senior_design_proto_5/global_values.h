@@ -7,7 +7,7 @@
 
 unsigned long go_one_cell_curr=0;
 unsigned long go_one_cell_prev=0;
-unsigned long go_one_cell_length=2400;//3000,2500,(1750 5 percent way there ,2300(really close to one cell
+unsigned long go_one_cell_length=2500;//3000,2500,(1750 5 percent way there ,2300(really close to one cell,2400
 //1500,500
 
 int motor_1_enable = 20;

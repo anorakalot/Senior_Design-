@@ -4,6 +4,7 @@
 #include "global_values.h"
 #include "motor_func.h"
 #include "misc_functions.h"
+#include "sonar_func.h"
 
 
 #define pi 3.141592653589793238462643383279
@@ -37,6 +38,13 @@ void right_encoder_update() {
 
 
 void setup() {
+  pinMode(trig_pin_2,OUTPUT);
+  pinMode(echo_pin_2,INPUT);
+
+  pinMode(trig_pin_3,OUTPUT);
+  pinMode(echo_pin_3,INPUT);
+  
+
   //make dummy reverse_path for testing 
 reverse_path[0].x = 0;
 reverse_path[0].y = 0;
@@ -123,7 +131,14 @@ reverse_path_index = 0;
   //  }
   //  Serial.println("STARTING MOTOR TEST");
 
-  delay(4000);
+
+  while(dist_val_middle >150){
+    
+    get_sonar_dist();
+    
+  }
+  delay(500);
+  //delay(4000);
 
 }//end of setup
 
@@ -412,6 +427,12 @@ void adjust_to_cup(){
 
 int testing_flag = 0;
 void loop() {
+//get_sonar_dist();
+  go_one_cell();
+  go_one_cell();
+  left_turn_w_gyro();
+  left_turn_w_gyro();
+  go_one_cell();
 //  //use tthis to test pid going straight
 //encoder_pid();
 //go_one_cell();
@@ -423,16 +444,16 @@ void loop() {
 //right_turn_w_enc(100);
 //left_turn_w_enc(100);
   
-  if (testing_flag == 0){
-//    halt();
-//    delay(1000);
-    adjust_to_cup();
-//    halt();
-//    delay(1000);
-    //testing_flag = 1;
-  }
-  
-//adjust_to_cup();
+//  if (testing_flag == 0){
+////    halt();
+////    delay(1000);
+//    adjust_to_cup();
+////    halt();
+////    delay(1000);
+//    //testing_flag = 1;
+//  }
+//  
+////adjust_to_cup();
 
 
 
