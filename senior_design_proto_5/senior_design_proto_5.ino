@@ -361,11 +361,12 @@ int number_of_input = 0;
 void send_recieve_serial(){
   
   while(1){
-    
+    delay(1000);
   //if (Serial.available() <=0){
     Serial.write('z');
   //}
-    
+
+        
   if (Serial.available() > 0) {
     //makes row/col = 0 at the start before going into a and getting values 
     row_number = 0;
@@ -416,8 +417,8 @@ void send_recieve_serial(){
 //      delay(300);
 //      
 //      }
-     Serial.write('B');
-    //end of for loop forward halt
+    //Serial.write('B');
+     //end of for loop forward halt
 
         //break out of while loop 
 
@@ -444,12 +445,12 @@ void adjust_to_cup(){
    enc_interval_length_global = abs(enc_interval_length_global);
    if (direction_micro_adj == 'l'){
     //
-    Serial.write('l');
+    //Serial.write('l');
     Serial.print("leftz");
     left_turn_w_enc(enc_interval_length_global);
    }
    else if (direction_micro_adj == 'r'){
-    Serial.write('r');
+    //Serial.write('r');
     Serial.print("rightz");
     right_turn_w_enc(enc_interval_length_global);
    }
