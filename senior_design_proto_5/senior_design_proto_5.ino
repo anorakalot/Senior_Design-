@@ -116,7 +116,7 @@ void setup() {
   Wire.begin();
 
   while (!imu.init()) {
-    Serial.println("IMU INIT FAILED");
+    //Serial.println("IMU INIT FAILED");
     //while (1);
     delay(1000);
   }
@@ -140,11 +140,11 @@ void setup() {
   
     get_sonar_dist();
   while(dist_val_middle >250){
-    Serial.println("INSIDE SETUP WHILE"); 
+    //Serial.println("INSIDE SETUP WHILE"); 
     get_sonar_dist();
     
   }
-  delay(500);
+  //delay(500);
   //delay(4000);
 
 }//end of setup
@@ -196,8 +196,8 @@ unsigned long left_turn_enc_count_prev=0;
 
 void left_turn_w_enc(unsigned long enc_interval_length) {
   //gyro_angle_z = 0;
-  halt();
-  delay(1000);
+  //halt();
+  //delay(1000);
   left_turn_enc_count_curr = curr_enc_count_l;
   left_turn_enc_count_prev = left_turn_enc_count_curr;
   
@@ -209,9 +209,9 @@ void left_turn_w_enc(unsigned long enc_interval_length) {
     
   }
   left_turn_enc_count_prev = left_turn_enc_count_curr;
-  
   halt();
-  delay(1000);
+  //halt();
+  //delay(1000);
  // gyro_angle_z = 0;
 }
 
@@ -233,8 +233,8 @@ unsigned long right_turn_enc_count_prev=0;
 
 void right_turn_w_enc(unsigned long enc_interval_length) {
   //gyro_angle_z = 0;
-  halt();
-  delay(1000);
+  //halt();
+  //delay(1000);
   right_turn_enc_count_curr = curr_enc_count_r;
   right_turn_enc_count_prev = right_turn_enc_count_curr;
   
@@ -246,7 +246,7 @@ void right_turn_w_enc(unsigned long enc_interval_length) {
   }
   right_turn_enc_count_prev = right_turn_enc_count_curr;
   halt();
-  delay(1000);
+  //delay(1000);
  // gyro_angle_z = 0;
 }
 
@@ -357,26 +357,67 @@ int col_number=0;
 int power_of_10_row = 100;
 int power_of_10_col = 100;
 int number_of_input = 0;
+int send_z_bool = 0;
+
+int counter_not_recieve= 0;
+
+unsigned long send_z_time_curr = 0;
+unsigned long send_z_time_prev = 0;
+
+unsigned long send_z_time_interval = 500;
 
 void send_recieve_serial(){
+  send_z_bool = 0;
+  //counter_not_recieve
+  send_z_time_curr = millis();
+  send_z_time_prev = send_z_time_curr;
   
-  while(1){
-    delay(1000);
+  while(send_z_bool == 0){
+
+    
+    //delay(5000);
   //if (Serial.available() <=0){
-    Serial.write('z');
+    //if (send_z_bool == 0){
+      //for(int x = 0; x < 1000; x ++){
+
+      send_z_time_curr = millis();
+      if ((send_z_time_curr - send_z_time_prev) >send_z_time_interval){
+        Serial.write('z');  
+        send_z_time_prev = send_z_time_curr;
+      }
+      
+      //delay(200);//2000,1000
+        
+      if (Serial.available() > 0){
+        char_input_from_serial = Serial.read();
+        if (char_input_from_serial == 'a'){
+          send_z_bool = 1;//get out of while loop
+        }
+      }
+      //}
+      
+      //send_z_bool = 1;  
+    
+    //}
+    
   //}
 
-        
-  if (Serial.available() > 0) {
-    //makes row/col = 0 at the start before going into a and getting values 
+  }
+  
     row_number = 0;
     col_number = 0;
     number_of_input = 0;
     power_of_10_row = 100;
     power_of_10_col = 100;
+    send_z_bool = 0;
     
-    char_input_from_serial = Serial.read();
-    if (char_input_from_serial == 'a') {
+//new while(1)
+  //while(1){
+  //if (Serial.available() > 0) {
+    //makes row/col = 0 at the start before going into a and getting values 
+    
+    //char_input_from_serial = Serial.read();
+  //  if (char_input_from_serial == 'a') {
       while(1){
         if (Serial.available()> 0){
           char_input_from_serial = Serial.read();
@@ -396,19 +437,20 @@ void send_recieve_serial(){
                power_of_10_col /= 10;  
             }
             number_of_input += 1;
-           }//end of else statement
+           }//end of else statement calculation
         
         }//end of inner if serial.available() > 0
       
-      }//end of while (1)
+      }//end of inner while (1)
       
-    }//end of if char _input == 0
-  }//end of outer else if serial.available() > 0
-
+      //}//end of if char _input == 0
+  //}//end of outer else if serial.available() > 0
+    //
+    
 //    row_number = 200;
 //    col_number = 200;
     
-    if ((row_number >= 100 ) && (col_number >= 100 )){
+    //if ((row_number >= 100 ) && (col_number >= 100 )){
       
 //      for(int x = 0; x < 2; x ++){
 //      forward_w_speed(100,100);
@@ -422,11 +464,11 @@ void send_recieve_serial(){
 
         //break out of while loop 
 
-        break;
+        //break;
         //PUT BREAK HERE IF VALUES ARE RIGHT
-     }//end of if 
+     //}//end of if 
 
-  }//end of while(1);
+  //}//end of outer while(1);
 }//end of send recieve func
 
 int enc_interval_length_global = 0;
@@ -435,27 +477,35 @@ void adjust_to_cup(){
   //gets col_number from nano to use in micro adj
    send_recieve_serial();
 
+   
    //this is what p term is set to 
+   if (col_number < 100){
+    //nothing
+   }
+   else{
+    
    enc_interval_length_global = micro_adjust_l_r.update_robot(col_number);
+   //}
    
    //enc_interval_length_global = micro_adjust_l_r.update_robot(203);
     
-   Serial.println(enc_interval_length_global);
+   //Serial.println(enc_interval_length_global);
 
    enc_interval_length_global = abs(enc_interval_length_global);
    if (direction_micro_adj == 'l'){
     //
     //Serial.write('l');
-    Serial.print("leftz");
+    //Serial.print("leftz");
     left_turn_w_enc(enc_interval_length_global);
-   }
+    }
    else if (direction_micro_adj == 'r'){
     //Serial.write('r');
-    Serial.print("rightz");
+    //Serial.print("rightz");
     right_turn_w_enc(enc_interval_length_global);
-   }
+    }
+    
 
-   
+   }
    
 }
 

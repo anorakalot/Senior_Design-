@@ -28,7 +28,7 @@ unsigned long dist_val_left = 0;
 void get_sonar_dist() {
   
   // put your main code here, to run repeatedly:
-  Serial.println("Top of Loop");
+  //Serial.println("Top of Loop");
 
   
   
@@ -46,7 +46,7 @@ void get_sonar_dist() {
 
 
 
-  Serial.println(time_print);
+  //Serial.println(time_print);
   //end of middle
 
   
@@ -62,7 +62,7 @@ void get_sonar_dist() {
 
 
 
-  Serial.println(time_print);
+  //Serial.println(time_print);
 
   delay(500);
 }
