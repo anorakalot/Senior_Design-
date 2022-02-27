@@ -55,10 +55,10 @@ coord maze[5][5];
 
 void setup() {
   start_pos.x = 0;
-  start_pos.y = 0;
+  start_pos.y = 4;
 
   goal.x = 4;
-  goal.y = 4;
+  goal.y = 0;
   Serial.begin(9600);
   Serial.println("BEFORE_DELAY");
   delay(5000);
@@ -72,29 +72,32 @@ void setup() {
 
    for (int y = 0; y < 5 ; y++){
     for (int x = 0; x < 5; x++){
-      maze[y][x].x = x;
-      maze[y][x].y = y;
+      maze[x][y].x = x;
+      maze[x][y].y = y;
     }
    }
    Serial.println("Maze");
    for (int y = 0; y < 5 ; y++){
     for (int x = 0; x < 5; x++){
-    snprintf(misc_print_1,sizeof(misc_print_1), "[%i][%i] ",maze[y][x].x,maze[y][x].y);
+    snprintf(misc_print_1,sizeof(misc_print_1), "[%i][%i] ",maze[x][y].x,maze[x][y].y);
     Serial.print(misc_print_1);
     }
     Serial.println();
    
    }
-//
-//   Serial.println("Cost at beginning");
-//   for (int y = 0; y < 5 ; y++){
-//    for (int x = 0; x < 5; x++){
-//    snprintf(misc_print_1,sizeof(misc_print_1), "[%i][%i] ",maze[y][x].x,maze[y][x].y);
-//    Serial.print(misc_print_1);
-//    }
-//    Serial.println();
-//   
-//   }
+
+   Serial.println("Cost at beginning");
+   for (int y = 0; y < 5 ; y++){
+    for (int x = 0; x < 5; x++){
+    maze[x][y].cost = manhattan_distance_func(maze[x][y],goal);
+    
+    snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[x][y].cost);
+    Serial.print(misc_print_1);
+    }
+    Serial.println();
+   
+   }
+   
 
 //  
 //  for(int y = 0; y< 5; x ++){
