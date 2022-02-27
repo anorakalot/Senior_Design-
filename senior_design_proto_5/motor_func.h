@@ -327,7 +327,11 @@ void go_one_cell(){
     halt();
     delay(2000);
 }
+//STUFF TO COMMUNICATE TO OTHER TEENSY 
 
+
+
+//STUFF FOR TRAVERSAL 
 
 //just use this coord for testing before fully integratin a star search into proto 5 
 struct coord{
@@ -338,6 +342,8 @@ struct coord{
 
 
 coord reverse_path[100];
+
+int maze[5][5];
 
 
 
@@ -351,15 +357,22 @@ int direction_robot= 1;
 //1 = forward, 
 //
 struct custom_stack{
-  int stack[200];
-  
+  coord stack[200];
+    
 };
-//
-//void pop;
+
 custom_stack maze_stack;
 
 
-int maze[5][5];
+
+
+////
+//void pop(){
+// for (int x = 0; x < 200; x++) {
+//   if (maze_stack
+// }
+//
+//}
 
 //example is [3] [5] 
 // 0 1 2 3 4 

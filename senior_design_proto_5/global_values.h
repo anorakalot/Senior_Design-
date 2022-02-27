@@ -161,7 +161,9 @@ double p_d_error_val_abs_r = 0;
 double left_pwm=100;
 double right_pwm=100;
 
-
+//teensy communication
+int pin_recieve = 13;
+int pin_send = 23;
 
 //for state machine 
 

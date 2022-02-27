@@ -16,7 +16,6 @@ LSM6 imu;
 
 
 
-
 //should put in if negative going backwards
 void left_encoder_update() {
   encoder_count_left += 1;
@@ -39,6 +38,7 @@ void right_encoder_update() {
 
 
 void setup() {
+  
   pinMode(trig_pin_2,OUTPUT);
   pinMode(echo_pin_2,INPUT);
 
@@ -107,12 +107,16 @@ void setup() {
   digitalWrite(motor_1_enable, HIGH);
   digitalWrite(motor_2_enable, HIGH);
 
+  digitalWrite(pin_send,LOW);
+
   attachInterrupt(digitalPinToInterrupt(motor_1_enc_a), left_encoder_update, CHANGE);
   //attachInterrupt(digitalPinToInterrupt(motor_1_enc_b),left_encoder_update,CHANGE);
 
   attachInterrupt(digitalPinToInterrupt(motor_2_enc_a), right_encoder_update, CHANGE);
   //attachInterrupt(digitalPinToInterrupt(motor_2_enc_b),right_encoder_update,CHANGE);
 
+  pinMode(pin_recieve,INPUT);
+  pinMode(pin_send,OUTPUT);
   Wire.begin();
 
   while (!imu.init()) {
@@ -124,7 +128,7 @@ void setup() {
   imu.enableDefault();
 
 
-
+  
   //  for (int i = 0; i < 3; i++){
   //    digitalWrite(led_pin,HIGH);
   //    delay(1000);
@@ -510,13 +514,61 @@ void adjust_to_cup(){
 }
 
 int testing_flag = 0;
+
+int recieve_reading = 0;
+void other_teensy_comm(){
+  
+  digitalWrite(pin_send,HIGH);
+  recieve_reading = 0;
+  while(recieve_reading == 0){
+   digitalWrite(pin_send,LOW);
+  
+  //nothing
+  Serial.println();
+  Serial.println("Apples");
+  recieve_reading = digitalRead(pin_recieve);
+  Serial.print("recieve_pin ");
+  Serial.println(recieve_reading);
+  }
+
+} 
+
+unsigned long test_time_curr=0;
+unsigned long test_time_prev=0;
+unsigned long test_forw_interval = 5000;
+unsigned long test_halt_interval = 1000;
 void loop() {
+  
+  test_time_curr = millis();
+  test_time_prev = test_time_curr;
+  while((test_time_curr - test_time_prev) < test_forw_interval){
+    Serial.println("IN FORWARD");
+    forward_w_speed(60,60);
+    test_time_curr = millis();
+  }
+  
+  test_time_curr = millis();
+  test_time_prev = test_time_curr;
+  while((test_time_curr - test_time_prev)< test_halt_interval){
+    Serial.println("IN HALT");
+    halt();
+    test_time_curr = millis();
+  }
+  
+//  forward_w_speed(60,60);
+//  halt();
+//  delay(1000);
+  //delay(1000);
+  other_teensy_comm();
 //get_sonar_dist();
  // go_one_cell();
   //left_turn_w_gyro();
   //left_turn_w_gyro();
   //right_turn_w_gyro();
-  adjust_to_cup();
+
+  //adjust to cup works GOOD!
+  //adjust_to_cup();
+
 //  left_turn_w_enc(100);
 //  right_turn_w_enc(100);
   //Serial.println("APPLES");
