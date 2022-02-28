@@ -301,7 +301,7 @@ void left_turn_w_enc(unsigned long enc_interval_length) {
   left_turn_enc_count_prev = left_turn_enc_count_curr;
   
   
-  while (left_turn_enc_count_curr- left_turn_enc_count_prev < enc_interval_length) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
+  while ((left_turn_enc_count_curr- left_turn_enc_count_prev) < enc_interval_length) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
     left_turn_enc_count_curr = curr_enc_count_l;
     left_turn();
     
@@ -334,17 +334,18 @@ void right_turn_w_enc(unsigned long enc_interval_length) {
   //gyro_angle_z = 0;
   //halt();
   //delay(1000);
+  halt_sec();
   right_turn_enc_count_curr = curr_enc_count_r;
   right_turn_enc_count_prev = right_turn_enc_count_curr;
   
-  while (right_turn_enc_count_curr- right_turn_enc_count_prev < enc_interval_length) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
+  while ((right_turn_enc_count_curr- right_turn_enc_count_prev) < enc_interval_length) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
     right_turn_enc_count_curr = curr_enc_count_r;
     right_turn();
     
     
   }
   right_turn_enc_count_prev = right_turn_enc_count_curr;
-  halt();
+  halt_sec();
   //delay(1000);
  // gyro_angle_z = 0;
 }
@@ -358,12 +359,13 @@ void forward_w_enc(unsigned long enc_interval_length){
   forward_enc_count_curr = curr_enc_count_l;
   forward_enc_count_prev = forward_enc_count_curr;
   
-  while (forward_enc_count_curr- forward_enc_count_prev < enc_interval_length) { 
-    forward_enc_count_curr = curr_enc_count_r;
+  while ((forward_enc_count_curr- forward_enc_count_prev) < enc_interval_length) { 
+    forward_enc_count_curr = curr_enc_count_l;
     //forward();
     forward_w_speed(100,100);
   }
-  right_turn_enc_count_prev = right_turn_enc_count_curr;
+  
+  forward_enc_count_prev = forward_enc_count_curr;
   //halt();
   halt_sec();
   
@@ -396,7 +398,7 @@ void reverse_w_enc(unsigned long enc_interval_length){
   reverse_enc_count_curr = curr_enc_count_l;
   reverse_enc_count_prev = reverse_enc_count_curr;
   
-  while (reverse_enc_count_curr - reverse_enc_count_prev < enc_interval_length){ 
+  while ((reverse_enc_count_curr - reverse_enc_count_prev) < enc_interval_length){ 
     reverse_enc_count_curr = curr_enc_count_l;
     //reverse();
     reverse_w_speed(100,100);
@@ -671,8 +673,13 @@ void adjust_to_cup(){
 void sonar_adjust_to_block(){
   //gets col_number from nano to use in micro adj
    
-
+  
    get_sonar_dist();
+  //high pass filter 
+  if (dist_val_middle  > 900){
+   sonar_adjust_to_block();
+   return;
+  } 
     
    //enc_interval_length_global = micro_adjust_u_d.update_robot(200);
     //enc_interval_length_global = micro_adjust_u_d.update_robot(420);
@@ -680,10 +687,10 @@ void sonar_adjust_to_block(){
    
    enc_interval_length_global = (micro_adjust_u_d.update_robot(int(dist_val_middle)));
     
-   Serial.println(enc_interval_length_global);
-
    enc_interval_length_global = abs(enc_interval_length_global);
    
+   Serial.println(enc_interval_length_global);
+
    if (sonar_direction_micro_adj == 'u'){
     Serial.println("forward_u");
     forward_w_enc(enc_interval_length_global);
@@ -748,8 +755,15 @@ void loop() {
 
 
 //get_sonar_dist();
-//sonar_adjust_to_block();
 
+//sonar_adjust_to_block TEST DONE
+sonar_adjust_to_block();
+
+//left_turn_w_enc(1000);
+//right_turn_w_enc(1000);
+
+//forward_w_enc(1000);
+//reverse_w_enc(1000);
 
 //forward();
 //delay(1000);
@@ -768,7 +782,7 @@ void loop() {
 //delay(1000);
 //halt_sec();
 
-go_one_cell();
+//go_one_cell();
 
 //forward_w_speed(255,255);
 //left_turn_w_gyro();
