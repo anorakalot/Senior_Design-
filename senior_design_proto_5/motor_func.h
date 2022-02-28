@@ -406,9 +406,7 @@ void go_one_cell(){
 
 
 
-void motor_init(){
-  motor_state = MOTOR_INIT;
-}
+
 
 //int direction_robot= 1;
 //1 = forward, 
@@ -439,7 +437,9 @@ void motor_init(){
 // 2
 
 
-
+void motor_init(){
+  motor_state = MOTOR_INIT;
+}
 
 //enum MOTOR_STATES {MOTOR_INIT, GO_ONE_CELL, CHOOSE_MOVE, TURN_REVERSE, TURN_LEFT, TURN_RIGHT,MICRO_ADJ } motor_state;
 

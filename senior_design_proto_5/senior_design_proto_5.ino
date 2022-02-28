@@ -757,7 +757,7 @@ void loop() {
 //get_sonar_dist();
 
 //sonar_adjust_to_block TEST DONE
-sonar_adjust_to_block();
+//sonar_adjust_to_block();
 
 //left_turn_w_enc(1000);
 //right_turn_w_enc(1000);
