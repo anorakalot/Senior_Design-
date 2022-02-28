@@ -3,7 +3,7 @@ struct coord{
   int x;
   int y;
   //int cost;
-  int is_accesible_bool; 
+  int is_accesible_bool; //1 means it is accessible 0 means it's a bool
   int visited_num;
 };
 //
@@ -133,6 +133,11 @@ void setup() {
    }
 
   
+  //PUT IN TEST OBSTACLES
+  Serial.println("PUTTING IN OBSTACLES");
+  maze[2][0].is_accesible_bool = 0;
+  maze[0][3].is_accesible_bool = 0;
+  maze[1][3].is_accesible_bool = 0;
   
    
 
@@ -183,8 +188,10 @@ void loop() {
           
           continue;//go to next for loop iteration
            
+        } 
+        else if (maze[candidates[i].x][candidates[i].y].is_accesible_bool == 0){
+          continue;//if it's an obstacle skip over it
         }
-        //else if (maze[candidates[i].x][candidates[i].y]
         
         else if (min_value == -100){
           min_value = maze[candidates[i].x][candidates[i].y].visited_num;
