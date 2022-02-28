@@ -150,17 +150,21 @@ void setup() {
   
   
 
-  left_pwm = 100;
-  right_pwm = 100;
+  //left_pwm = 100;
+  //right_pwm = 100;
+  left_pwm = 80;
+  right_pwm = 80;
 
   //l r setpoint 0.70 and 0.67 goes to the right
   //l r setpoint 0.70 and 0.68 goes to the right
   //l r setpoint 0.70 and 0.69 goes to the right
 
   // l r setpoint 0.70 and 0.70 goes pretty straightt
-  l_speed.set_setpoint(0.50);//0.65,0.70,0.71 movse to the right 0.70
-  r_speed.set_setpoint(0.49);                                 //  0.70
+  //l_speed.set_setpoint(0.50);//0.65,0.70,0.71 movse to the right 0.70
+  //r_speed.set_setpoint(0.49);                                 //  0.70
 
+  l_speed.set_setpoint(0.60);
+  r_speed.set_setpoint(0.60);
   micro_adjust_u_d.set_setpoint(380);
   
 //  Serial.print("l setpoint");
@@ -347,7 +351,8 @@ unsigned long forward_enc_count_curr = 0;
 unsigned long forward_enc_count_prev = 0;
 
 void forward_w_enc(unsigned long enc_interval_length){
-  halt();
+  //halt();
+  halt_sec();
   forward_enc_count_curr = curr_enc_count_l;
   forward_enc_count_prev = forward_enc_count_curr;
   
@@ -357,8 +362,28 @@ void forward_w_enc(unsigned long enc_interval_length){
     forward_w_speed(100,100);
   }
   right_turn_enc_count_prev = right_turn_enc_count_curr;
-  halt();
+  //halt();
+  halt_sec();
+  
+}
 
+unsigned long forward_curr_time = 0;
+unsigned long forward_prev_time = 0;
+
+void forward_w_time(unsigned long enc_interval_length){
+  //halt();
+  halt_sec();
+  forward_enc_count_curr = curr_enc_count_l;
+  forward_enc_count_prev = forward_enc_count_curr;
+  
+  while (forward_enc_count_curr- forward_enc_count_prev < enc_interval_length) { 
+    forward_enc_count_curr = curr_enc_count_r;
+    //forward();
+    forward_w_speed(100,100);
+  }
+  right_turn_enc_count_prev = right_turn_enc_count_curr;
+  //halt();
+  halt_sec();
   
 }
 unsigned long reverse_enc_count_curr = 0;
@@ -692,13 +717,14 @@ void other_teensy_comm(){
   }
 
 } 
-
+  
 unsigned long test_time_curr=0;
 unsigned long test_time_prev=0;
 unsigned long test_forw_interval = 5000;
 unsigned long test_halt_interval = 1000;
-
+  
 void loop() {
+  
   
 //  test_time_curr = millis();
 //  test_time_prev = test_time_curr;
@@ -734,18 +760,30 @@ void loop() {
 //delay(1000);
 
 //forward_w_enc(100);
-forward_w_speed(255,255);
-delay(1000);
-halt();
-delay(1000);
-//halt_digital();
+
+//forward_w_enc(1000);
+//forward();
 //delay(1000);
-////Serial.println("AFTER_FORWARD_W_ENC");
+//halt_sec();
+
+go_one_cell();
+
+//forward_w_speed(255,255);
+//left_turn_w_gyro();
+//right_turn_w_gyro();
+//delay(1000);
+
+//halt();
+//delay(1000);
+////halt_digital();
+////delay(1000);
+//////Serial.println("AFTER_FORWARD_W_ENC");
 //reverse_w_enc(100);
-reverse_w_speed(255,255);
-delay(1000);
-halt();
-delay(1000);
+//reverse_w_speed(255,255);
+//delay(1000);
+//halt();
+//delay(1000);
+
 //halt_digital();
 //delay(1000);
 //alt();

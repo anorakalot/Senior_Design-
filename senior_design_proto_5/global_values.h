@@ -158,8 +158,11 @@ double p_d_error_val_abs_r = 0;
 
 
 
-double left_pwm=100;
-double right_pwm=100;
+//double left_pwm=100;
+//double right_pwm=100;
+double left_pwm=80;
+double right_pwm=80;
+
 
 //teensy communication
 int pin_recieve = 13;

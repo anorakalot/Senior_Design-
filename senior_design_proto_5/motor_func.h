@@ -61,28 +61,33 @@ void halt_digital(){
 void left_turn(){
   digitalWrite(motor_1_enable,HIGH);
   digitalWrite(motor_1_enable,HIGH);
-  digitalWrite(motor_driver_output_1_1,LOW);
-  digitalWrite(motor_driver_output_1_2,HIGH);
-
-  digitalWrite(motor_driver_output_2_1,HIGH);
-  digitalWrite(motor_driver_output_2_2,LOW);
-
-//  analogWrite(motor_driver_output_1_1,0);
-//  analogWrite(motor_driver_output_1_2,255);
+//  digitalWrite(motor_driver_output_1_1,LOW);
+//  digitalWrite(motor_driver_output_1_2,HIGH);
 //
-//  analogWrite(motor_driver_output_2_1,255);
-//  analogWrite(motor_driver_output_2_2,0);
+//  digitalWrite(motor_driver_output_2_1,HIGH);
+//  digitalWrite(motor_driver_output_2_2,LOW);
+
+  analogWrite(motor_driver_output_1_1,0);
+  analogWrite(motor_driver_output_1_2,255);
+
+  analogWrite(motor_driver_output_2_1,255);
+  analogWrite(motor_driver_output_2_2,0);
 
 }
 
 void right_turn(){
   digitalWrite(motor_1_enable,HIGH);
   digitalWrite(motor_1_enable,HIGH);
-  digitalWrite(motor_driver_output_1_1,HIGH);
-  digitalWrite(motor_driver_output_1_2,LOW);
+//  digitalWrite(motor_driver_output_1_1,HIGH);
+//  digitalWrite(motor_driver_output_1_2,LOW);
+//
+//  digitalWrite(motor_driver_output_2_1,LOW);
+//  digitalWrite(motor_driver_output_2_2,HIGH);
+  analogWrite(motor_driver_output_1_1,255);
+  analogWrite(motor_driver_output_1_2,0);
 
-  digitalWrite(motor_driver_output_2_1,LOW);
-  digitalWrite(motor_driver_output_2_2,HIGH);
+  analogWrite(motor_driver_output_2_1,0);
+  analogWrite(motor_driver_output_2_2,255);
 }
 
 //hatlt that works w forward_w_speed
@@ -104,11 +109,36 @@ void halt(){
 //
 
     
+//  analogWrite(motor_driver_output_1_1,0);
+//  digitalWrite(motor_driver_output_1_2,LOW);
+//
+//  analogWrite(motor_driver_output_2_1,0);
+//  digitalWrite(motor_driver_output_2_2,LOW);
+
+
   analogWrite(motor_driver_output_1_1,0);
-  digitalWrite(motor_driver_output_1_2,LOW);
+  analogWrite(motor_driver_output_1_2,LOW);
 
   analogWrite(motor_driver_output_2_1,0);
-  digitalWrite(motor_driver_output_2_2,LOW);
+  analogWrite(motor_driver_output_2_2,LOW);
+  
+
+}
+
+unsigned long halt_time_curr;
+unsigned long halt_time_prev;
+unsigned long halt_interval=1000;
+
+
+void halt_sec(){
+  halt_time_curr = millis();
+  halt_time_prev = halt_time_curr;
+  while((halt_time_curr - halt_time_prev) < halt_interval){
+    halt();
+    halt_time_curr = millis();
+    
+  }
+  
 }
 
 
@@ -144,7 +174,7 @@ class controller_enc{
       kp = 5;//0.50 moves slow as of time of writing,0.75,2 goes to values pretty fast of velocity,3,3.2,,4
       //3 kp  was used in pid test that went pretty straight
 //kp 5 might be a little too much       
-      kd = 2;//1 isn't making it change fast,3 
+      kd = 3;//1 isn't making it change fas//t,3 
       //kd = 0;
       error = 0;
       set_point = 1;
@@ -312,8 +342,9 @@ void encoder_pid() {
 
 
 void go_one_cell(){
-  halt();
-  delay(2000);
+//  halt();
+//  delay(2000);
+  halt_sec();
 
    //Serial.println("outside while");
    //need to set this before going into loop so that it doesn't take into account enc revolutions during turn
@@ -349,8 +380,9 @@ void go_one_cell(){
     //forward_w_speed(100,100);  
   }//end of while
   go_one_cell_prev = go_one_cell_curr;
-    halt();
-    delay(2000);
+//    halt();
+//    delay(2000);
+  halt_sec();
 }
 //STUFF TO COMMUNICATE TO OTHER TEENSY 
 
