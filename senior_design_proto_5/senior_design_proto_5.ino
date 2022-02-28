@@ -151,8 +151,12 @@ void setup() {
 
   //left_pwm = 100;
   //right_pwm = 100;
-  left_pwm = 80;
-  right_pwm = 80;
+  //left_pwm = 80;
+  //right_pwm = 80;
+//  left_pwm = 83;
+//  right_pwm = 83;
+    left_pwm = 75;
+    right_pwm = 75;
 
   //l r setpoint 0.70 and 0.67 goes to the right
   //l r setpoint 0.70 and 0.68 goes to the right
@@ -162,8 +166,13 @@ void setup() {
   //l_speed.set_setpoint(0.50);//0.65,0.70,0.71 movse to the right 0.70
   //r_speed.set_setpoint(0.49);                                 //  0.70
 
-  l_speed.set_setpoint(0.60);
-  r_speed.set_setpoint(0.60);
+//  l_speed.set_setpoint(0.60);
+//  r_speed.set_setpoint(0.60);
+//  
+  
+  l_speed.set_setpoint(0.50);
+  r_speed.set_setpoint(0.50);
+  
   micro_adjust_u_d.set_setpoint(380);
   
   
@@ -707,8 +716,8 @@ unsigned long test_forw_interval = 5000;
 unsigned long test_halt_interval = 1000;
   
 void loop() {
- go_one_cell();
-  //motor_tick();
+ //go_one_cell();
+ motor_tick();
 //  right_turn_w_gyro();
 //  right_turn_w_gyro();
   //reverse_turn_w_gyro();
