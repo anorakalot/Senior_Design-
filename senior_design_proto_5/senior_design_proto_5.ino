@@ -3,6 +3,7 @@
 #include <math.h>    // (no semicolon)  
 #include "global_values.h"
 #include "sonar_func.h"
+#include "tremaux_func.h"
 #include "motor_func.h"
 #include "misc_functions.h"
 
@@ -38,6 +39,103 @@ void right_encoder_update() {
 
 
 void setup() {
+
+ //SETUP FOR TREAMUX 
+ //start_pos.x = 0;
+  //start_pos.y = 4;
+  start_pos.y = 4;
+  start_pos.x = 0;
+  
+  //goal.x = 4;
+  //goal.y = 4;
+  goal.y = 0;
+  goal.x = 4;
+  Serial.begin(9600);
+  //Serial.println("BEFORE_DELAY");
+    delay(2000);
+//  delay(2000);
+// candidates = neighbors_func(start_pos);
+// Serial.println("Neighbors");
+//  for (int i = 0; i < 4; i ++){
+//    snprintf(misc_print_1,sizeof(misc_print_1), "[%i],[%i]\n",candidates[i].x,candidates[i].y);
+//    Serial.println(misc_print_1);
+//  }
+
+
+   for (int y = 0; y < 5 ; y++){
+    for (int x = 0; x < 5; x++){
+      maze[y][x].x = x;
+      maze[y][x].y = y;
+      maze[y][x].is_accesible_bool = 1;//sets all spaces to be accessible at the start 
+      maze[y][x].visited_num = 0;
+    }
+   }
+   Serial.println("Maze");
+   for (int y = 0; y < 5 ; y++){
+    for (int x = 0; x < 5; x++){
+      snprintf(misc_print_1,sizeof(misc_print_1), "[%i][%i] ",maze[y][x].y,maze[y][x].x);
+      Serial.print(misc_print_1);
+    }
+    Serial.println();
+  }
+
+   //delay(5000);
+ 
+
+   Serial.println("Visited_num at beginning");
+   for (int y = 0; y < 5 ; y++){
+    for (int x = 0; x < 5; x++){
+    
+    snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
+    Serial.print(misc_print_1);
+    }
+    
+    Serial.println();
+   
+   }
+
+  
+  //PUT IN TEST OBSTACLES
+  Serial.println("PUTTING IN OBSTACLES");
+  maze[0][3].is_accesible_bool = 0;
+  maze[1][3].is_accesible_bool = 0;
+  maze[2][3].is_accesible_bool = 0;
+  
+   
+
+//  
+//  for(int y = 0; y< 5; x ++){
+//    for ( int x = 0; x < 5; y++){
+//        maze[y][x] = manhattan_distance_func(
+//    }
+//  }
+
+//JUST CHECKS
+  //checks.push(start_pos);
+//need to make start _pos visited_num = 1
+
+  //should be one
+  maze[start_pos.y][start_pos.x].visited_num += 1;
+  
+
+   Serial.println("Visited_num after setting start");
+   for (int y = 0; y < 5 ; y++){
+    for (int x = 0; x < 5; x++){
+    
+    snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
+    Serial.print(misc_print_1);
+    }
+    
+    Serial.println();
+   
+   }
+   
+  snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.y %i, start_pos.x  %i, goal.y %i , goal.x %i ,start_pos visited_num:%i \n",
+  start_pos.y,start_pos.x
+  ,goal.y, goal.x,maze[start_pos.y][start_pos.x].visited_num);
+  Serial.print(misc_print_1);
+  
+  //SETUP FOR EVERYTHING ELSE
   
   pinMode(trig_pin_2,OUTPUT);
   pinMode(echo_pin_2,INPUT);
@@ -46,22 +144,11 @@ void setup() {
   pinMode(echo_pin_3,INPUT);
   
 
-  //make dummy reverse_path for testing 
-  reverse_path[0].x = 0;
-  reverse_path[0].y = 0;
-  
-  reverse_path[1].x = 1;
-  reverse_path[1].y = 0;
-  
-  
-  reverse_path[2].x = 1;
-  reverse_path[2].y = 1;
 
 
 
   
   
-  reverse_path_index = 0;
 
   left_pwm = 100;
   right_pwm = 100;
@@ -74,6 +161,8 @@ void setup() {
   l_speed.set_setpoint(0.50);//0.65,0.70,0.71 movse to the right 0.70
   r_speed.set_setpoint(0.49);                                 //  0.70
 
+  micro_adjust_u_d.set_setpoint(380);
+  
 //  Serial.print("l setpoint");
 //  Serial.println(l_speed.set_point);
 //  Serial.print("r setpoint");
@@ -91,7 +180,7 @@ void setup() {
 
   // put your setup code here, to run once:
 
-  Serial.begin(9600);
+
 
   // encoder_count_left_1 = 0;
   pinMode(motor_driver_output_1_1, OUTPUT);
@@ -253,6 +342,43 @@ void right_turn_w_enc(unsigned long enc_interval_length) {
   //delay(1000);
  // gyro_angle_z = 0;
 }
+
+unsigned long forward_enc_count_curr = 0;
+unsigned long forward_enc_count_prev = 0;
+
+void forward_w_enc(unsigned long enc_interval_length){
+  halt();
+  forward_enc_count_curr = curr_enc_count_l;
+  forward_enc_count_prev = forward_enc_count_curr;
+  
+  while (forward_enc_count_curr- forward_enc_count_prev < enc_interval_length) { 
+    forward_enc_count_curr = curr_enc_count_r;
+    //forward();
+    forward_w_speed(100,100);
+  }
+  right_turn_enc_count_prev = right_turn_enc_count_curr;
+  halt();
+
+  
+}
+unsigned long reverse_enc_count_curr = 0;
+unsigned long reverse_enc_count_prev = 0;
+
+void reverse_w_enc(unsigned long enc_interval_length){
+  halt();
+  reverse_enc_count_curr = curr_enc_count_l;
+  reverse_enc_count_prev = reverse_enc_count_curr;
+  
+  while (reverse_enc_count_curr - reverse_enc_count_prev < enc_interval_length){ 
+    reverse_enc_count_curr = curr_enc_count_l;
+    //reverse();
+    reverse_w_speed(100,100);
+  }
+  right_turn_enc_count_prev = right_turn_enc_count_curr;
+  halt();
+}
+
+
 
 //int drift_comp_value = 1;
 //time to get data might be causing pid oscillations
@@ -513,6 +639,40 @@ void adjust_to_cup(){
    
 }
 
+
+
+void sonar_adjust_to_block(){
+  //gets col_number from nano to use in micro adj
+   
+
+   get_sonar_dist();
+    
+   //enc_interval_length_global = micro_adjust_u_d.update_robot(200);
+    //enc_interval_length_global = micro_adjust_u_d.update_robot(420);
+  
+   
+   enc_interval_length_global = (micro_adjust_u_d.update_robot(int(dist_val_middle)));
+    
+   Serial.println(enc_interval_length_global);
+
+   enc_interval_length_global = abs(enc_interval_length_global);
+   
+   if (sonar_direction_micro_adj == 'u'){
+    Serial.println("forward_u");
+    forward_w_enc(enc_interval_length_global);
+    
+    }
+    
+   else if (sonar_direction_micro_adj == 'd'){
+    Serial.print("reverse_d");
+    reverse_w_enc(enc_interval_length_global);
+    }
+    
+
+   //end of func of sonar_micro_adj
+}
+
+
 int testing_flag = 0;
 
 int recieve_reading = 0;
@@ -537,29 +697,60 @@ unsigned long test_time_curr=0;
 unsigned long test_time_prev=0;
 unsigned long test_forw_interval = 5000;
 unsigned long test_halt_interval = 1000;
+
 void loop() {
   
-  test_time_curr = millis();
-  test_time_prev = test_time_curr;
-  while((test_time_curr - test_time_prev) < test_forw_interval){
-    Serial.println("IN FORWARD");
-    forward_w_speed(60,60);
-    test_time_curr = millis();
-  }
-  
-  test_time_curr = millis();
-  test_time_prev = test_time_curr;
-  while((test_time_curr - test_time_prev)< test_halt_interval){
-    Serial.println("IN HALT");
-    halt();
-    test_time_curr = millis();
-  }
+//  test_time_curr = millis();
+//  test_time_prev = test_time_curr;
+//  while((test_time_curr - test_time_prev) < test_forw_interval){
+//    Serial.println("IN FORWARD");
+//    forward_w_speed(60,60);
+//    test_time_curr = millis();
+//  }
+//  
+//  test_time_curr = millis();
+//  test_time_prev = test_time_curr;
+//  while((test_time_curr - test_time_prev)< test_halt_interval){
+//    Serial.println("IN HALT");
+//    halt();
+//    test_time_curr = millis();
+//  }
+//  other_teensy_comm();
+//  //end of other_teensy_comm test
+
+
+//get_sonar_dist();
+//sonar_adjust_to_block();
+
+
+//forward();
+//delay(1000);
+//reverse();
+//delay(1000);
+//
+//forward_w_speed(60,60);
+//delay(1000);
+//reverse_w_speed(60,60);
+//delay(1000);
+
+forward_w_enc(100);
+halt();
+delay(1000);
+//halt_digital();
+//delay(1000);
+////Serial.println("AFTER_FORWARD_W_ENC");
+reverse_w_enc(100);
+halt();
+delay(1000);
+//halt_digital();
+//delay(1000);
+//alt();
+//delay(1000);
   
 //  forward_w_speed(60,60);
 //  halt();
 //  delay(1000);
   //delay(1000);
-  other_teensy_comm();
 //get_sonar_dist();
  // go_one_cell();
   //left_turn_w_gyro();

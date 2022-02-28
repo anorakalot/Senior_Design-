@@ -245,6 +245,7 @@ controller_imu l_r_speed_imu;
 
 
 char direction_micro_adj;
+char sonar_direction_micro_adj;
 
 class controller_micro_adjustment{
   
@@ -267,15 +268,17 @@ class controller_micro_adjustment{
     
     double update_robot(double current_value){
       error = set_point - current_value;
-      //Serial.print("ERROR IN MICRO ADJ CONTROLLER");
-      //Serial.println(error);
+      Serial.print("ERROR IN MICRO ADJ CONTROLLER");
+      Serial.println(error);
       
       if (error < 0){
         direction_micro_adj = 'r';
+        sonar_direction_micro_adj = 'u';
       }
       
       else if (error > 0){
         direction_micro_adj = 'l';
+        sonar_direction_micro_adj = 'd';
       }
       
       p_value = kp * error;
@@ -300,3 +303,4 @@ class controller_micro_adjustment{
     
 };
 controller_micro_adjustment micro_adjust_l_r;
+controller_micro_adjustment micro_adjust_u_d;
