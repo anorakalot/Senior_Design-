@@ -183,7 +183,7 @@ void setup() {
   //l_speed.set_setpoint(0.60);
 
 
-  l_speed.set_setpoint(0.65);
+  l_speed.set_setpoint(0.66);
   //increase setpoint to the left since it veers to the left 
   //making left faster to encounter for the offset
   r_speed.set_setpoint(0.64);

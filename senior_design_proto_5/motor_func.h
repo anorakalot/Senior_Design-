@@ -239,7 +239,8 @@ class controller_enc{
       kp = 4;//0.50 moves slow as of time of writing,0.75,2 goes to values pretty fast of velocity,3,3.2,,4
       //3 kp  was used in pid test that went pretty straight,5 was used went a luttle to the left
 //kp 5 might be a little too much       
-      kd = 4;//1 isn't making it change fas//t,3,3 
+      //kd = 4;//1 isn't making it change fas//t,3,3 
+      kd = 6;
       //kd = 0;
       error = 0;
       set_point = 1;
