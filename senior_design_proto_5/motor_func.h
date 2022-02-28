@@ -163,7 +163,7 @@ void update_gyro() {
     imu.read();
     gyro_raw_data_z = imu.g.z;
     gyro_angle_z += ((gyro_raw_data_z / 100));//100 works 
-    Serial.println(gyro_angle_z);
+    //Serial.println(gyro_angle_z);
 
 
 
@@ -222,6 +222,7 @@ void left_turn_w_enc(unsigned long enc_interval_length) {
     
     
   }
+  
   left_turn_enc_count_prev = left_turn_enc_count_curr;
   halt();
   //halt();
@@ -267,7 +268,11 @@ void forward_w_enc(unsigned long enc_interval_length){
   while ((forward_enc_count_curr- forward_enc_count_prev) < enc_interval_length) { 
     forward_enc_count_curr = curr_enc_count_l;
     //forward();
-    forward_w_speed(100,100);
+
+    //CHANGED FORWARD_W_SPEED TO USE PREVIOUS LEFT_RIGHT_PWM VALUE
+    //forward_w_speed(100,100);
+    forward_w_speed(left_pwm,right_pwm);
+    
   }
   
   forward_enc_count_prev = forward_enc_count_curr;
@@ -287,7 +292,10 @@ void reverse_w_enc(unsigned long enc_interval_length){
   while ((reverse_enc_count_curr - reverse_enc_count_prev) < enc_interval_length){ 
     reverse_enc_count_curr = curr_enc_count_l;
     //reverse();
-    reverse_w_speed(100,100);
+    
+    //CHANGED FORWARD_W_SPEED TO USE PREVIOUS LEFT_RIGHT_PWM VALUE
+    //reverse_w_speed(100,100);
+    reverse_w_speed(left_pwm,right_pwm);
   }
   right_turn_enc_count_prev = right_turn_enc_count_curr;
   halt();
@@ -389,28 +397,31 @@ class controller_micro_adjustment{
     double p_value;
     double d_value;
     double previous_error;
+    int p_value_int;
 
     //default constructor
     controller_micro_adjustment(){
       kp = 0.5;//1,
       error = 0;
-      set_point = 330;
+      set_point = 284;
       previous_error = 0;  
     }
     
-    double update_robot(double current_value){
-      error = set_point - current_value;
-      Serial.print("ERROR IN MICRO ADJ CONTROLLER");
-      Serial.println(error);
+    int update_robot(double current_value){
+      error = current_value - set_point;
       
+      //Serial.print("ERROR IN MICRO ADJ CONTROLLER");
+      //Serial.println(error);
+      
+      //100 - 330; < 0 moves to the lef
       if (error < 0){
         direction_micro_adj = 'r';
-        sonar_direction_micro_adj = 'u';
+        sonar_direction_micro_adj = 'd';
       }
-      
+      //600 - 330  > 0 left meoves right
       else if (error > 0){
         direction_micro_adj = 'l';
-        sonar_direction_micro_adj = 'd';
+        sonar_direction_micro_adj = 'u';
       }
       
       p_value = kp * error;
@@ -418,7 +429,10 @@ class controller_micro_adjustment{
       previous_error = error;
       //Serial.print("p_value ");
       //Serial.println(p_value);
-      return (p_value );
+      p_value_int = int (p_value);
+      
+      return (p_value_int );
+      
     }
 
     void set_kp(double input_kp){
@@ -549,7 +563,7 @@ void encoder_pid() {
 
   //snprintf(misc_print_1, sizeof(misc_print_1), " curr_enc_count_l %lu , curr_enc_count_r %lu,prev_enc_count %lu,prev_enc_count %lu, ", curr_enc_count_l, curr_enc_count_r, prev_enc_count_l, prev_enc_count_r);
   //snprintf(misc_print_2, sizeof(misc_print_2), " enc_count_interval_l %i, enc_count_interval_r %i", enc_count_interval_l, enc_count_interval_r);
-  Serial.println(misc_print_1);
+  //Serial.println(misc_print_1);
   //Serial.println(misc_print_2);
   }
 
@@ -625,6 +639,7 @@ unsigned long send_z_time_prev = 0;
 unsigned long send_z_time_interval = 500;
 
 void send_recieve_serial(){
+  
   send_z_bool = 0;
   //counter_not_recieve
   send_z_time_curr = millis();
@@ -727,12 +742,14 @@ void send_recieve_serial(){
      //}//end of if 
 
   //}//end of outer while(1);
+  
 }//end of send recieve func
 
 int enc_interval_length_global = 0;
 
 void adjust_to_cup(){
   //gets col_number from nano to use in micro adj
+   
    send_recieve_serial();
 
    
@@ -741,7 +758,7 @@ void adjust_to_cup(){
     //nothing
    }
    else{
-    
+    //gonna_swtich to row_number;
    enc_interval_length_global = micro_adjust_l_r.update_robot(col_number);
    //}
    
@@ -788,16 +805,16 @@ void sonar_adjust_to_block(){
     
    enc_interval_length_global = abs(enc_interval_length_global);
    
-   Serial.println(enc_interval_length_global);
+   //Serial.println(enc_interval_length_global);
 
    if (sonar_direction_micro_adj == 'u'){
-    Serial.println("forward_u");
+    //Serial.println("forward_u");
     forward_w_enc(enc_interval_length_global);
     
     }
     
    else if (sonar_direction_micro_adj == 'd'){
-    Serial.print("reverse_d");
+    //Serial.print("reverse_d");
     reverse_w_enc(enc_interval_length_global);
     }
     
@@ -818,11 +835,11 @@ void other_teensy_comm(){
    digitalWrite(pin_send,LOW);
   
   //nothing
-  Serial.println();
-  Serial.println("Apples");
+  //Serial.println();
+  //Serial.println("Apples");
   recieve_reading = digitalRead(pin_recieve);
-  Serial.print("recieve_pin ");
-  Serial.println(recieve_reading);
+  //Serial.print("recieve_pin ");
+  //Serial.println(recieve_reading);
   }
 
 } 
@@ -885,6 +902,8 @@ void motor_init(){
 }
 
 //enum MOTOR_STATES {MOTOR_INIT, GO_ONE_CELL, CHOOSE_MOVE, TURN_REVERSE, TURN_LEFT, TURN_RIGHT,MICRO_ADJ } motor_state;
+
+int adjust_to_cup_num= 0;
 
 char current_motor_dir_val = 'u';
 
@@ -1023,6 +1042,7 @@ void motor_tick(){
       motor_state = CHOOSE_MOVE;
       break;
     case TURN_RIGHT:
+      
       motor_state  = CHOOSE_MOVE;
       break;
     case TEMP_HALT:
@@ -1030,6 +1050,7 @@ void motor_tick(){
       break;
       
     case SONAR_SENSOR:
+      
       motor_state = CHOOSE_MOVE;
       break;
     //these are different since it happens at the end
@@ -1037,6 +1058,12 @@ void motor_tick(){
       motor_state = ADJUST_TO_SONAR;
       break;
     case ADJUST_TO_SONAR:
+      if (adjust_to_cup_num == 0){
+        motor_state =  ADJUST_TO_CUP;
+        adjust_to_cup_num += 1;
+        break;
+      }
+      
       motor_state = COMM_TO_OTHER_TEENSY;
       break;
     case COMM_TO_OTHER_TEENSY:
@@ -1086,21 +1113,24 @@ void motor_tick(){
       get_sonar_dist();
       break;
     case ADJUST_TO_CUP:
+      //Serial.println("ADJUST_TO_CUP");
       for(int x = 0; x < 5; x ++){
         adjust_to_cup();  
       }
-      
       break;
     case ADJUST_TO_SONAR:
-        for(int x = 0; x < 5; x++){
+        //Serial.println("ADJUST_TO_SONAR");
+        for(int x = 0; x < 10; x++){
           sonar_adjust_to_block();  
         }
         
       break;
     case COMM_TO_OTHER_TEENSY:
+      //Serial.println("COMM TO TEENSY");
       other_teensy_comm();
       break; 
     case PERM_HALT:
+      //Serial.println("PERM_HALT");
       halt_sec();
       break;
     

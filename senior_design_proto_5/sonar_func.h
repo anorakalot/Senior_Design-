@@ -46,7 +46,7 @@ void get_sonar_dist() {
 
 
 
-  Serial.println(time_print);
+  //Serial.println(time_print);
   //end of middle
 
   
@@ -62,7 +62,7 @@ void get_sonar_dist() {
 
 
 
-  Serial.println(time_print);
+  //Serial.println(time_print);
 
   delay(500);
 }

@@ -69,33 +69,33 @@ void setup() {
       maze[y][x].visited_num = 0;
     }
    }
-   Serial.println("Maze");
+   ////Serial.println("Maze");
    for (int y = 0; y < 5 ; y++){
     for (int x = 0; x < 5; x++){
       snprintf(misc_print_1,sizeof(misc_print_1), "[%i][%i] ",maze[y][x].y,maze[y][x].x);
-      Serial.print(misc_print_1);
+      //Serial.print(misc_print_1);
     }
-    Serial.println();
+    //Serial.println();
   }
 
    //delay(5000);
  
 
-   Serial.println("Visited_num at beginning");
+   //Serial.println("Visited_num at beginning");
    for (int y = 0; y < 5 ; y++){
     for (int x = 0; x < 5; x++){
     
     snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
-    Serial.print(misc_print_1);
+    //Serial.print(misc_print_1);
     }
     
-    Serial.println();
+    //Serial.println();
    
    }
 
   
   //PUT IN TEST OBSTACLES
-  Serial.println("PUTTING IN OBSTACLES");
+  //Serial.println("PUTTING IN OBSTACLES");
   maze[0][3].is_accesible_bool = 0;
   maze[1][3].is_accesible_bool = 0;
   maze[2][3].is_accesible_bool = 0;
@@ -117,22 +117,22 @@ void setup() {
   maze[start_pos.y][start_pos.x].visited_num += 1;
   
 
-   Serial.println("Visited_num after setting start");
+   //Serial.println("Visited_num after setting start");
    for (int y = 0; y < 5 ; y++){
     for (int x = 0; x < 5; x++){
     
     snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
-    Serial.print(misc_print_1);
+    //Serial.print(misc_print_1);
     }
     
-    Serial.println();
+    //Serial.println();
    
    }
    
   snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.y %i, start_pos.x  %i, goal.y %i , goal.x %i ,start_pos visited_num:%i \n",
   start_pos.y,start_pos.x
   ,goal.y, goal.x,maze[start_pos.y][start_pos.x].visited_num);
-  Serial.print(misc_print_1);
+  //Serial.print(misc_print_1);
   
   //SETUP FOR EVERYTHING ELSE
   
@@ -194,6 +194,7 @@ void setup() {
   
   
   micro_adjust_u_d.set_setpoint(380);
+  micro_adjust_u_d.set_kp(2);
   
   
 //  Serial.print("l setpoint");
@@ -353,7 +354,7 @@ bool update_gyro_forward() {
 //      gyro_angle_z_forward += 1;  
 //    }
     //gyro_angle_z += drift_comp_value;
-    Serial.println(gyro_angle_z_forward);
+    //Serial.println(gyro_angle_z_forward);
 
 
 

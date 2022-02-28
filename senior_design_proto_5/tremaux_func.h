@@ -71,7 +71,7 @@ void treamux_func() {
  snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.y %i, start_pos.x  %i, goal.y %i , goal.x %i ,start_pos visited_num:%i \n",
   start_pos.y,start_pos.x
   ,goal.y, goal.x,maze[start_pos.y][start_pos.x].visited_num);
-  Serial.print(misc_print_1);
+  //Serial.print(misc_print_1);
 
   //while((start_pos.x != goal.x) || (start_pos.y != goal.y)){//this doesn't matter since it still correctly stops at location
   if ((start_pos.x != goal.x) || (start_pos.y != goal.y)){
@@ -129,29 +129,29 @@ void treamux_func() {
        start_pos = move_to;
         //only add this to it
        maze[start_pos.y][start_pos.x].visited_num += 1;
-       Serial.println("Visited_num at this point");
+       //Serial.println("Visited_num at this point");
        
        for (int y = 0; y < 5 ; y++){
         for (int x = 0; x < 5; x++){
        
           snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
-          Serial.print(misc_print_1);
+          //Serial.print(misc_print_1);
         }
        
-        Serial.println();
+        //Serial.println();
        
        }
       
         
        snprintf(misc_print_1,sizeof(misc_print_1), "[%i],[%i], direction: %c\n ",start_pos.y,start_pos.x,direction_val);
-       Serial.print(misc_print_1);
+       //Serial.print(misc_print_1);
   
        delay(1000);
     
     }//end of while start != goal  // not it's if 
 
     else{
-    Serial.println("REACHED_GOAL");
+    //Serial.println("REACHED_GOAL");
     at_goal_bool = 1;
     //delay(10000);
     delay(1000);
