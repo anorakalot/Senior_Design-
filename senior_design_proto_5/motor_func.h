@@ -340,14 +340,14 @@ struct coord{
   int cost;
 };
 
+//outdated a star search 
+//coord reverse_path[100];
 
-coord reverse_path[100];
+//int reverse_path_index;
 
 int maze[5][5];
 
 
-
-int reverse_path_index;
 
 void motor_init(){
   motor_state = MOTOR_INIT;
@@ -356,10 +356,14 @@ void motor_init(){
 int direction_robot= 1;
 //1 = forward, 
 //
-struct custom_stack{
-  coord stack[200];
-    
-};
+//struct custom_stack{
+//  coord stack[200];
+//    
+//};
+
+
+
+
 
 custom_stack maze_stack;
 
