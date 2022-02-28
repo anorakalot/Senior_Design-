@@ -240,7 +240,7 @@ class controller_enc{
       //3 kp  was used in pid test that went pretty straight,5 was used went a luttle to the left
 //kp 5 might be a little too much       
       //kd = 4;//1 isn't making it change fas//t,3,3 
-      kd = 6;
+      kd = 12;//6(doesn't change fast_enough,7,8 after a while goes straight
       //kd = 0;
       error = 0;
       set_point = 1;

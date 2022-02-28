@@ -159,10 +159,13 @@ void setup() {
 //  right_pwm = 83;
 
 
-  left_pwm = 85;
-  right_pwm = 85;
-
+//  left_pwm = 95;
+//  right_pwm = 95;
+//  left_pwm = 100;
+//  right_pwm = 100;
   
+  left_pwm = 105;
+  right_pwm = 105;
 //    left_pwm = 75;
 //    right_pwm = 75;
 
@@ -183,7 +186,7 @@ void setup() {
   //l_speed.set_setpoint(0.60);
 
 
-  l_speed.set_setpoint(0.66);
+  l_speed.set_setpoint(0.68);
   //increase setpoint to the left since it veers to the left 
   //making left faster to encounter for the offset
   r_speed.set_setpoint(0.64);
@@ -733,8 +736,8 @@ unsigned long test_forw_interval = 5000;
 unsigned long test_halt_interval = 1000;
   
 void loop() {
- go_one_cell();
- //motor_tick();
+ //go_one_cell();
+ motor_tick();
 //  right_turn_w_gyro();
 //  right_turn_w_gyro();
   //reverse_turn_w_gyro();
