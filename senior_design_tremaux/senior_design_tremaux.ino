@@ -41,21 +41,22 @@ char misc_print_2[200];
 coord neighbors [4];
 coord * neighbors_func(coord current){
   //coord neighbors [4]; 
-  neighbors[0].x = -1;
   neighbors[0].y = 0;
+  neighbors[0].x = -1;
   
-  neighbors[1].x = 0;
   neighbors[1].y = -1;
-
-  neighbors[2].x = 1;
+  neighbors[1].x = 0;
+  
   neighbors[2].y = 0;
-
-  neighbors[3].x = 0;
+  neighbors[2].x = 1;
+  
   neighbors[3].y = 1;
-
+  neighbors[3].x = 0;
+  
   for (int i = 0; i < 4; i++){
-    neighbors[i].x = neighbors[i].x + current.x;
     neighbors[i].y = neighbors[i].y + current.y;
+    neighbors[i].x = neighbors[i].x + current.x;
+ 
   }
 
  return neighbors;
@@ -68,7 +69,7 @@ int manhattan_distance_func(coord candidate, coord goal){
 
 }
  
- char direction_val;
+char direction_val;
  
 coord move_to;
 coord maze[5][5];
@@ -84,7 +85,7 @@ void setup() {
   //start_pos.y = 4;
   start_pos.y = 4;
   start_pos.x = 0;
-
+  
   //goal.x = 4;
   //goal.y = 4;
   goal.y = 0;
@@ -102,29 +103,29 @@ void setup() {
 
    for (int y = 0; y < 5 ; y++){
     for (int x = 0; x < 5; x++){
-      maze[x][y].x = x;
-      maze[x][y].y = y;
-      maze[x][y].is_accesible_bool = 1;//sets all spaces to be accessible at the start 
-      maze[x][y].visited_num = 0;
+      maze[y][x].x = x;
+      maze[y][x].y = y;
+      maze[y][x].is_accesible_bool = 1;//sets all spaces to be accessible at the start 
+      maze[y][x].visited_num = 0;
     }
    }
    Serial.println("Maze");
    for (int y = 0; y < 5 ; y++){
     for (int x = 0; x < 5; x++){
-    snprintf(misc_print_1,sizeof(misc_print_1), "[%i][%i] ",maze[x][y].y,maze[x][y].x);
-    Serial.print(misc_print_1);
+      snprintf(misc_print_1,sizeof(misc_print_1), "[%i][%i] ",maze[y][x].y,maze[y][x].x);
+      Serial.print(misc_print_1);
     }
     Serial.println();
-   
-   }
-   
+  }
+
+   delay(5000);
  
 
    Serial.println("Visited_num at beginning");
    for (int y = 0; y < 5 ; y++){
     for (int x = 0; x < 5; x++){
     
-    snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[x][y].visited_num);
+    snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
     Serial.print(misc_print_1);
     }
     
@@ -135,9 +136,9 @@ void setup() {
   
   //PUT IN TEST OBSTACLES
   Serial.println("PUTTING IN OBSTACLES");
-  maze[2][0].is_accesible_bool = 0;
   maze[0][3].is_accesible_bool = 0;
   maze[1][3].is_accesible_bool = 0;
+  maze[2][3].is_accesible_bool = 0;
   
    
 
@@ -153,10 +154,11 @@ void setup() {
 //need to make start _pos visited_num = 1
 
   //should be one
-  maze[start_pos.x][start_pos.y].visited_num += 1;
+  maze[start_pos.y][start_pos.x].visited_num += 1;
 
-  snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.x %i, start_pos.y  %i, goal.x %i , goal.y %i ,start_pos visited_num:%i \n",start_pos.x,start_pos.y
-  ,goal.x, goal.y,maze[start_pos.x][start_pos.y].visited_num);
+  snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.y %i, start_pos.x  %i, goal.y %i , goal.x %i ,start_pos visited_num:%i \n",
+  start_pos.y,start_pos.x
+  ,goal.y, goal.x,maze[start_pos.y][start_pos.x].visited_num);
   Serial.print(misc_print_1);
 
 } 
@@ -166,35 +168,43 @@ void setup() {
 //start value should be current position //move in advance 
 
 //[-1,0],[0,-1],[1,0],[0,1]
+//  neighbors[0].x = -1;
+//  neighbors[0].y = 0;
+//  
+//  neighbors[1].x = 0;
+//  neighbors[1].y = -1;
+//
+//  neighbors[2].x = 1;
+//  neighbors[2].y = 0;
+//
+//  neighbors[3].x = 0;
+//  neighbors[3].y = 1;
 
+  //neighbors in y x format 
+  
+//  [0,-1],[-1,0],[0,1],[1,0]
 //coord cellCheck;
 
 void loop() {
-  snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.x %i, start_pos.y  %i, goal_pos.x %i , goal_pos.y %i ,start_pos visited_num:%i \n",start_pos.x,start_pos.y
-  ,goal.x, goal.y,maze[start_pos.x][start_pos.y].visited_num);
+ snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.y %i, start_pos.x  %i, goal.y %i , goal.x %i ,start_pos visited_num:%i \n",
+  start_pos.y,start_pos.x
+  ,goal.y, goal.x,maze[start_pos.y][start_pos.x].visited_num);
   Serial.print(misc_print_1);
 
-  while((start_pos.x != goal.x) || (start_pos.y != goal.y)){
-      
-      candidates = neighbors_func(maze[start_pos.x][start_pos.y]);
+  while((start_pos.x != goal.x) || (start_pos.y != goal.y)){//this doesn't matter since it still correctly stops at location
+      candidates = neighbors_func(maze[start_pos.y][start_pos.x]);
       min_value = -100;
-      
       for (int i = 0; i < 4; i ++){
-        
-        
         if (candidates[i].x < 0 || candidates[i].y < 0 || candidates[i].x > 4|| candidates[i].y > 4){
           //NOTHING
           //if it's less than zero it's not a valid 
-          
-          continue;//go to next for loop iteration
-           
+          continue;//go to next for loop iteration  
         } 
-        else if (maze[candidates[i].x][candidates[i].y].is_accesible_bool == 0){
+        else if (maze[candidates[i].y][candidates[i].x].is_accesible_bool == 0){
           continue;//if it's an obstacle skip over it
         }
-        
         else if (min_value == -100){
-          min_value = maze[candidates[i].x][candidates[i].y].visited_num;
+          min_value = maze[candidates[i].y][candidates[i].x].visited_num;
           //gonna chang ldru to lurd (since up and down are different since going up is -1 to the y value
           if (i == 0){
            direction_val =  'l';
@@ -212,20 +222,20 @@ void loop() {
           move_to = candidates[i];
         }
         
-        else if ( maze[candidates[i].x][candidates[i].y].visited_num < min_value ){
+        else if ( maze[candidates[i].y][candidates[i].x].visited_num < min_value ){
           move_to = candidates[i];
-          min_value = maze[candidates[i].x][candidates[i].y].visited_num;
+          min_value = maze[candidates[i].y][candidates[i].x].visited_num;
           if (i == 0){
            direction_val =  'l';
           }
           else if (i == 1){
-            direction_val = 'd';
+            direction_val = 'u';
           }
           else if (i == 2){
             direction_val = 'r';
           }
           else if (i == 3){
-            direction_val = 'u';  
+            direction_val = 'd';  
           }
         
         }//end of if min_value < maze_candidates[i].x   
@@ -235,13 +245,13 @@ void loop() {
         
        start_pos = move_to;
         //only add this to it
-       maze[start_pos.x][start_pos.y].visited_num += 1;
+       maze[start_pos.y][start_pos.x].visited_num += 1;
        Serial.println("Visited_num at this point");
        
        for (int y = 0; y < 5 ; y++){
         for (int x = 0; x < 5; x++){
        
-          snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[x][y].visited_num);
+          snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
           Serial.print(misc_print_1);
         }
        
@@ -250,14 +260,14 @@ void loop() {
        }
       
         
-       snprintf(misc_print_1,sizeof(misc_print_1), "[%i],[%i], direction: %c\n ",start_pos.x,start_pos.y,direction_val);
+       snprintf(misc_print_1,sizeof(misc_print_1), "[%i],[%i], direction: %c\n ",start_pos.y,start_pos.x,direction_val);
        Serial.print(misc_print_1);
   
        delay(1000);
     
     }//end of while start != goal 
     Serial.println("REACHED_GOAL");
-    delay(5000);
+    delay(10000);
   
     
   }//end of void loop 
