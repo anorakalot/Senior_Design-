@@ -204,6 +204,98 @@ void left_turn_w_gyro() {
   gyro_angle_z = 0;
 }
 
+//enc turns for micro_adj
+unsigned long left_turn_enc_count_curr=0;
+unsigned long left_turn_enc_count_prev=0;
+
+void left_turn_w_enc(unsigned long enc_interval_length) {
+  //gyro_angle_z = 0;
+  //halt();
+  //delay(1000);
+  left_turn_enc_count_curr = curr_enc_count_l;
+  left_turn_enc_count_prev = left_turn_enc_count_curr;
+  
+  
+  while ((left_turn_enc_count_curr- left_turn_enc_count_prev) < enc_interval_length) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
+    left_turn_enc_count_curr = curr_enc_count_l;
+    left_turn();
+    
+    
+  }
+  left_turn_enc_count_prev = left_turn_enc_count_curr;
+  halt();
+  //halt();
+  //delay(1000);
+ // gyro_angle_z = 0;
+}
+
+
+
+
+unsigned long right_turn_enc_count_curr=0;
+unsigned long right_turn_enc_count_prev=0;
+
+void right_turn_w_enc(unsigned long enc_interval_length) {
+  //gyro_angle_z = 0;
+  //halt();
+  //delay(1000);
+  halt_sec();
+  right_turn_enc_count_curr = curr_enc_count_r;
+  right_turn_enc_count_prev = right_turn_enc_count_curr;
+  
+  while ((right_turn_enc_count_curr- right_turn_enc_count_prev) < enc_interval_length) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close)
+    right_turn_enc_count_curr = curr_enc_count_r;
+    right_turn();
+    
+    
+  }
+  right_turn_enc_count_prev = right_turn_enc_count_curr;
+  halt_sec();
+  //delay(1000);
+ // gyro_angle_z = 0;
+}
+
+unsigned long forward_enc_count_curr = 0;
+unsigned long forward_enc_count_prev = 0;
+
+void forward_w_enc(unsigned long enc_interval_length){
+  //halt();
+  halt_sec();
+  forward_enc_count_curr = curr_enc_count_l;
+  forward_enc_count_prev = forward_enc_count_curr;
+  
+  while ((forward_enc_count_curr- forward_enc_count_prev) < enc_interval_length) { 
+    forward_enc_count_curr = curr_enc_count_l;
+    //forward();
+    forward_w_speed(100,100);
+  }
+  
+  forward_enc_count_prev = forward_enc_count_curr;
+  //halt();
+  halt_sec();
+  
+}
+
+unsigned long reverse_enc_count_curr = 0;
+unsigned long reverse_enc_count_prev = 0;
+
+void reverse_w_enc(unsigned long enc_interval_length){
+  halt();
+  reverse_enc_count_curr = curr_enc_count_l;
+  reverse_enc_count_prev = reverse_enc_count_curr;
+  
+  while ((reverse_enc_count_curr - reverse_enc_count_prev) < enc_interval_length){ 
+    reverse_enc_count_curr = curr_enc_count_l;
+    //reverse();
+    reverse_w_speed(100,100);
+  }
+  right_turn_enc_count_prev = right_turn_enc_count_curr;
+  halt();
+}
+
+
+
+
 
 
 
@@ -223,6 +315,7 @@ void left_turn_w_gyro() {
 
 //
 //encoder controller  NEW ENCODER COUNT ONLY
+//MAIN CONTROLLER FOR GOING STRAIGHT
 class controller_enc{
   
   public:
@@ -282,6 +375,67 @@ class controller_enc{
 controller_enc l_speed;
 controller_enc r_speed;
 
+//CONTROLLER FOR MICRO_ADJUSTMENT
+char direction_micro_adj;
+char sonar_direction_micro_adj;
+
+class controller_micro_adjustment{
+  
+  public:
+    double kp;
+    //double kd;
+    double error;
+    double set_point;
+    double p_value;
+    double d_value;
+    double previous_error;
+
+    //default constructor
+    controller_micro_adjustment(){
+      kp = 0.5;//1,
+      error = 0;
+      set_point = 330;
+      previous_error = 0;  
+    }
+    
+    double update_robot(double current_value){
+      error = set_point - current_value;
+      Serial.print("ERROR IN MICRO ADJ CONTROLLER");
+      Serial.println(error);
+      
+      if (error < 0){
+        direction_micro_adj = 'r';
+        sonar_direction_micro_adj = 'u';
+      }
+      
+      else if (error > 0){
+        direction_micro_adj = 'l';
+        sonar_direction_micro_adj = 'd';
+      }
+      
+      p_value = kp * error;
+
+      previous_error = error;
+      //Serial.print("p_value ");
+      //Serial.println(p_value);
+      return (p_value );
+    }
+
+    void set_kp(double input_kp){
+      kp = input_kp;
+    }
+    
+//    void set_kd(int input_kd){
+//      kd = input_kd;
+//    }
+
+    void set_setpoint(double input_set_point){
+      set_point = input_set_point;
+    }
+    
+};
+controller_micro_adjustment micro_adjust_l_r;
+controller_micro_adjustment micro_adjust_u_d;
 
 
 //nned to make function if given path go through said path
@@ -453,6 +607,229 @@ void go_one_cell(){
 //STUFF TO COMMUNICATE TO OTHER TEENSY 
 
 
+//ALL OTHER COMM TYPE FUNCTIONS HERE SO IT COMPILES
+int row_number=0;
+int int_serial_input = 0;
+
+int col_number=0;
+int power_of_10_row = 100;
+int power_of_10_col = 100;
+int number_of_input = 0;
+int send_z_bool = 0;
+
+int counter_not_recieve= 0;
+
+unsigned long send_z_time_curr = 0;
+unsigned long send_z_time_prev = 0;
+
+unsigned long send_z_time_interval = 500;
+
+void send_recieve_serial(){
+  send_z_bool = 0;
+  //counter_not_recieve
+  send_z_time_curr = millis();
+  send_z_time_prev = send_z_time_curr;
+  
+  while(send_z_bool == 0){
+
+    
+    //delay(5000);
+  //if (Serial.available() <=0){
+    //if (send_z_bool == 0){
+      //for(int x = 0; x < 1000; x ++){
+
+      send_z_time_curr = millis();
+      if ((send_z_time_curr - send_z_time_prev) >send_z_time_interval){
+        Serial.write('z');  
+        send_z_time_prev = send_z_time_curr;
+      }
+      
+      //delay(200);//2000,1000
+        
+      if (Serial.available() > 0){
+        char_input_from_serial = Serial.read();
+        if (char_input_from_serial == 'a'){
+          send_z_bool = 1;//get out of while loop
+        }
+      }
+      //}
+      
+      //send_z_bool = 1;  
+    
+    //}
+    
+  //}
+
+  }
+  
+    row_number = 0;
+    col_number = 0;
+    number_of_input = 0;
+    power_of_10_row = 100;
+    power_of_10_col = 100;
+    send_z_bool = 0;
+    
+//new while(1)
+  //while(1){
+  //if (Serial.available() > 0) {
+    //makes row/col = 0 at the start before going into a and getting values 
+    
+    //char_input_from_serial = Serial.read();
+  //  if (char_input_from_serial == 'a') {
+      while(1){
+        if (Serial.available()> 0){
+          char_input_from_serial = Serial.read();
+          if (char_input_from_serial== 'f'){
+            break;//breaks out of inner while(1)
+            
+          }//end of break out of 
+          
+          else{
+            int_serial_input = char_input_from_serial - '0';
+            if (number_of_input <3){
+              row_number  += (int_serial_input * power_of_10_row);
+              power_of_10_row /= 10;
+            }
+            else{
+               col_number += (int_serial_input * power_of_10_col);
+               power_of_10_col /= 10;  
+            }
+            number_of_input += 1;
+           }//end of else statement calculation
+        
+        }//end of inner if serial.available() > 0
+      
+      }//end of inner while (1)
+      
+      //}//end of if char _input == 0
+  //}//end of outer else if serial.available() > 0
+    //
+    
+//    row_number = 200;
+//    col_number = 200;
+    
+    //if ((row_number >= 100 ) && (col_number >= 100 )){
+      
+//      for(int x = 0; x < 2; x ++){
+//      forward_w_speed(100,100);
+//      delay(300);
+//      halt();
+//      delay(300);
+//      
+//      }
+    //Serial.write('B');
+     //end of for loop forward halt
+
+        //break out of while loop 
+
+        //break;
+        //PUT BREAK HERE IF VALUES ARE RIGHT
+     //}//end of if 
+
+  //}//end of outer while(1);
+}//end of send recieve func
+
+int enc_interval_length_global = 0;
+
+void adjust_to_cup(){
+  //gets col_number from nano to use in micro adj
+   send_recieve_serial();
+
+   
+   //this is what p term is set to 
+   if (col_number < 100){
+    //nothing
+   }
+   else{
+    
+   enc_interval_length_global = micro_adjust_l_r.update_robot(col_number);
+   //}
+   
+   //enc_interval_length_global = micro_adjust_l_r.update_robot(203);
+    
+   //Serial.println(enc_interval_length_global);
+
+   enc_interval_length_global = abs(enc_interval_length_global);
+   if (direction_micro_adj == 'l'){
+    //
+    //Serial.write('l');
+    //Serial.print("leftz");
+    left_turn_w_enc(enc_interval_length_global);
+    }
+   else if (direction_micro_adj == 'r'){
+    //Serial.write('r');
+    //Serial.print("rightz");
+    right_turn_w_enc(enc_interval_length_global);
+    }
+    
+
+   }
+   
+}
+
+
+
+void sonar_adjust_to_block(){
+  //gets col_number from nano to use in micro adj
+   
+  
+   get_sonar_dist();
+  //high pass filter 
+  if (dist_val_middle  > 900){
+   sonar_adjust_to_block();
+   return;
+  } 
+    
+   //enc_interval_length_global = micro_adjust_u_d.update_robot(200);
+    //enc_interval_length_global = micro_adjust_u_d.update_robot(420);
+  
+   
+   enc_interval_length_global = (micro_adjust_u_d.update_robot(int(dist_val_middle)));
+    
+   enc_interval_length_global = abs(enc_interval_length_global);
+   
+   Serial.println(enc_interval_length_global);
+
+   if (sonar_direction_micro_adj == 'u'){
+    Serial.println("forward_u");
+    forward_w_enc(enc_interval_length_global);
+    
+    }
+    
+   else if (sonar_direction_micro_adj == 'd'){
+    Serial.print("reverse_d");
+    reverse_w_enc(enc_interval_length_global);
+    }
+    
+
+   //end of func of sonar_micro_adj
+}
+
+
+int testing_flag = 0;
+
+int recieve_reading = 0;
+
+void other_teensy_comm(){
+  
+  digitalWrite(pin_send,HIGH);
+  recieve_reading = 0;
+  while(recieve_reading == 0){
+   digitalWrite(pin_send,LOW);
+  
+  //nothing
+  Serial.println();
+  Serial.println("Apples");
+  recieve_reading = digitalRead(pin_recieve);
+  Serial.print("recieve_pin ");
+  Serial.println(recieve_reading);
+  }
+
+} 
+  
+
+
+
 
 //STUFF FOR TRAVERSAL 
 
@@ -525,113 +902,115 @@ void motor_tick(){
 //      get_sonar_dist(); 
 
 
+        //PUT THIS IN AT_GOAL_BOOL LATER OR TEMP_HALT
+        motor_state = ADJUST_TO_CUP;
         
-        if (at_goal_bool == 1){
-          motor_state = TEMP_HALT;
-          go_one_cell_next = 0;//just in case it was called but it shouldn't
-          break;
-        }
-        
-        if (go_one_cell_next == 1){
-          motor_state = GO_ONE_CELL;
-          go_one_cell_next = 0;//reset go_one_cell_next
-          break;
-        }
-
-       treamux_func();//now direction_val from tremaux has been updated;
-       //put this in here so there's not extra go_one_cell at the end
-       if (at_goal_bool == 1){
-        motor_state = TEMP_HALT;
-        go_one_cell_next = 0;
-        break;
-       }
-       if (current_motor_dir_val == direction_val){
-        motor_state = GO_ONE_CELL;//IF IT'S SAME DIRECTION JUST KEEP GOING
-       }
-       //if direction is not the same
-       else {
-        if (current_motor_dir_val == 'd'){
-          if (direction_val == 'u'){
-            motor_state = TURN_REVERSE;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-            current_motor_dir_val = direction_val;
-          }
-          else if (direction_val == 'l'){
-            motor_state = TURN_RIGHT;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-          }
-          else if (direction_val == 'r'){
-            motor_state = TURN_LEFT;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-          }
-          current_motor_dir_val = direction_val;// this should work since all of them are set to their respective direction 
-        }// end of if current == 'd';
-
-        if (current_motor_dir_val == 'u'){
-          if (direction_val == 'd'){
-            motor_state = TURN_REVERSE;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-            
-          }
-          else if (direction_val == 'l'){
-            motor_state = TURN_LEFT;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-            
-          }
-          else if (direction_val == 'r'){
-            motor_state = TURN_RIGHT;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-            
-            
-          }
-          current_motor_dir_val = direction_val;//should work for all
-        }// end of if current == 'u';
-
-      if (current_motor_dir_val == 'l'){
-          if (direction_val == 'd'){
-            motor_state = TURN_LEFT;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-            
-            
-          }
-          else if (direction_val == 'u'){
-            motor_state = TURN_RIGHT;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-            
-            
-          }
-          else if (direction_val == 'r'){
-            motor_state = TURN_REVERSE;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-            
-          }
-          current_motor_dir_val = direction_val; // should work for all
-      }//end of if current == 'l' 
-
-
-      
-      if (current_motor_dir_val == 'r'){
-          if (direction_val == 'l'){
-            motor_state = TURN_REVERSE;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-            
-          }
-          else if (direction_val == 'u'){
-            motor_state = TURN_LEFT;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-            
-          }
-          else if (direction_val == 'd'){
-            motor_state = TURN_RIGHT;
-            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-            
-          }
-          current_motor_dir_val = direction_val;//should work for all
-      }//end of if current == 'r' 
-      
-        
-      }//end of else
-       
+//        if (at_goal_bool == 1){
+//          motor_state = TEMP_HALT;
+//          go_one_cell_next = 0;//just in case it was called but it shouldn't
+//          break;
+//        }
+//        
+//        if (go_one_cell_next == 1){
+//          motor_state = GO_ONE_CELL;
+//          go_one_cell_next = 0;//reset go_one_cell_next
+//          break;
+//        }
+//
+//       treamux_func();//now direction_val from tremaux has been updated;
+//       //put this in here so there's not extra go_one_cell at the end
+//       if (at_goal_bool == 1){
+//        motor_state = TEMP_HALT;
+//        go_one_cell_next = 0;
+//        break;
+//       }
+//       if (current_motor_dir_val == direction_val){
+//        motor_state = GO_ONE_CELL;//IF IT'S SAME DIRECTION JUST KEEP GOING
+//       }
+//       //if direction is not the same
+//       else {
+//        if (current_motor_dir_val == 'd'){
+//          if (direction_val == 'u'){
+//            motor_state = TURN_REVERSE;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//            current_motor_dir_val = direction_val;
+//          }
+//          else if (direction_val == 'l'){
+//            motor_state = TURN_RIGHT;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//          }
+//          else if (direction_val == 'r'){
+//            motor_state = TURN_LEFT;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//          }
+//          current_motor_dir_val = direction_val;// this should work since all of them are set to their respective direction 
+//        }// end of if current == 'd';
+//
+//        if (current_motor_dir_val == 'u'){
+//          if (direction_val == 'd'){
+//            motor_state = TURN_REVERSE;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//            
+//          }
+//          else if (direction_val == 'l'){
+//            motor_state = TURN_LEFT;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//            
+//          }
+//          else if (direction_val == 'r'){
+//            motor_state = TURN_RIGHT;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//            
+//            
+//          }
+//          current_motor_dir_val = direction_val;//should work for all
+//        }// end of if current == 'u';
+//
+//      if (current_motor_dir_val == 'l'){
+//          if (direction_val == 'd'){
+//            motor_state = TURN_LEFT;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//            
+//            
+//          }
+//          else if (direction_val == 'u'){
+//            motor_state = TURN_RIGHT;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//            
+//            
+//          }
+//          else if (direction_val == 'r'){
+//            motor_state = TURN_REVERSE;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//            
+//          }
+//          current_motor_dir_val = direction_val; // should work for all
+//      }//end of if current == 'l' 
+//
+//
+//      
+//      if (current_motor_dir_val == 'r'){
+//          if (direction_val == 'l'){
+//            motor_state = TURN_REVERSE;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//            
+//          }
+//          else if (direction_val == 'u'){
+//            motor_state = TURN_LEFT;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//            
+//          }
+//          else if (direction_val == 'd'){
+//            motor_state = TURN_RIGHT;
+//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+//            
+//          }
+//          current_motor_dir_val = direction_val;//should work for all
+//      }//end of if current == 'r' 
+//      
+//        
+//      }//end of else
+//       
       break;
     case GO_ONE_CELL:
       motor_state = CHOOSE_MOVE;
@@ -655,15 +1034,18 @@ void motor_tick(){
       break;
     //these are different since it happens at the end
     case ADJUST_TO_CUP:
-      
+      motor_state = ADJUST_TO_SONAR;
       break;
     case ADJUST_TO_SONAR:
-    
+      motor_state = COMM_TO_OTHER_TEENSY;
       break;
     case COMM_TO_OTHER_TEENSY:
-    
+      motor_state = PERM_HALT;
       break;
-      
+    case PERM_HALT:
+      motor_state = PERM_HALT;
+      break;
+    
     default:
       
       motor_state = GO_ONE_CELL;
@@ -687,14 +1069,14 @@ void motor_tick(){
       go_one_cell();
       break;
     case TURN_REVERSE:
-      left_turn_w_gyro();
-      left_turn_w_gyro();
+      //left_turn_w_gyro();
+      //left_turn_w_gyro();
       break;
     case TURN_LEFT:
-      left_turn_w_gyro();
+      //left_turn_w_gyro();
       break;
     case TURN_RIGHT:
-      right_turn_w_gyro();
+      //right_turn_w_gyro();
       break;
     case TEMP_HALT:
       halt_sec();
@@ -704,11 +1086,24 @@ void motor_tick(){
       get_sonar_dist();
       break;
     case ADJUST_TO_CUP:
+      for(int x = 0; x < 5; x ++){
+        adjust_to_cup();  
+      }
+      
       break;
     case ADJUST_TO_SONAR:
+        for(int x = 0; x < 5; x++){
+          sonar_adjust_to_block();  
+        }
+        
       break;
     case COMM_TO_OTHER_TEENSY:
+      other_teensy_comm();
       break; 
+    case PERM_HALT:
+      halt_sec();
+      break;
+    
          
     
       
