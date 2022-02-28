@@ -65,13 +65,16 @@ coord path[100];
 
 coord pop_value;
 
+int at_goal_bool=0;
+
 void treamux_func() {
  snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.y %i, start_pos.x  %i, goal.y %i , goal.x %i ,start_pos visited_num:%i \n",
   start_pos.y,start_pos.x
   ,goal.y, goal.x,maze[start_pos.y][start_pos.x].visited_num);
   Serial.print(misc_print_1);
 
-  while((start_pos.x != goal.x) || (start_pos.y != goal.y)){//this doesn't matter since it still correctly stops at location
+  //while((start_pos.x != goal.x) || (start_pos.y != goal.y)){//this doesn't matter since it still correctly stops at location
+  if ((start_pos.x != goal.x) || (start_pos.y != goal.y)){
       candidates = neighbors_func(maze[start_pos.y][start_pos.x]);
       min_value = -100;
       for (int i = 0; i < 4; i ++){
@@ -145,10 +148,14 @@ void treamux_func() {
   
        delay(1000);
     
-    }//end of while start != goal 
+    }//end of while start != goal  // not it's if 
+
+    else{
     Serial.println("REACHED_GOAL");
-    delay(10000);
-  
+    at_goal_bool = 1;
+    //delay(10000);
+    delay(1000);
+    }
     
   }//end of treamux func 
   

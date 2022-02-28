@@ -1,4 +1,6 @@
 
+
+
 void forward(){
   digitalWrite(motor_1_enable,HIGH);
   digitalWrite(motor_1_enable,HIGH);
@@ -140,6 +142,69 @@ void halt_sec(){
   }
   
 }
+
+
+
+
+LSM6 imu;
+
+
+void update_gyro() {
+
+
+  curr_time_imu = millis();
+  if ((curr_time_imu - reset_time_imu ) > reset_imu_interval) {
+    gyro_angle_z = 0;
+    reset_time_imu = curr_time_imu;
+  }
+
+  if ((curr_time_imu - prev_time_imu) > imu_interval) {
+
+    imu.read();
+    gyro_raw_data_z = imu.g.z;
+    gyro_angle_z += ((gyro_raw_data_z / 100));//100 works 
+    Serial.println(gyro_angle_z);
+
+
+
+    prev_time_imu = curr_time_imu;
+  }
+}
+
+//gyro_turn_func
+void right_turn_w_gyro() {
+  gyro_angle_z = 0;
+//  halt();
+//  delay(1000);
+  halt_sec();
+  while (gyro_angle_z > -7860) {//-8000,-7900,7850
+    right_turn();
+    update_gyro();
+  }
+//  halt();
+//  delay(1000);
+  halt_sec();
+}
+
+
+
+
+void left_turn_w_gyro() {
+  gyro_angle_z = 0;
+//  halt();
+//  delay(1000);
+  halt_sec();
+  while (gyro_angle_z <7860) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close),7900(really close)
+    left_turn();        //7900,7800(too little),7850(REALLY Good but I'm gonna try a little more
+    update_gyro();
+  }
+//  halt();
+//  delay(1000);
+  halt_sec();
+  gyro_angle_z = 0;
+}
+
+
 
 
 
@@ -443,6 +508,10 @@ void motor_init(){
 
 //enum MOTOR_STATES {MOTOR_INIT, GO_ONE_CELL, CHOOSE_MOVE, TURN_REVERSE, TURN_LEFT, TURN_RIGHT,MICRO_ADJ } motor_state;
 
+char current_motor_dir_val = 'u';
+
+int go_one_cell_next = 0;
+
 void motor_tick(){
 
   switch (motor_state) { //transitions
@@ -451,22 +520,141 @@ void motor_tick(){
       motor_state = CHOOSE_MOVE;
       break;
     case CHOOSE_MOVE:
-      get_sonar_dist();
-      get_sonar_dist();
+//      get_sonar_dist();
+//      get_sonar_dist(); 
+        if (at_goal_bool == 1){
+          motor_state = TEMP_HALT;
+          go_one_cell_next = 0;//just in case it was called but it shouldn't
+          break;
+        }
+        
+        if (go_one_cell_next == 1){
+          motor_state = GO_ONE_CELL;
+          go_one_cell_next = 0;//reset go_one_cell_next
+          break;
+        }
+
+       treamux_func();//now direction_val from tremaux has been updated;
+       
+       if (current_motor_dir_val == direction_val){
+        motor_state = GO_ONE_CELL;//IF IT'S SAME DIRECTION JUST KEEP GOING
+       }
+       //if direction is not the same
+       else {
+        if (current_motor_dir_val == 'd'){
+          if (direction_val == 'u'){
+            motor_state = TURN_REVERSE;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            current_motor_dir_val = direction_val;
+          }
+          else if (direction_val == 'l'){
+            motor_state = TURN_RIGHT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+          }
+          else if (direction_val == 'r'){
+            motor_state = TURN_LEFT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+          }
+          current_motor_dir_val = direction_val;// this should work since all of them are set to their respective direction 
+        }// end of if current == 'd';
+
+        if (current_motor_dir_val == 'u'){
+          if (direction_val == 'd'){
+            motor_state = TURN_REVERSE;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          else if (direction_val == 'l'){
+            motor_state = TURN_LEFT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          else if (direction_val == 'r'){
+            motor_state = TURN_RIGHT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+            
+          }
+          current_motor_dir_val = direction_val;//should work for all
+        }// end of if current == 'u';
+
+      if (current_motor_dir_val == 'l'){
+          if (direction_val == 'd'){
+            motor_state = TURN_LEFT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+            
+          }
+          else if (direction_val == 'u'){
+            motor_state = TURN_RIGHT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+            
+          }
+          else if (direction_val == 'r'){
+            motor_state = TURN_REVERSE;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          current_motor_dir_val = direction_val; // should work for all
+      }//end of if current == 'l' 
+
+
       
+      if (current_motor_dir_val == 'r'){
+          if (direction_val == 'l'){
+            motor_state = TURN_REVERSE;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          else if (direction_val == 'u'){
+            motor_state = TURN_LEFT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          else if (direction_val == 'd'){
+            motor_state = TURN_RIGHT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          current_motor_dir_val = direction_val;//should work for all
+      }//end of if current == 'r' 
+      
+        
+      }//end of else
+       
+      break;
+    case GO_ONE_CELL:
+      motor_state = CHOOSE_MOVE;
       break;
     case TURN_REVERSE:
       motor_state = CHOOSE_MOVE;
       break;
       //break;
     case TURN_LEFT:
+      motor_state = CHOOSE_MOVE;
       break;
     case TURN_RIGHT:
+      motor_state  = CHOOSE_MOVE;
       break;
-    case SEND_RECIEVE_DATA:
+    case TEMP_HALT:
+      motor_state = CHOOSE_MOVE;
       break;
+      
+    case SONAR_SENSOR:
+      motor_state = CHOOSE_MOVE;
+      break;
+    //these are different since it happens at the end
     case ADJUST_TO_CUP:
+      
       break;
+    case ADJUST_TO_SONAR:
+    
+      break;
+    case COMM_TO_OTHER_TEENSY:
+    
+      break;
+      
     default:
       
       motor_state = GO_ONE_CELL;
@@ -477,25 +665,41 @@ void motor_tick(){
   switch (motor_state) { //actions
     case MOTOR_INIT:
       //motor_state = GO_ONE_CELL;
-      motor_state = CHOOSE_MOVE;
+      //motor_state = CHOOSE_MOVE;
+      //NOTHING
       break;
     case CHOOSE_MOVE:
-      //reverse_path[reverse_path_index];
-      //go_one_cell();
-      //NOTHING CHOOSE_MOVE:
+
+      //NOTHING CHOOSE_MOVE: 
+      //IS JUST FOR CHOOSING NEXT TRANSISTION NO ACTIONS
       
       break;
+    case GO_ONE_CELL:
+      go_one_cell();
+      break;
     case TURN_REVERSE:
+      left_turn_w_gyro();
+      left_turn_w_gyro();
       break;
     case TURN_LEFT:
+      left_turn_w_gyro();
       break;
     case TURN_RIGHT:
+      right_turn_w_gyro();
       break;
-    case SEND_RECIEVE_DATA:
+    case TEMP_HALT:
+      halt_sec();
+      break;
+      
+    case SONAR_SENSOR:
+      get_sonar_dist();
       break;
     case ADJUST_TO_CUP:
       break;
-
+    case ADJUST_TO_SONAR:
+      break;
+    case COMM_TO_OTHER_TEENSY:
+      break; 
          
     
       
