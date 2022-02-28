@@ -522,6 +522,9 @@ void motor_tick(){
     case CHOOSE_MOVE:
 //      get_sonar_dist();
 //      get_sonar_dist(); 
+
+
+        
         if (at_goal_bool == 1){
           motor_state = TEMP_HALT;
           go_one_cell_next = 0;//just in case it was called but it shouldn't
@@ -535,7 +538,12 @@ void motor_tick(){
         }
 
        treamux_func();//now direction_val from tremaux has been updated;
-       
+       //put this in here so there's not extra go_one_cell at the end
+       if (at_goal_bool == 1){
+        motor_state = TEMP_HALT;
+        go_one_cell_next = 0;
+        break;
+       }
        if (current_motor_dir_val == direction_val){
         motor_state = GO_ONE_CELL;//IF IT'S SAME DIRECTION JUST KEEP GOING
        }
