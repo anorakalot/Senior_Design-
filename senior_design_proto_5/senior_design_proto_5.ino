@@ -167,6 +167,7 @@ void setup() {
   r_speed.set_setpoint(0.60);
   micro_adjust_u_d.set_setpoint(380);
   
+  
 //  Serial.print("l setpoint");
 //  Serial.println(l_speed.set_point);
 //  Serial.print("r setpoint");
@@ -241,6 +242,7 @@ void setup() {
     get_sonar_dist();
     
   }
+  
   //delay(500);
   //delay(4000);
 
