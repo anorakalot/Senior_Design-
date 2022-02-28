@@ -733,13 +733,17 @@ void loop() {
 //reverse_w_speed(60,60);
 //delay(1000);
 
-forward_w_enc(100);
+//forward_w_enc(100);
+forward_w_speed(255,255);
+delay(1000);
 halt();
 delay(1000);
 //halt_digital();
 //delay(1000);
 ////Serial.println("AFTER_FORWARD_W_ENC");
-reverse_w_enc(100);
+//reverse_w_enc(100);
+reverse_w_speed(255,255);
+delay(1000);
 halt();
 delay(1000);
 //halt_digital();
