@@ -21,7 +21,7 @@ coord start_pos;
 coord curr_pos;
  
 coord goal;
-
+//  [0,-1],[-1,0],[0,1],[1,0]
 
 coord neighbors [4];
 coord * neighbors_func(coord current){
@@ -67,6 +67,12 @@ coord pop_value;
 
 int at_goal_bool=0;
 
+int detect_obstacle_bool_middle=0; 
+int detect_obstacle_bool_left = 0;
+int detect_obstacle_bool_right = 0;
+
+unsigned long detect_range = 600;
+
 void treamux_func() {
  snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.y %i, start_pos.x  %i, goal.y %i , goal.x %i ,start_pos visited_num:%i \n",
   start_pos.y,start_pos.x
@@ -74,8 +80,101 @@ void treamux_func() {
   //Serial.print(misc_print_1);
 
   //while((start_pos.x != goal.x) || (start_pos.y != goal.y)){//this doesn't matter since it still correctly stops at location
+  //
+//  [0,-1],[-1,0],[0,1],[1,0]
   if ((start_pos.x != goal.x) || (start_pos.y != goal.y)){
       candidates = neighbors_func(maze[start_pos.y][start_pos.x]);
+       
+//       //do sonar detection here 
+//       //need to reset them before each one 
+//      int detect_obstacle_bool_middle=0; 
+//      int detect_obstacle_bool_left = 0;
+//      int detect_obstacle_bool_right = 0;
+//
+//      for (int u = 0; u < 5; u++){
+//           get_sonar_dist(); 
+//           if (dist_val_middle < detect_range){
+//            detect_obstacle_bool_middle = 1;
+//           }
+//           if (dist_val_left < detect_range){
+//            detect_obstacle_bool_left = 1;
+//           }
+//           if (dist_val_right < detect_range){
+//            detect_obstacle_bool_left = 1;
+//           }
+//       }//end of
+//        
+//          //DONE CONDITIONS
+//        if (current_motor_dir_val == 'u'){
+//           if (detect_obstacle_bool_middle ==1){
+//            //[-1,0]
+//            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
+//           
+//           }
+//           
+//           if (detect_obstacle_bool_left==1){
+//            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
+//           }
+//            
+//           if (detect_obstacle_bool_right =1){
+//            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
+//           }
+//           
+//           }//end  of U
+//
+//        //DONE CONDITIONS
+//        else if (current_motor_dir_val == 'r'){
+//           if (detect_obstacle_bool_middle ==1){
+//            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
+//           }
+//           
+//           if (detect_obstacle_bool_left==1) {
+//            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
+//           }
+//            
+//           if (detect_obstacle_bool_right =1){
+//            maze[candidates[3].y][candidates[2].x].is_accesible_bool = 0; 
+//           }
+//          
+//        }
+//        //y x
+//        //  [0,-1],[-1,0],[0,1],[1,0]
+//        
+//        else if (current_motor_dir_val == 'd'){
+//           if (detect_obstacle_bool_middle ==1){
+//            maze[candidates[3].y][candidates[3].x].is_accesible_bool = 0; 
+//           }
+//           
+//           if (detect_obstacle_bool_left==1) {
+//            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
+//           }
+//           
+//           if (detect_obstacle_bool_right =1){
+//            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
+//           }
+//          
+//            
+//        }
+//        
+//        else if (current_motor_dir_val == 'l'){
+//            if (detect_obstacle_bool_middle ==1){
+//            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
+//            }
+//           
+//           if (detect_obstacle_bool_left==1) {
+//            maze[candidates[3].y][candidates[3].x].is_accesible_bool = 0; 
+//           }
+//           
+//           if (detect_obstacle_bool_right =1){
+//            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
+//           }
+//          
+//          
+//        }
+//        //end of ALL SENSE ACCESIBLITY THROUGH SONAR
+//        
+
+        //candidates = neighbors_func(maze[start_pos.y][start_pos.x]);
       min_value = -100;
       for (int i = 0; i < 4; i ++){
         if (candidates[i].x < 0 || candidates[i].y < 0 || candidates[i].x > 4|| candidates[i].y > 4){
@@ -129,33 +228,112 @@ void treamux_func() {
        start_pos = move_to;
         //only add this to it
        maze[start_pos.y][start_pos.x].visited_num += 1;
-       //Serial.println("Visited_num at this point");
+       Serial.println("Visited_num at this point");
        
        for (int y = 0; y < 5 ; y++){
         for (int x = 0; x < 5; x++){
        
           snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
-          //Serial.print(misc_print_1);
+          Serial.print(misc_print_1);
         }
        
-        //Serial.println();
+        Serial.println();
        
        }
       
         
        snprintf(misc_print_1,sizeof(misc_print_1), "[%i],[%i], direction: %c\n ",start_pos.y,start_pos.x,direction_val);
-       //Serial.print(misc_print_1);
+       Serial.print(misc_print_1);
   
        delay(1000);
     
-    }//end of while start != goal  // not it's if 
+//      min_value = -100;
+//      for (int i = 0; i < 4; i ++){
+//        if (candidates[i].x < 0 || candidates[i].y < 0 || candidates[i].x > 4|| candidates[i].y > 4){
+//          //NOTHING
+//          //if it's less than zero it's not a valid 
+//          continue;//go to next for loop iteration  
+//        }
+//        
+//        
+//        else if (maze[candidates[i].y][candidates[i].x].is_accesible_bool == 0){
+//          continue;//if it's an obstacle skip over it
+//        }
+//        else if (min_value == -100){
+//          min_value = maze[candidates[i].y][candidates[i].x].visited_num;
+//          //gonna chang ldru to lurd (since up and down are different since going up is -1 to the y value
+//          if (i == 0){
+//           direction_val =  'l';
+//          }
+//          else if (i == 1){
+//            direction_val = 'u';
+//          }
+//          else if (i == 2){
+//            direction_val = 'r';
+//          }
+//          else if (i == 3){
+//            direction_val = 'd';
+//            
+//          }
+//          move_to = candidates[i];
+//        }
+//        
+//        else if ( maze[candidates[i].y][candidates[i].x].visited_num < min_value ){
+//          move_to = candidates[i];
+//          min_value = maze[candidates[i].y][candidates[i].x].visited_num;
+//          if (i == 0){
+//           direction_val =  'l';
+//          }
+//          else if (i == 1){
+//            direction_val = 'u';
+//          }
+//          else if (i == 2){
+//            direction_val = 'r';
+//          }
+//          else if (i == 3){
+//            direction_val = 'd';  
+//          }
+//        
+//        }//end of if min_value < maze_candidates[i].x   
+//        
+//  
+//      }//end of for loop neighbors
+//        
+//       start_pos = move_to;
+//        //only add this to it
+//       maze[start_pos.y][start_pos.x].visited_num += 1;
+//       //Serial.println("Visited_num at this point");
+//       
+//       for (int y = 0; y < 5 ; y++){
+//        for (int x = 0; x < 5; x++){
+//       
+//          snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
+//          Serial.print(misc_print_1);
+//        }
+//       
+//        Serial.println();
+//       
+//       }
+//      
+//        
+//       snprintf(misc_print_1,sizeof(misc_print_1), "[%i],[%i], direction: %c\n ",start_pos.y,start_pos.x,direction_val);
+//       Serial.print(misc_print_1);
+//  
+//       delay(400);
+//    
+//    }//end of while start != goal  // not it's if 
+//
+  }
+//    else{
+//    //Serial.println("REACHED_GOAL");
+//    at_goal_bool = 1;
+//    //delay(10000);
+//    delay(500);
+//    }
 
-    else{
-    //Serial.println("REACHED_GOAL");
-    at_goal_bool = 1;
-    //delay(10000);
-    delay(1000);
-    }
+      if ((start_pos.x == goal.x) && (start_pos.y== goal.y)){
+        at_goal_bool = 1;
+      }
     
   }//end of treamux func 
   

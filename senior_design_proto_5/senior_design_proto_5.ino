@@ -51,7 +51,7 @@ void setup() {
   goal.x = 4;
   Serial.begin(9600);
   //Serial.println("BEFORE_DELAY");
-    delay(2000);
+//    delay(2000);
 //  delay(2000);
 // candidates = neighbors_func(start_pos);
 // Serial.println("Neighbors");
@@ -96,9 +96,10 @@ void setup() {
   
   //PUT IN TEST OBSTACLES
   //Serial.println("PUTTING IN OBSTACLES");
-  maze[0][3].is_accesible_bool = 0;
+  maze[1][0].is_accesible_bool = 0;
+  maze[1][1].is_accesible_bool = 0;
+  maze[1][2].is_accesible_bool = 0;
   maze[1][3].is_accesible_bool = 0;
-  maze[2][3].is_accesible_bool = 0;
   
    
 
@@ -142,6 +143,8 @@ void setup() {
   pinMode(trig_pin_3,OUTPUT);
   pinMode(echo_pin_3,INPUT);
   
+  pinMode(trig_pin_1,OUTPUT);
+  pinMode(echo_pin_1,INPUT);
 
 
 
@@ -164,11 +167,19 @@ void setup() {
 //  left_pwm = 100;
 //  right_pwm = 100;
   
-  left_pwm = 105;
-  right_pwm = 105;
 //    left_pwm = 75;
 //    right_pwm = 75;
+//latest pwm values 
+//  left_pwm = 105;
+//  right_pwm = 105;
+//
+//  left_pwm = 85;
+//  right_pwm = 85;
+//
 
+  left_pwm = 90;//100
+  right_pwm = 90;//100
+  
   //l r setpoint 0.70 and 0.67 goes to the right
   //l r setpoint 0.70 and 0.68 goes to the right
   //l r setpoint 0.70 and 0.69 goes to the right
@@ -185,15 +196,30 @@ void setup() {
 //  r_speed.set_setpoint(0.50);
   //l_speed.set_setpoint(0.60);
 
+//l_speed used to be 0.68
+//  l_speed.set_setpoint(0.66);
+//  //increase setpoint to the left since it veers to the left 
+//  //making left faster to encounter for the offset
+//  r_speed.set_setpoint(0.64);
 
-  l_speed.set_setpoint(0.68);
-  //increase setpoint to the left since it veers to the left 
-  //making left faster to encounter for the offset
-  r_speed.set_setpoint(0.64);
-    
+//  l_speed.set_setpoint(0.65);
+//  //increase setpoint to the left since it veers to the left 
+//  //making left faster to encounter for the offset
+//  r_speed.set_setpoint(0.64);
+//
+
+//
+//  l_speed.set_setpoint(0.66);  
+//  r_speed.set_setpoint(0.65);//goes left
+
+    l_speed.set_setpoint(0.67);
+    r_speed.set_setpoint(0.65);
   
+//  l_speed.set_setpoint(0.67);  
+//  r_speed.set_setpoint(0.64);
+
   
-  micro_adjust_u_d.set_setpoint(380);
+  micro_adjust_u_d.set_setpoint(400);//380
   micro_adjust_u_d.set_kp(2);
   
   
@@ -264,13 +290,16 @@ void setup() {
 //  }
 
   //halt();
-  
-    get_sonar_dist();
-  while(dist_val_middle >250){
+
+  dist_val_middle= 1000;
+    //get_sonar_dist();
+  while(dist_val_middle >240){//250
     //Serial.println("INSIDE SETUP WHILE"); 
     get_sonar_dist();
     
   }
+  
+  //delay(8000);
   //initialize the motor_state
   motor_init();
   //delay(500);
@@ -433,6 +462,19 @@ unsigned long test_halt_interval = 1000;
 void loop() {
  //go_one_cell();
  motor_tick();
+  
+  //left_turn_w_gyro();
+  //right_turn_w_gyro();
+  //encoder_pid();
+  //
+// forward_w_speed(106,103);
+// delay(1000);
+// halt_500_sec();
+// reverse_w_speed(106,103);
+// delay(700);
+// halt_500_sec();
+ //get_sonar_dist();
+   
 //  right_turn_w_gyro();
 //  right_turn_w_gyro();
   //reverse_turn_w_gyro();
@@ -458,8 +500,13 @@ void loop() {
 
 //get_sonar_dist();
 
+//go_one_cell();
 //sonar_adjust_to_block TEST DONE
 //sonar_adjust_to_block();
+//
+//for (int x = 0; x < 4; x++){
+//  sonar_adjust_to_block();  
+//}
 
 //left_turn_w_enc(1000);
 //right_turn_w_enc(1000);

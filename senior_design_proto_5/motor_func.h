@@ -130,7 +130,7 @@ void halt(){
 unsigned long halt_time_curr;
 unsigned long halt_time_prev;
 unsigned long halt_interval=1000;
-
+unsigned long halt_500_interval = 500;
 
 void halt_sec(){
   halt_time_curr = millis();
@@ -142,7 +142,14 @@ void halt_sec(){
   }
   
 }
-
+void halt_500_sec(){
+  halt_time_curr = millis();
+  halt_time_prev = halt_time_curr;
+  while((halt_time_curr - halt_time_prev) < halt_500_interval){
+    halt();
+    halt_time_curr = millis();
+  }
+}
 
 
 
@@ -212,6 +219,8 @@ void left_turn_w_enc(unsigned long enc_interval_length) {
   //gyro_angle_z = 0;
   //halt();
   //delay(1000);
+  halt_500_sec();
+  
   left_turn_enc_count_curr = curr_enc_count_l;
   left_turn_enc_count_prev = left_turn_enc_count_curr;
   
@@ -224,7 +233,8 @@ void left_turn_w_enc(unsigned long enc_interval_length) {
   }
   
   left_turn_enc_count_prev = left_turn_enc_count_curr;
-  halt();
+  //halt();
+  halt_500_sec();  
   //halt();
   //delay(1000);
  // gyro_angle_z = 0;
@@ -240,7 +250,8 @@ void right_turn_w_enc(unsigned long enc_interval_length) {
   //gyro_angle_z = 0;
   //halt();
   //delay(1000);
-  halt_sec();
+  //halt_sec();
+  halt_500_sec(); 
   right_turn_enc_count_curr = curr_enc_count_r;
   right_turn_enc_count_prev = right_turn_enc_count_curr;
   
@@ -251,7 +262,8 @@ void right_turn_w_enc(unsigned long enc_interval_length) {
     
   }
   right_turn_enc_count_prev = right_turn_enc_count_curr;
-  halt_sec();
+  //halt_sec();
+  halt_500_sec(); 
   //delay(1000);
  // gyro_angle_z = 0;
 }
@@ -261,7 +273,8 @@ unsigned long forward_enc_count_prev = 0;
 
 void forward_w_enc(unsigned long enc_interval_length){
   //halt();
-  halt_sec();
+  //halt_sec();
+  halt_500_sec();
   forward_enc_count_curr = curr_enc_count_l;
   forward_enc_count_prev = forward_enc_count_curr;
   
@@ -271,21 +284,23 @@ void forward_w_enc(unsigned long enc_interval_length){
 
     //CHANGED FORWARD_W_SPEED TO USE PREVIOUS LEFT_RIGHT_PWM VALUE
     //forward_w_speed(100,100);
-    forward_w_speed(left_pwm,right_pwm);
-    
+    //LURCHES TOO MUCH SINCE IT"S SUPPOSED TO BE CONSTANTLY UPDATING
+    //forward_w_speed(left_pwm,right_pwm);
+    forward_w_speed(106,103);
   }
   
   forward_enc_count_prev = forward_enc_count_curr;
   //halt();
-  halt_sec();
-  
+  //halt_sec();
+  halt_500_sec();
 }
 
 unsigned long reverse_enc_count_curr = 0;
 unsigned long reverse_enc_count_prev = 0;
 
 void reverse_w_enc(unsigned long enc_interval_length){
-  halt();
+  //halt();
+  halt_500_sec();
   reverse_enc_count_curr = curr_enc_count_l;
   reverse_enc_count_prev = reverse_enc_count_curr;
   
@@ -295,10 +310,14 @@ void reverse_w_enc(unsigned long enc_interval_length){
     
     //CHANGED FORWARD_W_SPEED TO USE PREVIOUS LEFT_RIGHT_PWM VALUE
     //reverse_w_speed(100,100);
-    reverse_w_speed(left_pwm,right_pwm);
+    //LURCHES TOO MUCH SINCE IT'S DESIGNED TO BE CONSTANTLY UPDATING
+    //reverse_w_speed(left_pwm,right_pwm); 
+    reverse_w_speed(106,103);
+       
   }
   right_turn_enc_count_prev = right_turn_enc_count_curr;
-  halt();
+  //halt();
+  halt_500_sec();
 }
 
 
@@ -337,11 +356,13 @@ class controller_enc{
 
     //default constructor
     controller_enc(){
-      kp = 4;//0.50 moves slow as of time of writing,0.75,2 goes to values pretty fast of velocity,3,3.2,,4
+      kp = 40;//4 not changing it fast enough,20
+      //0.50 moves slow as of time of writing,0.75,2 goes to values pretty fast of velocity,3,3.2,,4
       //3 kp  was used in pid test that went pretty straight,5 was used went a luttle to the left
 //kp 5 might be a little too much       
       //kd = 4;//1 isn't making it change fas//t,3,3 
-      kd = 12;//6(doesn't change fast_enough,7,8 after a while goes straight
+      kd = 40;//30
+      //6(doesn't change fast_enough,7,8 after a while goes straight,12 worked decent for a time,
       //kd = 0;
       error = 0;
       set_point = 1;
@@ -356,11 +377,11 @@ class controller_enc{
 
       //this is set speed wants - current speed 
       error = set_point - current_value;
-//      Serial.print("ERROR :");
-//      Serial.println(error);
+      Serial.print("ERROR :");
+      Serial.println(error);
       p_value = kp * error;
-//      Serial.print("p_value:");
-//      Serial.println(p_value);
+      Serial.print("p_value:");
+      Serial.println(p_value);
       d_value = kd * (error - previous_error);
       previous_error = error;
       return (p_value + d_value);
@@ -563,7 +584,7 @@ void encoder_pid() {
 
   //snprintf(misc_print_1, sizeof(misc_print_1), " curr_enc_count_l %lu , curr_enc_count_r %lu,prev_enc_count %lu,prev_enc_count %lu, ", curr_enc_count_l, curr_enc_count_r, prev_enc_count_l, prev_enc_count_r);
   //snprintf(misc_print_2, sizeof(misc_print_2), " enc_count_interval_l %i, enc_count_interval_r %i", enc_count_interval_l, enc_count_interval_r);
-  //Serial.println(misc_print_1);
+  Serial.println(misc_print_1);
   //Serial.println(misc_print_2);
   }
 
@@ -749,7 +770,8 @@ int enc_interval_length_global = 0;
 
 void adjust_to_cup(){
   //gets col_number from nano to use in micro adj
-   
+
+   //UNCOMMENT THIS WHEN ACTUALLY GOING
    send_recieve_serial();
 
    
@@ -759,10 +781,14 @@ void adjust_to_cup(){
    }
    else{
     //gonna_swtich to row_number;
+
+   //UNCOMMENT BELOW LINE WHEN ACTUALLY GOING
    enc_interval_length_global = micro_adjust_l_r.update_robot(col_number);
-   //}
    
-   //enc_interval_length_global = micro_adjust_l_r.update_robot(203);
+   //}
+
+   //COMMENT HIS OUT WHEN ACTUALLY GOING
+   //enc_interval_length_global = micro_adjust_l_r.update_robot(284);
     
    //Serial.println(enc_interval_length_global);
 
@@ -792,10 +818,15 @@ void sonar_adjust_to_block(){
   
    get_sonar_dist();
   //high pass filter 
-  if (dist_val_middle  > 900){
-   sonar_adjust_to_block();
-   return;
-  } 
+
+  while(dist_val_middle > 800){
+    get_sonar_dist();
+  }
+  
+//  if (dist_val_middle  > 800){//900
+//   sonar_adjust_to_block();
+//   return;
+//  } 
     
    //enc_interval_length_global = micro_adjust_u_d.update_robot(200);
     //enc_interval_length_global = micro_adjust_u_d.update_robot(420);
@@ -905,7 +936,8 @@ void motor_init(){
 
 int adjust_to_cup_num= 0;
 
-char current_motor_dir_val = 'u';
+//this moved to global variables so can be used in treamux_func
+//char current_motor_dir_val = 'u';
 
 int go_one_cell_next = 0;
 
@@ -916,120 +948,123 @@ void motor_tick(){
       //motor_state = GO_ONE_CELL;
       motor_state = CHOOSE_MOVE;
       break;
+      //GONNA DO SONAR OBSTACLES IN Tremaux FUNC
     case CHOOSE_MOVE:
-//      get_sonar_dist();
-//      get_sonar_dist(); 
-
-
-        //PUT THIS IN AT_GOAL_BOOL LATER OR TEMP_HALT
-        motor_state = ADJUST_TO_CUP;
         
-//        if (at_goal_bool == 1){
-//          motor_state = TEMP_HALT;
-//          go_one_cell_next = 0;//just in case it was called but it shouldn't
-//          break;
-//        }
-//        
-//        if (go_one_cell_next == 1){
-//          motor_state = GO_ONE_CELL;
-//          go_one_cell_next = 0;//reset go_one_cell_next
-//          break;
-//        }
-//
-//       treamux_func();//now direction_val from tremaux has been updated;
-//       //put this in here so there's not extra go_one_cell at the end
-//       if (at_goal_bool == 1){
-//        motor_state = TEMP_HALT;
-//        go_one_cell_next = 0;
-//        break;
-//       }
-//       if (current_motor_dir_val == direction_val){
-//        motor_state = GO_ONE_CELL;//IF IT'S SAME DIRECTION JUST KEEP GOING
-//       }
-//       //if direction is not the same
-//       else {
-//        if (current_motor_dir_val == 'd'){
-//          if (direction_val == 'u'){
-//            motor_state = TURN_REVERSE;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//            current_motor_dir_val = direction_val;
-//          }
-//          else if (direction_val == 'l'){
-//            motor_state = TURN_RIGHT;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//          }
-//          else if (direction_val == 'r'){
-//            motor_state = TURN_LEFT;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//          }
-//          current_motor_dir_val = direction_val;// this should work since all of them are set to their respective direction 
-//        }// end of if current == 'd';
-//
-//        if (current_motor_dir_val == 'u'){
-//          if (direction_val == 'd'){
-//            motor_state = TURN_REVERSE;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//            
-//          }
-//          else if (direction_val == 'l'){
-//            motor_state = TURN_LEFT;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//            
-//          }
-//          else if (direction_val == 'r'){
-//            motor_state = TURN_RIGHT;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//            
-//            
-//          }
-//          current_motor_dir_val = direction_val;//should work for all
-//        }// end of if current == 'u';
-//
-//      if (current_motor_dir_val == 'l'){
-//          if (direction_val == 'd'){
-//            motor_state = TURN_LEFT;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//            
-//            
-//          }
-//          else if (direction_val == 'u'){
-//            motor_state = TURN_RIGHT;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//            
-//            
-//          }
-//          else if (direction_val == 'r'){
-//            motor_state = TURN_REVERSE;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//            
-//          }
-//          current_motor_dir_val = direction_val; // should work for all
-//      }//end of if current == 'l' 
-//
-//
-//      
-//      if (current_motor_dir_val == 'r'){
-//          if (direction_val == 'l'){
-//            motor_state = TURN_REVERSE;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//            
-//          }
-//          else if (direction_val == 'u'){
-//            motor_state = TURN_LEFT;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//            
-//          }
-//          else if (direction_val == 'd'){
-//            motor_state = TURN_RIGHT;
-//            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
-//            
-//          }
-//          current_motor_dir_val = direction_val;//should work for all
-//      }//end of if current == 'r' 
-//      
-//        
-//      }//end of else
-//       
+        if (at_goal_bool == 1){
+          //motor_state = TEMP_HALT;Not gonna 
+          //PUT THIS IN AT_GOAL_BOOL LATER OR TEMP_HALT
+          motor_state = ADJUST_TO_CUP;
+
+          go_one_cell_next = 0;//just in case it was called but it shouldn't
+          break;
+        }
+        
+        if (go_one_cell_next == 1){
+          motor_state = GO_ONE_CELL;
+          go_one_cell_next = 0;//reset go_one_cell_next
+          break;
+        }
+
+       treamux_func();//now direction_val from tremaux has been updated;
+       //put this in here so there's not extra go_one_cell at the end
+       if (at_goal_bool == 1){
+        //motor_state = TEMP_HALT;
+        //PUT THIS IN AT_GOAL_BOOL LATER OR TEMP_HALT
+          motor_state = ADJUST_TO_CUP;
+          go_one_cell_next = 0;
+          break;
+       }
+       
+       if (current_motor_dir_val == direction_val){
+        motor_state = GO_ONE_CELL;//IF IT'S SAME DIRECTION JUST KEEP GOING
+       }
+       
+       //if direction is not the same
+       else {
+        if (current_motor_dir_val == 'd'){
+          if (direction_val == 'u'){
+            motor_state = TURN_REVERSE;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            current_motor_dir_val = direction_val;
+          }
+          else if (direction_val == 'l'){
+            motor_state = TURN_RIGHT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+          }
+          else if (direction_val == 'r'){
+            motor_state = TURN_LEFT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+          }
+          current_motor_dir_val = direction_val;// this should work since all of them are set to their respective direction 
+        }// end of if current == 'd';
+
+
+        if (current_motor_dir_val == 'u'){
+          if (direction_val == 'd'){
+            motor_state = TURN_REVERSE;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          else if (direction_val == 'l'){
+            motor_state = TURN_LEFT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          else if (direction_val == 'r'){
+            motor_state = TURN_RIGHT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+            
+          }
+          current_motor_dir_val = direction_val;//should work for all
+        }// end of if current == 'u';
+
+      if (current_motor_dir_val == 'l'){
+          if (direction_val == 'd'){
+            motor_state = TURN_LEFT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+            
+          }
+          else if (direction_val == 'u'){
+            motor_state = TURN_RIGHT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+            
+          }
+          else if (direction_val == 'r'){
+            motor_state = TURN_REVERSE;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          current_motor_dir_val = direction_val; // should work for all
+      }//end of if current == 'l' 
+
+
+      
+      if (current_motor_dir_val == 'r'){
+          if (direction_val == 'l'){
+            motor_state = TURN_REVERSE;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          else if (direction_val == 'u'){
+            motor_state = TURN_LEFT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          else if (direction_val == 'd'){
+            motor_state = TURN_RIGHT;
+            go_one_cell_next = 1;//NEEDS TO GO ONE_CELL_NEXT
+            
+          }
+          current_motor_dir_val = direction_val;//should work for all
+      }//end of if current == 'r' 
+      
+        
+      }//end of else
+       
       break;
     case GO_ONE_CELL:
       motor_state = CHOOSE_MOVE;
@@ -1048,11 +1083,14 @@ void motor_tick(){
     case TEMP_HALT:
       motor_state = CHOOSE_MOVE;
       break;
+
+//    //OR JUST HAVE SONAR_SENSOR BE PART OF CHOOSE_MOVE
+//    case SONAR_SENSOR:
+//      
+//      motor_state = CHOOSE_MOVE;
+//      break;
+//      
       
-    case SONAR_SENSOR:
-      
-      motor_state = CHOOSE_MOVE;
-      break;
     //these are different since it happens at the end
     case ADJUST_TO_CUP:
       motor_state = ADJUST_TO_SONAR;
@@ -1096,31 +1134,32 @@ void motor_tick(){
       go_one_cell();
       break;
     case TURN_REVERSE:
-      //left_turn_w_gyro();
-      //left_turn_w_gyro();
+      left_turn_w_gyro();
+      left_turn_w_gyro();
       break;
     case TURN_LEFT:
-      //left_turn_w_gyro();
+      left_turn_w_gyro();
       break;
     case TURN_RIGHT:
-      //right_turn_w_gyro();
+      right_turn_w_gyro();
       break;
     case TEMP_HALT:
       halt_sec();
       break;
       
-    case SONAR_SENSOR:
-      get_sonar_dist();
-      break;
+//    case SONAR_SENSOR:
+//      get_sonar_dist();
+//      break;
     case ADJUST_TO_CUP:
       //Serial.println("ADJUST_TO_CUP");
       for(int x = 0; x < 5; x ++){
         adjust_to_cup();  
       }
       break;
+      
     case ADJUST_TO_SONAR:
         //Serial.println("ADJUST_TO_SONAR");
-        for(int x = 0; x < 10; x++){
+        for(int x = 0; x < 6; x++){
           sonar_adjust_to_block();  
         }
         
@@ -1128,7 +1167,8 @@ void motor_tick(){
     case COMM_TO_OTHER_TEENSY:
       //Serial.println("COMM TO TEENSY");
       other_teensy_comm();
-      break; 
+      break;
+       
     case PERM_HALT:
       //Serial.println("PERM_HALT");
       halt_sec();

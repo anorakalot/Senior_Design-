@@ -6,6 +6,11 @@ int echo_pin_3 = 12;
 int trig_pin_2=9;
 int echo_pin_2=10;
 
+
+//right 
+int trig_pin_1 = 7;
+int echo_pin_1 = 8;
+
 ////right
 //int trig_pin_1 = 7;//3//0
 //int echo_pin_1 = 8;//13
@@ -23,6 +28,7 @@ unsigned long time_end = 0;
 char time_print[90];
 unsigned long dist_val_middle = 0;
 unsigned long dist_val_left = 0;
+unsigned long dist_val_right = 0;
 
 
 void get_sonar_dist() {
@@ -46,7 +52,7 @@ void get_sonar_dist() {
 
 
 
-  //Serial.println(time_print);
+  Serial.println(time_print);
   //end of middle
 
   
@@ -62,7 +68,24 @@ void get_sonar_dist() {
 
 
 
-  //Serial.println(time_print);
+  Serial.println(time_print);
+//end of LEFT
 
-  delay(500);
+
+  digitalWrite(trig_pin_1,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig_pin_1,LOW);
+  //analogWrite(trig_pin_1,
+
+  
+  time_count = pulseIn(echo_pin_1,HIGH);
+  dist_val_right = time_count * 0.34;//340,0.00034
+    
+  snprintf(time_print,sizeof(time_print), "time_start %lu , time_end %lu, time_count %lu,dist_val_right %lu", 
+  time_start,time_end,time_count,dist_val_right);
+
+
+
+  Serial.println(time_print);
+  delay(1000);
 }

@@ -7,7 +7,8 @@
 
 unsigned long go_one_cell_curr=0;
 unsigned long go_one_cell_prev=0;
-unsigned long go_one_cell_length=2800;//2700 loses a little ground each time  gonna up it a bit.
+unsigned long go_one_cell_length=2900;//2800
+//2700 loses a little ground each time  gonna up it a bit.
 //3000,2500,(1750 5 percent way there ,2300(really close to one cell,2400
 //1500,500
 
@@ -169,6 +170,9 @@ double right_pwm=80;
 int pin_recieve = 13;
 int pin_send = 23;
 
-//for state machine 
+
+//for state machine //treamux
+char current_motor_dir_val = 'u';
+
 
 enum MOTOR_STATES {MOTOR_INIT,  CHOOSE_MOVE, GO_ONE_CELL,TURN_REVERSE, TURN_LEFT, TURN_RIGHT,TEMP_HALT,SONAR_SENSOR,ADJUST_TO_CUP,ADJUST_TO_SONAR ,COMM_TO_OTHER_TEENSY,PERM_HALT} motor_state;
