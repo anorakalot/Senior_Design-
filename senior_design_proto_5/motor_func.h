@@ -584,7 +584,7 @@ void encoder_pid() {
 
   //snprintf(misc_print_1, sizeof(misc_print_1), " curr_enc_count_l %lu , curr_enc_count_r %lu,prev_enc_count %lu,prev_enc_count %lu, ", curr_enc_count_l, curr_enc_count_r, prev_enc_count_l, prev_enc_count_r);
   //snprintf(misc_print_2, sizeof(misc_print_2), " enc_count_interval_l %i, enc_count_interval_r %i", enc_count_interval_l, enc_count_interval_r);
-  Serial.println(misc_print_1);
+  //Serial.println(misc_print_1);
   //Serial.println(misc_print_2);
   }
 

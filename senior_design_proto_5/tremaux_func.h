@@ -228,22 +228,22 @@ void treamux_func() {
        start_pos = move_to;
         //only add this to it
        maze[start_pos.y][start_pos.x].visited_num += 1;
-       Serial.println("Visited_num at this point");
+       //Serial.println("Visited_num at this point");
        
        for (int y = 0; y < 5 ; y++){
         for (int x = 0; x < 5; x++){
        
           snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
-          Serial.print(misc_print_1);
+          //Serial.print(misc_print_1);
         }
        
-        Serial.println();
+        //Serial.println();
        
        }
       
         
        snprintf(misc_print_1,sizeof(misc_print_1), "[%i],[%i], direction: %c\n ",start_pos.y,start_pos.x,direction_val);
-       Serial.print(misc_print_1);
+       //Serial.print(misc_print_1);
   
        delay(1000);
     
