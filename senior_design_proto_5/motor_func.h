@@ -130,7 +130,7 @@ void halt(){
 unsigned long halt_time_curr;
 unsigned long halt_time_prev;
 unsigned long halt_interval=1000;
-unsigned long halt_500_interval = 500;
+unsigned long halt_500_interval = 300;
 
 void halt_sec(){
   halt_time_curr = millis();
@@ -377,11 +377,11 @@ class controller_enc{
 
       //this is set speed wants - current speed 
       error = set_point - current_value;
-      Serial.print("ERROR :");
-      Serial.println(error);
+      //Serial.print("ERROR :");
+      //Serial.println(error);
       p_value = kp * error;
-      Serial.print("p_value:");
-      Serial.println(p_value);
+//    //Serial.print("p_value:");
+      //Serial.println(p_value);
       d_value = kd * (error - previous_error);
       previous_error = error;
       return (p_value + d_value);
@@ -424,7 +424,7 @@ class controller_micro_adjustment{
     controller_micro_adjustment(){
       kp = 0.5;//1,
       error = 0;
-      set_point = 284;
+      set_point = 300;//284,290
       previous_error = 0;  
     }
     
@@ -770,7 +770,10 @@ int enc_interval_length_global = 0;
 
 void adjust_to_cup(){
   //gets col_number from nano to use in micro adj
-
+   if(col_number >297 && col_number < 303){
+    return;
+   }
+   
    //UNCOMMENT THIS WHEN ACTUALLY GOING
    send_recieve_serial();
 
@@ -811,17 +814,55 @@ void adjust_to_cup(){
 }
 
 
-
+unsigned long dist_val_middle_prev;
 void sonar_adjust_to_block(){
-  //gets col_number from nano to use in micro adj
-   
-  
-   get_sonar_dist();
-  //high pass filter 
 
-  while(dist_val_middle > 800){
-    get_sonar_dist();
+  if (times_sonar_adjust_ran_num > 0){
+    //gets col_number from nano to use in micro adj
+    //if (dist_val_middle >380 && dist_val_middle < 420){
+    //  return;
+    //}
+    //390 is now mid
+    if (avg_sonar_mid >380 && avg_sonar_mid < 420){
+      return;
+    }
+    
   }
+  
+    avg_sonar_mid = 0;
+   //get_sonar_dist();
+   
+    for (int x = 0; x < 10; x ++ ){
+      
+      get_sonar_dist_mid();
+
+      if (dist_val_middle > 1200){
+        dist_val_middle = dist_val_middle_prev;
+      }
+      
+      avg_sonar_mid += dist_val_middle;
+      
+      dist_val_middle_prev = dist_val_middle;
+    }    
+    avg_sonar_mid /= 10;
+    
+    
+  //high pass filter 
+//
+//  while(dist_val_middle > 800){
+//    get_sonar_dist();
+//  }
+//
+
+//  if (dist_val_middle > 1500){
+//    return;
+//  }
+
+  if (avg_sonar_mid > 1200){
+    return;
+  }
+
+  
   
 //  if (dist_val_middle  > 800){//900
 //   sonar_adjust_to_block();
@@ -832,7 +873,9 @@ void sonar_adjust_to_block(){
     //enc_interval_length_global = micro_adjust_u_d.update_robot(420);
   
    
-   enc_interval_length_global = (micro_adjust_u_d.update_robot(int(dist_val_middle)));
+   //enc_interval_length_global = (micro_adjust_u_d.update_robot(int(dist_val_middle)));
+   enc_interval_length_global = (micro_adjust_u_d.update_robot(int(avg_sonar_mid)));
+
     
    enc_interval_length_global = abs(enc_interval_length_global);
    
@@ -841,7 +884,6 @@ void sonar_adjust_to_block(){
    if (sonar_direction_micro_adj == 'u'){
     //Serial.println("forward_u");
     forward_w_enc(enc_interval_length_global);
-    
     }
     
    else if (sonar_direction_micro_adj == 'd'){
@@ -849,7 +891,8 @@ void sonar_adjust_to_block(){
     reverse_w_enc(enc_interval_length_global);
     }
     
-
+   times_sonar_adjust_ran_num += 1;
+  
    //end of func of sonar_micro_adj
 }
 
@@ -954,7 +997,7 @@ void motor_tick(){
         if (at_goal_bool == 1){
           //motor_state = TEMP_HALT;Not gonna 
           //PUT THIS IN AT_GOAL_BOOL LATER OR TEMP_HALT
-          motor_state = ADJUST_TO_CUP;
+          motor_state = MICRO_ADJUST;
 
           go_one_cell_next = 0;//just in case it was called but it shouldn't
           break;
@@ -971,7 +1014,7 @@ void motor_tick(){
        if (at_goal_bool == 1){
         //motor_state = TEMP_HALT;
         //PUT THIS IN AT_GOAL_BOOL LATER OR TEMP_HALT
-          motor_state = ADJUST_TO_CUP;
+          motor_state = MICRO_ADJUST;
           go_one_cell_next = 0;
           break;
        }
@@ -1092,18 +1135,24 @@ void motor_tick(){
 //      
       
     //these are different since it happens at the end
-    case ADJUST_TO_CUP:
-      motor_state = ADJUST_TO_SONAR;
-      break;
-    case ADJUST_TO_SONAR:
-      if (adjust_to_cup_num == 0){
-        motor_state =  ADJUST_TO_CUP;
-        adjust_to_cup_num += 1;
+//    case ADJUST_TO_CUP:
+//      motor_state = ADJUST_TO_SONAR;
+//      break;
+//    case ADJUST_TO_SONAR:
+//      if (adjust_to_cup_num == 0){
+//        motor_state =  ADJUST_TO_CUP;
+//        adjust_to_cup_num += 1;
+//        break;
+//      }
+//      
+//      motor_state = COMM_TO_OTHER_TEENSY;
+//      break;
+
+    case MICRO_ADJUST:
+        motor_state = COMM_TO_OTHER_TEENSY;
         break;
-      }
-      
-      motor_state = COMM_TO_OTHER_TEENSY;
-      break;
+
+        
     case COMM_TO_OTHER_TEENSY:
       motor_state = PERM_HALT;
       break;
@@ -1150,20 +1199,26 @@ void motor_tick(){
 //    case SONAR_SENSOR:
 //      get_sonar_dist();
 //      break;
-    case ADJUST_TO_CUP:
-      //Serial.println("ADJUST_TO_CUP");
-      for(int x = 0; x < 5; x ++){
-        adjust_to_cup();  
-      }
-      break;
-      
-    case ADJUST_TO_SONAR:
-        //Serial.println("ADJUST_TO_SONAR");
-        for(int x = 0; x < 6; x++){
-          sonar_adjust_to_block();  
+//    case ADJUST_TO_CUP:
+//      //Serial.println("ADJUST_TO_CUP");
+//      for(int x = 0; x < 5; x ++){
+//        adjust_to_cup();  
+//      }
+//      break;
+//      
+//    case ADJUST_TO_SONAR:
+//        //Serial.println("ADJUST_TO_SONAR");
+//        for(int x = 0; x < 5; x++){
+//          sonar_adjust_to_block();  
+//        }
+//        
+//      break;
+    case MICRO_ADJUST:
+        for (int x = 0; x < 6; x ++){
+          sonar_adjust_to_block();
+          adjust_to_cup();
         }
-        
-      break;
+        break;
     case COMM_TO_OTHER_TEENSY:
       //Serial.println("COMM TO TEENSY");
       other_teensy_comm();
@@ -1175,7 +1230,7 @@ void motor_tick(){
       break;
     
          
-    
+
       
 
 

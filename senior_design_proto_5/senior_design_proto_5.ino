@@ -212,14 +212,15 @@ void setup() {
 //  l_speed.set_setpoint(0.66);  
 //  r_speed.set_setpoint(0.65);//goes left
 
-    l_speed.set_setpoint(0.67);
-    r_speed.set_setpoint(0.65);
-  
 //  l_speed.set_setpoint(0.67);  
 //  r_speed.set_setpoint(0.64);
 
+
+  l_speed.set_setpoint(0.66);
+  r_speed.set_setpoint(0.65);
   
-  micro_adjust_u_d.set_setpoint(400);//380
+  
+  micro_adjust_u_d.set_setpoint(400);//380,400
   micro_adjust_u_d.set_kp(2);
   
   
@@ -462,7 +463,10 @@ unsigned long test_halt_interval = 1000;
 void loop() {
  //go_one_cell();
  motor_tick();
-  
+  //sonar_adjust_to_block();
+  //adjust_to_cup();
+ //dist_val_mid();
+  //get_sonar_dist_mid();
   //left_turn_w_gyro();
   //right_turn_w_gyro();
   //encoder_pid();

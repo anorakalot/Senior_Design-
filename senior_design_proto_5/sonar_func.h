@@ -47,8 +47,10 @@ void get_sonar_dist() {
   time_count = pulseIn(echo_pin_2,HIGH);
   dist_val_middle = time_count * 0.34;//340,0.00034
     
-  snprintf(time_print,sizeof(time_print), "time_start %lu , time_end %lu, time_count %lu,dist_val_middle %lu", 
-  time_start,time_end,time_count,dist_val_middle);
+//  snprintf(time_print,sizeof(time_print), "time_start %lu , time_end %lu, time_count %lu,dist_val_middle %lu", 
+//  time_start,time_end,time_count,dist_val_middle);
+  snprintf(time_print,sizeof(time_print), "IN MAIN SONAR dist_val_middle %lu", 
+  dist_val_middle);
 
 
 
@@ -87,5 +89,32 @@ void get_sonar_dist() {
 
 
   //Serial.println(time_print);
-  delay(5000);
+  //delay(200);
+}
+
+
+
+void get_sonar_dist_mid() {
+  
+  // put your main code here, to run repeatedly:
+  //Serial.println("Top of Loop");
+
+  
+  
+  digitalWrite(trig_pin_2,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig_pin_2,LOW);
+  //analogWrite(trig_pin_1,
+
+  
+  time_count = pulseIn(echo_pin_2,HIGH);
+  dist_val_middle = time_count * 0.34;//340,0.00034
+    
+  snprintf(time_print,sizeof(time_print), "time_start %lu , time_end %lu, time_count %lu,dist_val_middle %lu", 
+  time_start,time_end,time_count,dist_val_middle);
+
+
+//  Serial.println(time_print);
+// 
+//  delay(300);
 }
