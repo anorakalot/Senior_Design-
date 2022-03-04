@@ -1063,6 +1063,7 @@ void motor_tick(){
        
        //if direction is not the same
        else {
+        
         if (current_motor_dir_val == 'd'){
           if (direction_val == 'u'){
             motor_state = TURN_REVERSE;
@@ -1143,7 +1144,7 @@ void motor_tick(){
           current_motor_dir_val = direction_val;//should work for all
         }//end of if current == 'r' 
       
-        
+        current_motor_dir_val = direction_val;
       }//end of else
        
       break;

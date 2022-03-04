@@ -71,7 +71,7 @@ int detect_obstacle_bool_middle=0;
 int detect_obstacle_bool_left = 0;
 int detect_obstacle_bool_right = 0;
 
-unsigned long detect_range = 600;
+unsigned long detect_range = 500;//600
 
 void treamux_func() {
  snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.y %i, start_pos.x  %i, goal.y %i , goal.x %i ,start_pos visited_num:%i \n",
@@ -84,96 +84,137 @@ void treamux_func() {
 //  [0,-1],[-1,0],[0,1],[1,0]
   if ((start_pos.x != goal.x) || (start_pos.y != goal.y)){
       candidates = neighbors_func(maze[start_pos.y][start_pos.x]);
-       
-//       //do sonar detection here 
-//       //need to reset them before each one 
-//      int detect_obstacle_bool_middle=0; 
-//      int detect_obstacle_bool_left = 0;
-//      int detect_obstacle_bool_right = 0;
-//
-//      for (int u = 0; u < 5; u++){
-//           get_sonar_dist(); 
-//           if (dist_val_middle < detect_range){
-//            detect_obstacle_bool_middle = 1;
-//           }
-//           if (dist_val_left < detect_range){
-//            detect_obstacle_bool_left = 1;
-//           }
-//           if (dist_val_right < detect_range){
-//            detect_obstacle_bool_left = 1;
-//           }
-//       }//end of
-//        
-//          //DONE CONDITIONS
-//        if (current_motor_dir_val == 'u'){
-//           if (detect_obstacle_bool_middle ==1){
-//            //[-1,0]
-//            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
-//           
-//           }
-//           
-//           if (detect_obstacle_bool_left==1){
-//            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
-//           }
-//            
-//           if (detect_obstacle_bool_right =1){
-//            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
-//           }
-//           
-//           }//end  of U
-//
-//        //DONE CONDITIONS
-//        else if (current_motor_dir_val == 'r'){
-//           if (detect_obstacle_bool_middle ==1){
-//            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
-//           }
-//           
-//           if (detect_obstacle_bool_left==1) {
-//            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
-//           }
-//            
-//           if (detect_obstacle_bool_right =1){
-//            maze[candidates[3].y][candidates[2].x].is_accesible_bool = 0; 
-//           }
-//          
-//        }
-//        //y x
-//        //  [0,-1],[-1,0],[0,1],[1,0]
-//        
-//        else if (current_motor_dir_val == 'd'){
-//           if (detect_obstacle_bool_middle ==1){
-//            maze[candidates[3].y][candidates[3].x].is_accesible_bool = 0; 
-//           }
-//           
-//           if (detect_obstacle_bool_left==1) {
-//            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
-//           }
-//           
-//           if (detect_obstacle_bool_right =1){
-//            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
-//           }
-//          
-//            
-//        }
-//        
-//        else if (current_motor_dir_val == 'l'){
-//            if (detect_obstacle_bool_middle ==1){
-//            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
-//            }
-//           
-//           if (detect_obstacle_bool_left==1) {
-//            maze[candidates[3].y][candidates[3].x].is_accesible_bool = 0; 
-//           }
-//           
-//           if (detect_obstacle_bool_right =1){
-//            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
-//           }
-//          
-//          
-//        }
-//        //end of ALL SENSE ACCESIBLITY THROUGH SONAR
-//        
 
+//      for(int x = 0; x < 4 ; x++){
+//        seria
+//      }
+       snprintf(misc_print_1,sizeof(misc_print_1), "[%i],[%i], direction: %c\n ",start_pos.y,start_pos.x,current_motor_dir_val);
+        //Serial.print(misc_print_1);
+       
+       //ERROR IS SOMEWHERE HERE IN SONAR ACESSIBLE CODE 
+       
+       //do sonar detection here 
+       //need to reset them before each one 
+      detect_obstacle_bool_middle=0; 
+      detect_obstacle_bool_left = 0;
+      detect_obstacle_bool_right = 0;
+      
+      
+      for (int u = 0; u < 5; u++){
+           get_sonar_dist(); 
+           if (dist_val_middle < detect_range){
+            detect_obstacle_bool_middle = 1;
+           }
+           if (dist_val_left < detect_range){
+            detect_obstacle_bool_left = 1;
+           }
+//           if (dist_val_right < detect_range){
+//            detect_obstacle_bool_right = 1;
+//           }//got rid of t his until right sensor is fixed 
+       }//end of
+
+
+       if (detect_obstacle_bool_middle ==1){
+        //Serial.println("OBSTACEL MIDDLE DETECT");
+        //delay(500);
+       }
+       
+      if (detect_obstacle_bool_right ==1){
+        //Serial.println("OBSTACEL RIGHT DETECT");
+        //delay(500);
+       }
+
+      if (detect_obstacle_bool_left == 1){
+        //Serial.println("obstacle left detect");
+        //delay(500);
+      }
+      
+               
+          //DONE CONDITIONS
+        if (current_motor_dir_val == 'u'){
+           if (detect_obstacle_bool_middle ==1){
+            //[-1,0]
+            //y,x
+            //  [0,-1],[-1,0],[0,1],[1,0]
+            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
+           
+           }
+           
+           if (detect_obstacle_bool_left==1){
+            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
+           }
+            
+           if (detect_obstacle_bool_right ==1){
+            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
+           }
+           
+           }//end  of U
+
+        //DONE CONDITIONS
+        //y,x
+        //  [0,-1],[-1,0],[0,1],[1,0]
+        
+        else if (current_motor_dir_val == 'r'){
+           if (detect_obstacle_bool_middle ==1){
+            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
+           }
+           
+           if (detect_obstacle_bool_left==1) {
+            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
+           }
+            
+           if (detect_obstacle_bool_right ==1){
+            maze[candidates[3].y][candidates[2].x].is_accesible_bool = 0; 
+           }
+          
+        }
+        //y x
+        //  [0,-1],[-1,0],[0,1],[1,0]
+        
+        else if (current_motor_dir_val == 'd'){
+           if (detect_obstacle_bool_middle ==1){
+            maze[candidates[3].y][candidates[3].x].is_accesible_bool = 0; 
+           }
+           
+           if (detect_obstacle_bool_left==1) {
+            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
+           }
+           
+           if (detect_obstacle_bool_right ==1){
+            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
+           }
+          
+            
+        }
+
+        //y x
+        //  [0,-1],[-1,0],[0,1],[1,0]
+           
+        
+        else if (current_motor_dir_val == 'l'){
+            if (detect_obstacle_bool_middle ==1){
+            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
+            }
+           
+           if (detect_obstacle_bool_left==1) {
+            maze[candidates[3].y][candidates[3].x].is_accesible_bool = 0; 
+           }
+           
+           if (detect_obstacle_bool_right==1){
+            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
+           }
+          
+          
+        }
+        //end of ALL SENSE ACCESIBLITY THROUGH SONAR
+
+        //ERROR IS SOMEWHERE HERE   ABOVE IN SONAR ACESSIBLE CODE     
+
+
+      //PATHFINDING HAS ISSUE WHERE IT DOESN"T JUST GO TO zero when going need to go in no obstacles 
+      //CHECK TO SEE IF THIS ISSUE IS HERE 
+      //ACTUALLY ERROR NOT HERE SINCE WITHOUT SONAR IT WORKED WELL WITH NO OBSTACLES 
+      
         //candidates = neighbors_func(maze[start_pos.y][start_pos.x]);
       min_value = -100;
       for (int i = 0; i < 4; i ++){
@@ -185,6 +226,7 @@ void treamux_func() {
         else if (maze[candidates[i].y][candidates[i].x].is_accesible_bool == 0){
           continue;//if it's an obstacle skip over it
         }
+        
         else if (min_value == -100){
           min_value = maze[candidates[i].y][candidates[i].x].visited_num;
           //gonna chang ldru to lurd (since up and down are different since going up is -1 to the y value
@@ -233,10 +275,10 @@ void treamux_func() {
         for (int x = 0; x < 5; x++){
         
           snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
-          Serial.print(misc_print_1);
+          //Serial.print(misc_print_1);
         }
         
-        Serial.println();
+        //Serial.println();
         
        }
       
@@ -244,7 +286,7 @@ void treamux_func() {
        snprintf(misc_print_1,sizeof(misc_print_1), "[%i],[%i], direction: %c\n ",start_pos.y,start_pos.x,direction_val);
        //Serial.print(misc_print_1);
   
-       delay(1000);
+       //delay(1000);
     
 
   }
@@ -252,7 +294,7 @@ void treamux_func() {
 
       else if ((start_pos.x == goal.x) && (start_pos.y== goal.y)){
         at_goal_bool = 1;
-        Serial.println("AT_GOAL");
+        //Serial.println("AT_GOAL");
       }
     
   }//end of treamux func 

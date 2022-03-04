@@ -38,7 +38,8 @@ void right_encoder_update() {
 
 
 void setup() {
-
+  digitalWrite(pin_send,LOW);
+//delay(2000);
  //SETUP FOR TREAMUX 
  //start_pos.x = 0;
   //start_pos.y = 4;
@@ -63,8 +64,10 @@ void setup() {
 
    for (int y = 0; y < 5 ; y++){
     for (int x = 0; x < 5; x++){
-      maze[y][x].x = x;
       maze[y][x].y = y;
+      maze[y][x].x = x;
+      //switched placement of these 2 above but shouldn't have made a difference 
+      
       maze[y][x].is_accesible_bool = 1;//sets all spaces to be accessible at the start 
       maze[y][x].visited_num = 0;
     }
@@ -306,7 +309,7 @@ void setup() {
     
   }
   
-  //delay(8000);
+  delay(8000);
   //initialize the motor_state
   motor_init();
   //delay(500);
@@ -316,7 +319,7 @@ void setup() {
 
 
 
-
+///also might be an issue since right sensor isn't working
 
 
 
@@ -468,7 +471,12 @@ unsigned long test_halt_interval = 1000;
   
 void loop() {
  //go_one_cell();
- //motor_tick();
+ 
+ motor_tick();
+ 
+//treamux_func();
+//delay(1000);
+ 
   //sonar_adjust_to_block();
   //adjust_to_cup();
  //dist_val_mid();
@@ -483,7 +491,7 @@ void loop() {
 // reverse_w_speed(106,103);
 // delay(700);
 // halt_500_sec();
- get_sonar_dist();
+ //get_sonar_dist();
    
 //  right_turn_w_gyro();
 //  right_turn_w_gyro();
