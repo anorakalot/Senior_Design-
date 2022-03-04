@@ -468,7 +468,7 @@ unsigned long test_halt_interval = 1000;
   
 void loop() {
  //go_one_cell();
- motor_tick();
+ //motor_tick();
   //sonar_adjust_to_block();
   //adjust_to_cup();
  //dist_val_mid();
@@ -483,7 +483,7 @@ void loop() {
 // reverse_w_speed(106,103);
 // delay(700);
 // halt_500_sec();
- //get_sonar_dist();
+ get_sonar_dist();
    
 //  right_turn_w_gyro();
 //  right_turn_w_gyro();

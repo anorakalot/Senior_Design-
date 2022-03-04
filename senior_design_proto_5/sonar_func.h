@@ -91,7 +91,7 @@ void get_sonar_dist() {
 
 
   Serial.println(time_print);
-  //delay(200);
+  delay(200);
 }
 
 

@@ -1047,9 +1047,9 @@ void motor_tick(){
           break;
         }
 
-       treamux_func();//now direction_val from tremaux has been updated;
-       //put this in here so there's not extra go_one_cell at the end
-       if (at_goal_bool == 1){
+        treamux_func();//now direction_val from tremaux has been updated;
+        //put this in here so there's not extra go_one_cell at the end
+        if (at_goal_bool == 1){
         //motor_state = TEMP_HALT;
         //PUT THIS IN AT_GOAL_BOOL LATER OR TEMP_HALT
           motor_state = MICRO_ADJUST;
