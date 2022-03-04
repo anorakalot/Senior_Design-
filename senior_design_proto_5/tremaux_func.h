@@ -21,19 +21,24 @@ coord start_pos;
 coord curr_pos;
  
 coord goal;
-//  [0,-1],[-1,0],[0,1],[1,0]
+
+//up //right // left //down
+//[-1,0],[0,1],[0,-1],[1,0]
 
 coord neighbors [4];
 coord * neighbors_func(coord current){
   //coord neighbors [4]; 
-  neighbors[0].y = 0;
-  neighbors[0].x = -1;
   
-  neighbors[1].y = -1;
-  neighbors[1].x = 0;
-  
+  neighbors[0].y = -1;
+  neighbors[0].x = 0;
+
+  neighbors[1].y = 0;
+  neighbors[1].x = 1;
+
   neighbors[2].y = 0;
-  neighbors[2].x = 1;
+  neighbors[2].x = -1;
+  
+  
   
   neighbors[3].y = 1;
   neighbors[3].x = 0;
@@ -80,8 +85,9 @@ void treamux_func() {
   Serial.print(misc_print_1);
 
   //while((start_pos.x != goal.x) || (start_pos.y != goal.y)){//this doesn't matter since it still correctly stops at location
-  //
-//  [0,-1],[-1,0],[0,1],[1,0]
+//up //right // left //down
+//[-1,0],[0,1],[0,-1],[1,0]
+
   if ((start_pos.x != goal.x) || (start_pos.y != goal.y)){
       candidates = neighbors_func(maze[start_pos.y][start_pos.x]);
 
@@ -129,47 +135,46 @@ void treamux_func() {
         //delay(500);
       }
       
-               
+ //up //right // left //down
+//[-1,0],[0,1],[0,-1],[1,0]
+              
           //DONE CONDITIONS
         if (current_motor_dir_val == 'u'){
            if (detect_obstacle_bool_middle ==1){
-            //[-1,0]
-            //y,x
-            //  [0,-1],[-1,0],[0,1],[1,0]
-            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
+            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
            
            }
            
            if (detect_obstacle_bool_left==1){
-            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
+            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
            }
             
            if (detect_obstacle_bool_right ==1){
-            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
+            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
            }
            
            }//end  of U
 
         //DONE CONDITIONS
-        //y,x
-        //  [0,-1],[-1,0],[0,1],[1,0]
+
+//up //right // left //down
+//[-1,0],[0,1],[0,-1],[1,0]
         
         else if (current_motor_dir_val == 'r'){
            if (detect_obstacle_bool_middle ==1){
-            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
+            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
            }
            
            if (detect_obstacle_bool_left==1) {
-            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
+            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
            }
-            
            if (detect_obstacle_bool_right ==1){
-            maze[candidates[3].y][candidates[2].x].is_accesible_bool = 0; 
+            maze[candidates[3].y][candidates[3].x].is_accesible_bool = 0; 
            }
           
         }
-        //y x
-        //  [0,-1],[-1,0],[0,1],[1,0]
+//up //right // left //down
+//[-1,0],[0,1],[0,-1],[1,0]
         
         else if (current_motor_dir_val == 'd'){
            if (detect_obstacle_bool_middle ==1){
@@ -177,23 +182,23 @@ void treamux_func() {
            }
            
            if (detect_obstacle_bool_left==1) {
-            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
+            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
            }
            
            if (detect_obstacle_bool_right ==1){
-            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
+            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
            }
           
             
         }
 
-        //y x
-        //  [0,-1],[-1,0],[0,1],[1,0]
+//up //right // left //down
+//[-1,0],[0,1],[0,-1],[1,0]
            
         
         else if (current_motor_dir_val == 'l'){
             if (detect_obstacle_bool_middle ==1){
-            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
+            maze[candidates[2].y][candidates[2].x].is_accesible_bool = 0; 
             }
            
            if (detect_obstacle_bool_left==1) {
@@ -201,7 +206,7 @@ void treamux_func() {
            }
            
            if (detect_obstacle_bool_right==1){
-            maze[candidates[1].y][candidates[1].x].is_accesible_bool = 0; 
+            maze[candidates[0].y][candidates[0].x].is_accesible_bool = 0; 
            }
           
           
@@ -229,15 +234,16 @@ void treamux_func() {
         
         else if (min_value == -100){
           min_value = maze[candidates[i].y][candidates[i].x].visited_num;
-          //gonna chang ldru to lurd (since up and down are different since going up is -1 to the y value
+          //up //right // left //down
+//[-1,0],[0,1],[0,-1],[1,0]
           if (i == 0){
-           direction_val =  'l';
+           direction_val =  'u';
           }
           else if (i == 1){
-            direction_val = 'u';
+            direction_val = 'r';
           }
           else if (i == 2){
-            direction_val = 'r';
+            direction_val = 'l';
           }
           else if (i == 3){
             direction_val = 'd';
@@ -249,13 +255,13 @@ void treamux_func() {
           move_to = candidates[i];
           min_value = maze[candidates[i].y][candidates[i].x].visited_num;
           if (i == 0){
-           direction_val =  'l';
+           direction_val =  'u';
           }
           else if (i == 1){
-            direction_val = 'u';
+            direction_val = 'r';
           }
           else if (i == 2){
-            direction_val = 'r';
+            direction_val = 'l';
           }
           else if (i == 3){
             direction_val = 'd';  
