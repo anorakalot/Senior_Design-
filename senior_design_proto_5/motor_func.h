@@ -1141,7 +1141,7 @@ void motor_tick(){
             
           }
           current_motor_dir_val = direction_val;//should work for all
-      }//end of if current == 'r' 
+        }//end of if current == 'r' 
       
         
       }//end of else
@@ -1165,26 +1165,6 @@ void motor_tick(){
       motor_state = CHOOSE_MOVE;
       break;
 
-//    //OR JUST HAVE SONAR_SENSOR BE PART OF CHOOSE_MOVE
-//    case SONAR_SENSOR:
-//      
-//      motor_state = CHOOSE_MOVE;
-//      break;
-//      
-      
-    //these are different since it happens at the end
-//    case ADJUST_TO_CUP:
-//      motor_state = ADJUST_TO_SONAR;
-//      break;
-//    case ADJUST_TO_SONAR:
-//      if (adjust_to_cup_num == 0){
-//        motor_state =  ADJUST_TO_CUP;
-//        adjust_to_cup_num += 1;
-//        break;
-//      }
-//      
-//      motor_state = COMM_TO_OTHER_TEENSY;
-//      break;
 
     case MICRO_ADJUST:
         motor_state = COMM_TO_OTHER_TEENSY;
@@ -1234,23 +1214,7 @@ void motor_tick(){
       halt_sec();
       break;
       
-//    case SONAR_SENSOR:
-//      get_sonar_dist();
-//      break;
-//    case ADJUST_TO_CUP:
-//      //Serial.println("ADJUST_TO_CUP");
-//      for(int x = 0; x < 5; x ++){
-//        adjust_to_cup();  
-//      }
-//      break;
-//      
-//    case ADJUST_TO_SONAR:
-//        //Serial.println("ADJUST_TO_SONAR");
-//        for(int x = 0; x < 5; x++){
-//          sonar_adjust_to_block();  
-//        }
-//        
-//      break;
+
     case MICRO_ADJUST:
         for (int x = 0; x < 5; x ++){//3(not enough)
           sonar_adjust_to_block();

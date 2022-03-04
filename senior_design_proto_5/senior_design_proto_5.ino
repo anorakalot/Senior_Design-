@@ -96,11 +96,11 @@ void setup() {
   
   //PUT IN TEST OBSTACLES
   //Serial.println("PUTTING IN OBSTACLES");
-  maze[1][0].is_accesible_bool = 0;
-  maze[1][1].is_accesible_bool = 0;
-  maze[1][2].is_accesible_bool = 0;
-  maze[1][3].is_accesible_bool = 0;
-  
+//  maze[1][0].is_accesible_bool = 0;
+//  maze[1][1].is_accesible_bool = 0;
+//  maze[1][2].is_accesible_bool = 0;
+//  maze[1][3].is_accesible_bool = 0;
+//  
    
 
 //  

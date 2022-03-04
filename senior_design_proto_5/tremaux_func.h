@@ -77,7 +77,7 @@ void treamux_func() {
  snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.y %i, start_pos.x  %i, goal.y %i , goal.x %i ,start_pos visited_num:%i \n",
   start_pos.y,start_pos.x
   ,goal.y, goal.x,maze[start_pos.y][start_pos.x].visited_num);
-  //Serial.print(misc_print_1);
+  Serial.print(misc_print_1);
 
   //while((start_pos.x != goal.x) || (start_pos.y != goal.y)){//this doesn't matter since it still correctly stops at location
   //
@@ -199,7 +199,6 @@ void treamux_func() {
           }
           else if (i == 3){
             direction_val = 'd';
-            
           }
           move_to = candidates[i];
         }
@@ -232,13 +231,13 @@ void treamux_func() {
        
        for (int y = 0; y < 5 ; y++){
         for (int x = 0; x < 5; x++){
-       
+        
           snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
-          //Serial.print(misc_print_1);
+          Serial.print(misc_print_1);
         }
-       
-        //Serial.println();
-       
+        
+        Serial.println();
+        
        }
       
         
@@ -251,8 +250,9 @@ void treamux_func() {
   }
 
 
-      if ((start_pos.x == goal.x) && (start_pos.y== goal.y)){
+      else if ((start_pos.x == goal.x) && (start_pos.y== goal.y)){
         at_goal_bool = 1;
+        Serial.println("AT_GOAL");
       }
     
   }//end of treamux func 
