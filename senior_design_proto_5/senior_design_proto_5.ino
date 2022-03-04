@@ -19,7 +19,7 @@
 //should put in if negative going backwards
 void left_encoder_update() {
   encoder_count_left += 1;
-  if (encoder_count_left > 200000000) {
+  if (encoder_count_left > 4000000000){//200000000 {
     encoder_count_left = 0;
   }
   curr_enc_count_l = encoder_count_left;
@@ -28,7 +28,7 @@ void left_encoder_update() {
 
 void right_encoder_update() {
   encoder_count_right += 1;
-  if (encoder_count_right > 200000000) {
+  if (encoder_count_right > 4000000000){ //200000000
     encoder_count_right = 0;
   }
 
@@ -216,12 +216,18 @@ void setup() {
 //  r_speed.set_setpoint(0.64);
 
 
+//  l_speed.set_setpoint(0.66);
+//  r_speed.set_setpoint(0.65);
+
+ // l_speed.set_setpoint(0.65);//goes left not good
+ // r_speed.set_setpoint(0.65);
+
+
   l_speed.set_setpoint(0.66);
   r_speed.set_setpoint(0.65);
   
-  
   micro_adjust_u_d.set_setpoint(400);//380,400
-  micro_adjust_u_d.set_kp(2);
+  micro_adjust_u_d.set_kp(1.5);//
   
   
 //  Serial.print("l setpoint");

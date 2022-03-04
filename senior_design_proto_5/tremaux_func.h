@@ -247,89 +247,9 @@ void treamux_func() {
   
        delay(1000);
     
-//      min_value = -100;
-//      for (int i = 0; i < 4; i ++){
-//        if (candidates[i].x < 0 || candidates[i].y < 0 || candidates[i].x > 4|| candidates[i].y > 4){
-//          //NOTHING
-//          //if it's less than zero it's not a valid 
-//          continue;//go to next for loop iteration  
-//        }
-//        
-//        
-//        else if (maze[candidates[i].y][candidates[i].x].is_accesible_bool == 0){
-//          continue;//if it's an obstacle skip over it
-//        }
-//        else if (min_value == -100){
-//          min_value = maze[candidates[i].y][candidates[i].x].visited_num;
-//          //gonna chang ldru to lurd (since up and down are different since going up is -1 to the y value
-//          if (i == 0){
-//           direction_val =  'l';
-//          }
-//          else if (i == 1){
-//            direction_val = 'u';
-//          }
-//          else if (i == 2){
-//            direction_val = 'r';
-//          }
-//          else if (i == 3){
-//            direction_val = 'd';
-//            
-//          }
-//          move_to = candidates[i];
-//        }
-//        
-//        else if ( maze[candidates[i].y][candidates[i].x].visited_num < min_value ){
-//          move_to = candidates[i];
-//          min_value = maze[candidates[i].y][candidates[i].x].visited_num;
-//          if (i == 0){
-//           direction_val =  'l';
-//          }
-//          else if (i == 1){
-//            direction_val = 'u';
-//          }
-//          else if (i == 2){
-//            direction_val = 'r';
-//          }
-//          else if (i == 3){
-//            direction_val = 'd';  
-//          }
-//        
-//        }//end of if min_value < maze_candidates[i].x   
-//        
-//  
-//      }//end of for loop neighbors
-//        
-//       start_pos = move_to;
-//        //only add this to it
-//       maze[start_pos.y][start_pos.x].visited_num += 1;
-//       //Serial.println("Visited_num at this point");
-//       
-//       for (int y = 0; y < 5 ; y++){
-//        for (int x = 0; x < 5; x++){
-//       
-//          snprintf(misc_print_1,sizeof(misc_print_1), "%i ",maze[y][x].visited_num);
-//          Serial.print(misc_print_1);
-//        }
-//       
-//        Serial.println();
-//       
-//       }
-//      
-//        
-//       snprintf(misc_print_1,sizeof(misc_print_1), "[%i],[%i], direction: %c\n ",start_pos.y,start_pos.x,direction_val);
-//       Serial.print(misc_print_1);
-//  
-//       delay(400);
-//    
-//    }//end of while start != goal  // not it's if 
-//
+
   }
-//    else{
-//    //Serial.println("REACHED_GOAL");
-//    at_goal_bool = 1;
-//    //delay(10000);
-//    delay(500);
-//    }
+
 
       if ((start_pos.x == goal.x) && (start_pos.y== goal.y)){
         at_goal_bool = 1;

@@ -130,8 +130,9 @@ void halt(){
 unsigned long halt_time_curr;
 unsigned long halt_time_prev;
 unsigned long halt_interval=1000;
-unsigned long halt_500_interval = 300;
-
+unsigned long halt_500_interval = 75;
+unsigned long halt_300_interval = 200;
+//halt_500_interval :300,150(worked),(small)
 void halt_sec(){
   halt_time_curr = millis();
   halt_time_prev = halt_time_curr;
@@ -151,6 +152,14 @@ void halt_500_sec(){
   }
 }
 
+void halt_300_sec(){
+  halt_time_curr = millis();
+  halt_time_prev = halt_time_curr;
+  while((halt_time_curr - halt_time_prev) < halt_300_interval){
+    halt();
+    halt_time_curr = millis();
+  }
+}
 
 
 LSM6 imu;
@@ -183,14 +192,14 @@ void right_turn_w_gyro() {
   gyro_angle_z = 0;
 //  halt();
 //  delay(1000);
-  halt_sec();
+  halt_500_sec();
   while (gyro_angle_z > -7860) {//-8000,-7900,7850
     right_turn();
     update_gyro();
   }
 //  halt();
 //  delay(1000);
-  halt_sec();
+  halt_500_sec();
 }
 
 
@@ -199,6 +208,7 @@ void right_turn_w_gyro() {
 void left_turn_w_gyro() {
   gyro_angle_z = 0;
 //  halt();
+  halt_500_sec();
 //  delay(1000);
   halt_sec();
   while (gyro_angle_z <7860) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close),7900(really close)
@@ -207,7 +217,8 @@ void left_turn_w_gyro() {
   }
 //  halt();
 //  delay(1000);
-  halt_sec();
+  //halt_sec();
+  halt_500_sec();
   gyro_angle_z = 0;
 }
 
@@ -219,8 +230,8 @@ void left_turn_w_enc(unsigned long enc_interval_length) {
   //gyro_angle_z = 0;
   //halt();
   //delay(1000);
-  halt_500_sec();
-  
+  //halt_500_sec();
+  halt_300_sec();
   left_turn_enc_count_curr = curr_enc_count_l;
   left_turn_enc_count_prev = left_turn_enc_count_curr;
   
@@ -234,7 +245,8 @@ void left_turn_w_enc(unsigned long enc_interval_length) {
   
   left_turn_enc_count_prev = left_turn_enc_count_curr;
   //halt();
-  halt_500_sec();  
+  //halt_500_sec();
+    halt_300_sec();  
   //halt();
   //delay(1000);
  // gyro_angle_z = 0;
@@ -251,7 +263,8 @@ void right_turn_w_enc(unsigned long enc_interval_length) {
   //halt();
   //delay(1000);
   //halt_sec();
-  halt_500_sec(); 
+  //halt_500_sec();
+  halt_300_sec(); 
   right_turn_enc_count_curr = curr_enc_count_r;
   right_turn_enc_count_prev = right_turn_enc_count_curr;
   
@@ -263,7 +276,8 @@ void right_turn_w_enc(unsigned long enc_interval_length) {
   }
   right_turn_enc_count_prev = right_turn_enc_count_curr;
   //halt_sec();
-  halt_500_sec(); 
+  //halt_500_sec();
+   halt_300_sec(); 
   //delay(1000);
  // gyro_angle_z = 0;
 }
@@ -274,7 +288,8 @@ unsigned long forward_enc_count_prev = 0;
 void forward_w_enc(unsigned long enc_interval_length){
   //halt();
   //halt_sec();
-  halt_500_sec();
+  //halt_500_sec();
+  halt_300_sec();
   forward_enc_count_curr = curr_enc_count_l;
   forward_enc_count_prev = forward_enc_count_curr;
   
@@ -292,7 +307,8 @@ void forward_w_enc(unsigned long enc_interval_length){
   forward_enc_count_prev = forward_enc_count_curr;
   //halt();
   //halt_sec();
-  halt_500_sec();
+  //halt_500_sec();
+  halt_300_sec();
 }
 
 unsigned long reverse_enc_count_curr = 0;
@@ -300,7 +316,8 @@ unsigned long reverse_enc_count_prev = 0;
 
 void reverse_w_enc(unsigned long enc_interval_length){
   //halt();
-  halt_500_sec();
+  //halt_500_sec();
+  halt_300_sec();
   reverse_enc_count_curr = curr_enc_count_l;
   reverse_enc_count_prev = reverse_enc_count_curr;
   
@@ -317,7 +334,8 @@ void reverse_w_enc(unsigned long enc_interval_length){
   }
   right_turn_enc_count_prev = right_turn_enc_count_curr;
   //halt();
-  halt_500_sec();
+  //halt_500_sec();
+    halt_300_sec();
 }
 
 
@@ -422,7 +440,7 @@ class controller_micro_adjustment{
 
     //default constructor
     controller_micro_adjustment(){
-      kp = 0.5;//1,
+      kp = 0.3;//1,0.5
       error = 0;
       set_point = 300;//284,290
       previous_error = 0;  
@@ -599,7 +617,8 @@ void encoder_pid() {
 void go_one_cell(){
 //  halt();
 //  delay(2000);
-  halt_sec();
+  //halt_sec();
+  halt_500_sec();
 
    //Serial.println("outside while");
    //need to set this before going into loop so that it doesn't take into account enc revolutions during turn
@@ -637,7 +656,9 @@ void go_one_cell(){
   go_one_cell_prev = go_one_cell_curr;
 //    halt();
 //    delay(2000);
-  halt_sec();
+  //halt_sec();
+  halt_500_sec();
+  
 }
 //STUFF TO COMMUNICATE TO OTHER TEENSY 
 
@@ -900,13 +921,28 @@ void sonar_adjust_to_block(){
 int testing_flag = 0;
 
 int recieve_reading = 0;
+unsigned long curr_other_comm;
+unsigned long prev_other_comm;
+unsigned long comm_interval=500;
 
 void other_teensy_comm(){
-  
+  curr_other_comm  = millis();
+  prev_other_comm = curr_other_comm;
   digitalWrite(pin_send,HIGH);
+  while((curr_other_comm - prev_other_comm ) < comm_interval){
+    //digitalWrite(pin_send,HIGH);
+    curr_other_comm = millis();
+    
+     
+  }
+  //digitalWrite(pin_send,HIGH);
+  
+
+  
+  
   recieve_reading = 0;
   while(recieve_reading == 0){
-   digitalWrite(pin_send,LOW);
+   //digitalWrite(pin_send,LOW);
   
   //nothing
   //Serial.println();
@@ -915,6 +951,8 @@ void other_teensy_comm(){
   //Serial.print("recieve_pin ");
   //Serial.println(recieve_reading);
   }
+  digitalWrite(pin_send,LOW);
+  
 
 } 
   
@@ -1214,10 +1252,11 @@ void motor_tick(){
 //        
 //      break;
     case MICRO_ADJUST:
-        for (int x = 0; x < 6; x ++){
+        for (int x = 0; x < 5; x ++){//3(not enough)
           sonar_adjust_to_block();
           adjust_to_cup();
         }
+        
         break;
     case COMM_TO_OTHER_TEENSY:
       //Serial.println("COMM TO TEENSY");
