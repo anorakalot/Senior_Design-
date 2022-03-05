@@ -1,3 +1,16 @@
+//putting delay_timer here so it can be used anywhere in the code 
+unsigned long delay_time_curr = 0;
+unsigned long delay_time_prev = 0;
+
+void delay_timer(unsigned long timer){
+  delay_time_curr = millis();
+  delay_time_prev = delay_time_curr;
+
+  while((delay_time_curr -delay_time_prev) < timer){
+    delay_time_curr = millis();
+  }
+}
+
 int times_sonar_adjust_ran_num= 0;
 int avg_sonar_mid = 0;
 
@@ -175,7 +188,7 @@ int pin_send = 23;
 
 //for state machine //treamux
 char current_motor_dir_val = 'u';
-
+int found_cup_bool = 0;
 
 //enum MOTOR_STATES {MOTOR_INIT,  CHOOSE_MOVE, GO_ONE_CELL,TURN_REVERSE, TURN_LEFT, TURN_RIGHT,TEMP_HALT,SONAR_SENSOR,ADJUST_TO_CUP,ADJUST_TO_SONAR ,COMM_TO_OTHER_TEENSY,PERM_HALT} motor_state;
-enum MOTOR_STATES {MOTOR_INIT,  CHOOSE_MOVE, GO_ONE_CELL,TURN_REVERSE, TURN_LEFT, TURN_RIGHT,TEMP_HALT,MICRO_ADJUST,COMM_TO_OTHER_TEENSY,PERM_HALT} motor_state;
+enum MOTOR_STATES {MOTOR_INIT,  CHOOSE_MOVE, GO_ONE_CELL,TURN_REVERSE, TURN_LEFT, TURN_RIGHT,TEMP_HALT,FIND_CUP,MICRO_ADJUST,COMM_TO_OTHER_TEENSY,PERM_HALT} motor_state;

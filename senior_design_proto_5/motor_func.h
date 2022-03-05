@@ -130,7 +130,7 @@ void halt(){
 unsigned long halt_time_curr;
 unsigned long halt_time_prev;
 unsigned long halt_interval=1000;
-unsigned long halt_500_interval = 75;
+unsigned long halt_500_interval = 100;//75
 unsigned long halt_300_interval = 200;
 //halt_500_interval :300,150(worked),(small)
 void halt_sec(){
@@ -169,10 +169,11 @@ void update_gyro() {
 
 
   curr_time_imu = millis();
-  if ((curr_time_imu - reset_time_imu ) > reset_imu_interval) {
-    gyro_angle_z = 0;
-    reset_time_imu = curr_time_imu;
-  }
+//  //prev_time_imu = curr_time_imu;
+//  if ((curr_time_imu - reset_time_imu ) > reset_imu_interval) {
+//    gyro_angle_z = 0;
+//    reset_time_imu = curr_time_imu;
+//  }
 
   if ((curr_time_imu - prev_time_imu) > imu_interval) {
 
@@ -193,7 +194,7 @@ void right_turn_w_gyro() {
 //  halt();
 //  delay(1000);
   halt_500_sec();
-  while (gyro_angle_z > -7860) {//-8000,-7900,7850
+  while (gyro_angle_z >-8040 ) {//-8000,-7900,7850,-7860,-7880,-8000
     right_turn();
     update_gyro();
   }
@@ -211,7 +212,7 @@ void left_turn_w_gyro() {
   halt_500_sec();
 //  delay(1000);
   halt_sec();
-  while (gyro_angle_z <7860) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close),7900(really close)
+  while (gyro_angle_z <8040) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close),7900(really close),7860,7880,8000
     left_turn();        //7900,7800(too little),7850(REALLY Good but I'm gonna try a little more
     update_gyro();
   }
@@ -1035,7 +1036,9 @@ void motor_tick(){
         if (at_goal_bool == 1){
           //motor_state = TEMP_HALT;Not gonna 
           //PUT THIS IN AT_GOAL_BOOL LATER OR TEMP_HALT
-          motor_state = MICRO_ADJUST;
+          
+          //motor_state = MICRO_ADJUST;
+          motor_state = FIND_CUP;
 
           go_one_cell_next = 0;//just in case it was called but it shouldn't
           break;
@@ -1052,7 +1055,8 @@ void motor_tick(){
         if (at_goal_bool == 1){
         //motor_state = TEMP_HALT;
         //PUT THIS IN AT_GOAL_BOOL LATER OR TEMP_HALT
-          motor_state = MICRO_ADJUST;
+          //motor_state = MICRO_ADJUST;
+          motor_state = FIND_CUP;
           go_one_cell_next = 0;
           break;
        }
@@ -1165,9 +1169,17 @@ void motor_tick(){
     case TEMP_HALT:
       motor_state = CHOOSE_MOVE;
       break;
+    case FIND_CUP:
+      motor_state = MICRO_ADJUST;
+      break;
 
 
     case MICRO_ADJUST:
+      if (avg_sonar_mid <380|| avg_sonar_mid > 420){
+        motor_state= MICRO_ADJUST;
+        break;
+      }
+    
         motor_state = COMM_TO_OTHER_TEENSY;
         break;
 
@@ -1214,10 +1226,42 @@ void motor_tick(){
     case TEMP_HALT:
       halt_sec();
       break;
+
+    case FIND_CUP:
+      found_cup_bool = 0;
+      
+      if (current_motor_dir_val == 'u'){
+        for(int i = 0;i < 5; i++){
+        send_recieve_serial();
+        if(col_number > 100){
+          found_cup_bool = 1;//found cup
+          }
+        }//end of for loop
+        
+        if (found_cup_bool == 0){//if not found cup turn to it 
+          right_turn_w_gyro();
+        }//only need to take into account if need to turn
+      }//end of if going up direction
+      
+      else if (current_motor_dir_val == 'r'){
+        for(int i = 0; i < 5; i++){
+          
+        send_recieve_serial();
+        if (col_number > 100){
+          found_cup_bool =1;
+          }
+        }//end for loop
+        
+        if(found_cup_bool == 0){
+          left_turn_w_gyro();
+        }
+      }//end of if going r direction
+      
+      break;
       
 
     case MICRO_ADJUST:
-        for (int x = 0; x < 5; x ++){//3(not enough)
+        for (int x = 0; x < 5; x ++){//3(not enough),7(too many not the best)
           sonar_adjust_to_block();
           adjust_to_cup();
         }
@@ -1225,7 +1269,10 @@ void motor_tick(){
         break;
     case COMM_TO_OTHER_TEENSY:
       //Serial.println("COMM TO TEENSY");
-      other_teensy_comm();
+      //other_teensy_comm();
+      for (int x = 0; x < 100; x++){
+        other_teensy_comm();
+      }
       break;
        
     case PERM_HALT:

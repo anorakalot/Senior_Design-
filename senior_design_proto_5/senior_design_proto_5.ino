@@ -303,13 +303,21 @@ void setup() {
 
   dist_val_middle= 1000;
     //get_sonar_dist();
-  while(dist_val_middle >240){//250
+  while(dist_val_middle >180){//250,240
     //Serial.println("INSIDE SETUP WHILE"); 
     get_sonar_dist();
     
   }
-  
-  delay(8000);
+  unsigned long timer_setup_curr = 0;
+  unsigned long timer_setup_prev = 0;
+  unsigned long timer_setup_interval = 4000;
+  //delay(8000);
+  //delay(4000);
+  timer_setup_curr = millis();
+  timer_setup_prev = timer_setup_curr;
+  while((timer_setup_curr - timer_setup_prev ) < timer_setup_interval){
+    timer_setup_curr = millis();
+  }
   //initialize the motor_state
   motor_init();
   //delay(500);
@@ -468,11 +476,17 @@ unsigned long test_time_curr=0;
 unsigned long test_time_prev=0;
 unsigned long test_forw_interval = 5000;
 unsigned long test_halt_interval = 1000;
+
+
+
+
   
 void loop() {
  //go_one_cell();
- 
+ //comm_to_other_teensy();
+ //other_teensy_comm();
  motor_tick();
+ //left_turn_w_gyro();
  
 //treamux_func();
 //delay(1000);
@@ -483,6 +497,7 @@ void loop() {
   //get_sonar_dist_mid();
   //left_turn_w_gyro();
   //right_turn_w_gyro();
+  //halt_sec();
   //encoder_pid();
   //
 // forward_w_speed(106,103);

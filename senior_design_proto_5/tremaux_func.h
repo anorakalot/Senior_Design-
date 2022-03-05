@@ -76,7 +76,7 @@ int detect_obstacle_bool_middle=0;
 int detect_obstacle_bool_left = 0;
 int detect_obstacle_bool_right = 0;
 
-unsigned long detect_range = 500;//600
+unsigned long detect_range = 600;//600,500
 
 void treamux_func() {
  snprintf(misc_print_1,sizeof(misc_print_1), "start_pos.y %i, start_pos.x  %i, goal.y %i , goal.x %i ,start_pos visited_num:%i \n",
@@ -109,7 +109,7 @@ void treamux_func() {
       
       
       
-      for (int u = 0; u < 5; u++){
+      for (int u = 0; u < 10; u++){//5 times prone to error 
            get_sonar_dist(); 
            if (dist_val_middle < detect_range){
             detect_obstacle_bool_middle = 1;
