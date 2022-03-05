@@ -98,12 +98,15 @@ void treamux_func() {
         //Serial.print(misc_print_1);
        
        //ERROR IS SOMEWHERE HERE IN SONAR ACESSIBLE CODE 
-       
+        //FOUND ERROR IT WAS JUST RIGHT IF WAS SET TO = INSTEAD OF ==
+
+         
        //do sonar detection here 
        //need to reset them before each one 
       detect_obstacle_bool_middle=0; 
       detect_obstacle_bool_left = 0;
       detect_obstacle_bool_right = 0;
+      
       
       
       for (int u = 0; u < 5; u++){
@@ -114,9 +117,9 @@ void treamux_func() {
            if (dist_val_left < detect_range){
             detect_obstacle_bool_left = 1;
            }
-//           if (dist_val_right < detect_range){
-//            detect_obstacle_bool_right = 1;
-//           }//got rid of t his until right sensor is fixed 
+           if (dist_val_right < detect_range){
+            detect_obstacle_bool_right = 1;
+           }//got rid of t his until right sensor is fixed 
        }//end of
 
 
@@ -215,6 +218,7 @@ void treamux_func() {
 
         //ERROR IS SOMEWHERE HERE   ABOVE IN SONAR ACESSIBLE CODE     
 
+        // FOUND ERROR ABOVE IT WAS JUST = instead of ==
 
       //PATHFINDING HAS ISSUE WHERE IT DOESN"T JUST GO TO zero when going need to go in no obstacles 
       //CHECK TO SEE IF THIS ISSUE IS HERE 
