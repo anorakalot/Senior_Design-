@@ -229,6 +229,7 @@ void setup() {
   l_speed.set_setpoint(0.66);
   r_speed.set_setpoint(0.65);
   
+  
   micro_adjust_u_d.set_setpoint(400);//380,400
   micro_adjust_u_d.set_kp(1.5);//
   
@@ -303,21 +304,23 @@ void setup() {
 
   dist_val_middle= 1000;
     //get_sonar_dist();
-  while(dist_val_middle >180){//250,240
+  while(dist_val_middle >160){//250,240,180
     //Serial.println("INSIDE SETUP WHILE"); 
     get_sonar_dist();
     
   }
-  unsigned long timer_setup_curr = 0;
-  unsigned long timer_setup_prev = 0;
-  unsigned long timer_setup_interval = 4000;
-  //delay(8000);
-  //delay(4000);
-  timer_setup_curr = millis();
-  timer_setup_prev = timer_setup_curr;
-  while((timer_setup_curr - timer_setup_prev ) < timer_setup_interval){
-    timer_setup_curr = millis();
-  }
+//  unsigned long timer_setup_curr = 0;
+//  unsigned long timer_setup_prev = 0;
+//  unsigned long timer_setup_interval = 4000;
+//  //delay(8000);
+//  //delay(4000);
+//  timer_setup_curr = millis();
+//  timer_setup_prev = timer_setup_curr;
+//  while((timer_setup_curr - timer_setup_prev ) < timer_setup_interval){
+//    timer_setup_curr = millis();
+//  }
+
+  delay_timer(5000);
   //initialize the motor_state
   motor_init();
   //delay(500);
@@ -482,12 +485,16 @@ unsigned long test_halt_interval = 1000;
 
   
 void loop() {
- //go_one_cell();
+ go_one_cell();
  //comm_to_other_teensy();
  //other_teensy_comm();
- motor_tick();
+ //motor_tick();
  //left_turn_w_gyro();
- 
+
+  //send_recieve_serial();
+  
+ //left_turn_w_enc(20);
+  //get_sonar_dist_test();
 //treamux_func();
 //delay(1000);
  

@@ -194,7 +194,8 @@ void right_turn_w_gyro() {
 //  halt();
 //  delay(1000);
   halt_500_sec();
-  while (gyro_angle_z >-8040 ) {//-8000,-7900,7850,-7860,-7880,-8000
+  while (gyro_angle_z >-8040 ) {//-8040,8020
+    //-8000,-7900,7850,-7860,-7880,-8000
     right_turn();
     update_gyro();
   }
@@ -212,7 +213,8 @@ void left_turn_w_gyro() {
   halt_500_sec();
 //  delay(1000);
   halt_sec();
-  while (gyro_angle_z <8040) { //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close),7900(really close),7860,7880,8000
+  while (gyro_angle_z <8020) {//8040,8020 
+    //100 too small,1000,3000,6000,6500,6700,6900,7200(close),7500(30,7800(close),7900,8000(really close),7900(really close),7860,7880,8000
     left_turn();        //7900,7800(too little),7850(REALLY Good but I'm gonna try a little more
     update_gyro();
   }
@@ -1009,7 +1011,7 @@ void other_teensy_comm(){
 // 1
 // 2
 
-
+      
 void motor_init(){
   motor_state = MOTOR_INIT;
 }
@@ -1038,6 +1040,7 @@ void motor_tick(){
           //PUT THIS IN AT_GOAL_BOOL LATER OR TEMP_HALT
           
           //motor_state = MICRO_ADJUST;
+          found_cup_bool = 0; //set found_cup_bool to 0 before going into find cup state 
           motor_state = FIND_CUP;
 
           go_one_cell_next = 0;//just in case it was called but it shouldn't
@@ -1056,6 +1059,7 @@ void motor_tick(){
         //motor_state = TEMP_HALT;
         //PUT THIS IN AT_GOAL_BOOL LATER OR TEMP_HALT
           //motor_state = MICRO_ADJUST;
+          found_cup_bool = 0;
           motor_state = FIND_CUP;
           go_one_cell_next = 0;
           break;
@@ -1170,6 +1174,10 @@ void motor_tick(){
       motor_state = CHOOSE_MOVE;
       break;
     case FIND_CUP:
+      if (found_cup_bool != 1){//cup not found
+        motor_state = FIND_CUP;
+        break;
+      }
       motor_state = MICRO_ADJUST;
       break;
 
@@ -1228,36 +1236,53 @@ void motor_tick(){
       break;
 
     case FIND_CUP:
-      found_cup_bool = 0;
-      
-      if (current_motor_dir_val == 'u'){
-        for(int i = 0;i < 5; i++){
-        send_recieve_serial();
-        if(col_number > 100){
-          found_cup_bool = 1;//found cup
-          }
-        }//end of for loop
-        
-        if (found_cup_bool == 0){//if not found cup turn to it 
-          right_turn_w_gyro();
-        }//only need to take into account if need to turn
-      }//end of if going up direction
-      
-      else if (current_motor_dir_val == 'r'){
-        for(int i = 0; i < 5; i++){
+//     for(int i = 0;i < 5; i++){
+//        send_recieve_serial();
+//        if(col_number > 100){
+//          found_cup_bool = 1;//found cup
+//          }
+//        }//end of for loop
+//
+//      if (found_cup_bool != 1){//not found
+//        left_turn_w_enc(20);
+//      }
+
+      //below code is just testing make sure it gets to find cup state
+        left_turn_w_enc(20);
+        left_turn_w_enc(20);
+        found_cup_bool = 1;
+          break;
           
-        send_recieve_serial();
-        if (col_number > 100){
-          found_cup_bool =1;
-          }
-        }//end for loop
-        
-        if(found_cup_bool == 0){
-          left_turn_w_gyro();
-        }
-      }//end of if going r direction
-      
-      break;
+//old find cup way new way is above      
+//      if (current_motor_dir_val == 'u'){
+//        for(int i = 0;i < 5; i++){
+//        send_recieve_serial();
+//        if(col_number > 100){
+//          found_cup_bool = 1;//found cup
+//          }
+//        }//end of for loop
+//        
+//        if (found_cup_bool == 0){//if not found cup turn to it 
+//          right_turn_w_gyro();
+//        }//only need to take into account if need to turn
+//      }//end of if going up direction
+//      
+//      else if (current_motor_dir_val == 'r'){
+//        for(int i = 0; i < 5; i++){
+//          
+//        send_recieve_serial();
+//        if (col_number > 100){
+//          found_cup_bool =1;
+//          }
+//        }//end for loop
+//        
+//        if(found_cup_bool == 0){
+//          left_turn_w_gyro();
+//        }
+//      }//end of if going r direction
+//      
+//      break;
+      //end of find cup 
       
 
     case MICRO_ADJUST:
@@ -1267,6 +1292,7 @@ void motor_tick(){
         }
         
         break;
+        
     case COMM_TO_OTHER_TEENSY:
       //Serial.println("COMM TO TEENSY");
       //other_teensy_comm();
