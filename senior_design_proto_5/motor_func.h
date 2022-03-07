@@ -377,12 +377,14 @@ class controller_enc{
 
     //default constructor
     controller_enc(){
-      kp = 40;//4 not changing it fast enough,20
+      kp = 50;//40
+      //4 not changing it fast enough,20
       //0.50 moves slow as of time of writing,0.75,2 goes to values pretty fast of velocity,3,3.2,,4
       //3 kp  was used in pid test that went pretty straight,5 was used went a luttle to the left
 //kp 5 might be a little too much       
       //kd = 4;//1 isn't making it change fas//t,3,3 
-      kd = 40;//30
+      kd = 60;//40
+      //30,40
       //6(doesn't change fast_enough,7,8 after a while goes straight,12 worked decent for a time,
       //kd = 0;
       error = 0;
@@ -445,7 +447,10 @@ class controller_micro_adjustment{
     controller_micro_adjustment(){
       kp = 0.3;//1,0.5
       error = 0;
-      set_point = 300;//284,290
+      set_point = 240;//
+      //286
+      //300
+      //284,290
       previous_error = 0;  
     }
     
@@ -665,23 +670,23 @@ void go_one_cell(){
 }
 //STUFF TO COMMUNICATE TO OTHER TEENSY 
 
-
-//ALL OTHER COMM TYPE FUNCTIONS HERE SO IT COMPILES
-int row_number=0;
-int int_serial_input = 0;
-
-int col_number=0;
-int power_of_10_row = 100;
-int power_of_10_col = 100;
-int number_of_input = 0;
-int send_z_bool = 0;
-
-int counter_not_recieve= 0;
-
-unsigned long send_z_time_curr = 0;
-unsigned long send_z_time_prev = 0;
-
-unsigned long send_z_time_interval = 500;
+//
+////ALL OTHER COMM TYPE FUNCTIONS HERE SO IT COMPILES
+//int row_number=0;
+//int int_serial_input = 0;
+//
+//int col_number=0;
+//int power_of_10_row = 100;
+//int power_of_10_col = 100;
+//int number_of_input = 0;
+//int send_z_bool = 0;
+//
+//int counter_not_recieve= 0;
+//
+//unsigned long send_z_time_curr = 0;
+//unsigned long send_z_time_prev = 0;
+//
+//unsigned long send_z_time_interval = 500;
 
 void send_recieve_serial(){
   
@@ -794,16 +799,22 @@ int enc_interval_length_global = 0;
 
 void adjust_to_cup(){
   //gets col_number from nano to use in micro adj
-   if(col_number >297 && col_number < 303){
-    return;
-   }
+  //need to change these ranges later 
+//   if(col_number >297 && col_number < 303){
+//    return;
+//   }
    
    //UNCOMMENT THIS WHEN ACTUALLY GOING
    send_recieve_serial();
 
    
    //this is what p term is set to 
-   if (col_number < 100){
+//   if (col_number < 100){
+//    //nothing
+//   }
+
+   
+   if (col_number < 50){
     //nothing
    }
    else{
@@ -847,7 +858,8 @@ void sonar_adjust_to_block(){
     //  return;
     //}
     //390 is now mid
-    if (avg_sonar_mid >380 && avg_sonar_mid < 420){
+  //  if (avg_sonar_mid >380 && avg_sonar_mid < 420){//setpoint is 483 now
+    if (avg_sonar_mid > 460 && avg_sonar_mid < 490){
       return;
     }
     
@@ -861,6 +873,9 @@ void sonar_adjust_to_block(){
       get_sonar_dist_mid();
 
       if (dist_val_middle > 1200){
+        dist_val_middle = dist_val_middle_prev;
+      }
+      else if (dist_val_middle < 10){
         dist_val_middle = dist_val_middle_prev;
       }
       
@@ -1173,8 +1188,10 @@ void motor_tick(){
     case TEMP_HALT:
       motor_state = CHOOSE_MOVE;
       break;
+      
     case FIND_CUP:
-      if (found_cup_bool != 1){//cup not found
+      //if (found_cup_bool != 1){//cup not found
+      if (found_cup_bool == 0){ 
         motor_state = FIND_CUP;
         break;
       }
@@ -1183,10 +1200,18 @@ void motor_tick(){
 
 
     case MICRO_ADJUST:
-      if (avg_sonar_mid <380|| avg_sonar_mid > 420){
-        motor_state= MICRO_ADJUST;
-        break;
-      }
+      //if (avg_sonar_mid <380|| avg_sonar_mid > 420){//if not set to right range won't go into comm state
+//      if (avg_sonar_mid < 460 || avg_sonar_mid > 500){//new value is 483
+//        motor_state= MICRO_ADJUST;
+//        break;
+//      }
+//      
+//      //if(col_number <297 || col_number > 303){//286 is new value
+//      if (col_number <250 || col_number > 320){ 
+//        motor_state = MICRO_ADJUST;
+//        break;
+//      }
+      
     
         motor_state = COMM_TO_OTHER_TEENSY;
         break;
@@ -1195,6 +1220,7 @@ void motor_tick(){
     case COMM_TO_OTHER_TEENSY:
       motor_state = PERM_HALT;
       break;
+      
     case PERM_HALT:
       motor_state = PERM_HALT;
       break;
@@ -1236,22 +1262,29 @@ void motor_tick(){
       break;
 
     case FIND_CUP:
-//     for(int i = 0;i < 5; i++){
-//        send_recieve_serial();
+     for(int i = 0;i < 5; i++){
+        send_recieve_serial();
 //        if(col_number > 100){
 //          found_cup_bool = 1;//found cup
 //          }
-//        }//end of for loop
-//
-//      if (found_cup_bool != 1){//not found
-//        left_turn_w_enc(20);
-//      }
 
-      //below code is just testing make sure it gets to find cup state
-        left_turn_w_enc(20);
-        left_turn_w_enc(20);
-        found_cup_bool = 1;
+          if(col_number >= 50){
+          found_cup_bool = 1;//found cup
           break;
+          }
+        }//end of for loop
+
+      //if (found_cup_bool != 1){//not found
+      if (found_cup_bool == 0){
+        right_turn_w_enc(20);
+      }
+
+//      //below code is just testing make sure it gets to find cup state
+//        left_turn_w_enc(20);
+//        left_turn_w_enc(20);
+//        found_cup_bool = 1;
+         
+          break;//break that's actually used
           
 //old find cup way new way is above      
 //      if (current_motor_dir_val == 'u'){
@@ -1286,7 +1319,8 @@ void motor_tick(){
       
 
     case MICRO_ADJUST:
-        for (int x = 0; x < 5; x ++){//3(not enough),7(too many not the best)
+        for (int x = 0; x < 15; x ++){
+          //3(not enough),7(too many not the best),5
           sonar_adjust_to_block();
           adjust_to_cup();
         }
@@ -1296,7 +1330,7 @@ void motor_tick(){
     case COMM_TO_OTHER_TEENSY:
       //Serial.println("COMM TO TEENSY");
       //other_teensy_comm();
-      for (int x = 0; x < 100; x++){
+      for (int x = 0; x < 6; x++){//100
         other_teensy_comm();
       }
       break;

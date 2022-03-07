@@ -225,12 +225,18 @@ void setup() {
  // l_speed.set_setpoint(0.65);//goes left not good
  // r_speed.set_setpoint(0.65);
 
+//
+  //l_speed.set_setpoint(0.66);
+  //r_speed.set_setpoint(0.65);//LAST VALUE BUT WITH NEW BUILD STEERS RIGHT OVER TIME
 
+  
   l_speed.set_setpoint(0.66);
-  r_speed.set_setpoint(0.65);
+  r_speed.set_setpoint(0.66);
+
   
   
-  micro_adjust_u_d.set_setpoint(400);//380,400
+  micro_adjust_u_d.set_setpoint(483);//400
+  //380,400,
   micro_adjust_u_d.set_kp(1.5);//
   
   
@@ -325,6 +331,8 @@ void setup() {
   motor_init();
   //delay(500);
   //delay(4000);
+  //COMMENT BELOW AFTER DONE TESTING
+  //motor_state = FIND_CUP;
 
 }//end of setup
 
@@ -483,14 +491,16 @@ unsigned long test_halt_interval = 1000;
 
 
 
-  
+  //SUNDAY : robot is going really straight problem might have been the kp and kd small and setpoints not being equal previously
+  //also could just be that the robot is more balanced now with new constructions
 void loop() {
- go_one_cell();
- //comm_to_other_teensy();
+ //go_one_cell();
+ 
  //other_teensy_comm();
- //motor_tick();
+  motor_tick();
  //left_turn_w_gyro();
 
+ 
   //send_recieve_serial();
   
  //left_turn_w_enc(20);

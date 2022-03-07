@@ -190,5 +190,24 @@ int pin_send = 23;
 char current_motor_dir_val = 'u';
 int found_cup_bool = 0;
 
+
+//ALL OTHER COMM TYPE FUNCTIONS HERE SO IT COMPILES
+int row_number=0;
+int int_serial_input = 0;
+
+//for send_recieve serial
+int col_number=0;
+int power_of_10_row = 100;
+int power_of_10_col = 100;
+int number_of_input = 0;
+int send_z_bool = 0;
+
+int counter_not_recieve= 0;
+
+unsigned long send_z_time_curr = 0;
+unsigned long send_z_time_prev = 0;
+
+unsigned long send_z_time_interval = 500;
+
 //enum MOTOR_STATES {MOTOR_INIT,  CHOOSE_MOVE, GO_ONE_CELL,TURN_REVERSE, TURN_LEFT, TURN_RIGHT,TEMP_HALT,SONAR_SENSOR,ADJUST_TO_CUP,ADJUST_TO_SONAR ,COMM_TO_OTHER_TEENSY,PERM_HALT} motor_state;
 enum MOTOR_STATES {MOTOR_INIT,  CHOOSE_MOVE, GO_ONE_CELL,TURN_REVERSE, TURN_LEFT, TURN_RIGHT,TEMP_HALT,FIND_CUP,MICRO_ADJUST,COMM_TO_OTHER_TEENSY,PERM_HALT} motor_state;
